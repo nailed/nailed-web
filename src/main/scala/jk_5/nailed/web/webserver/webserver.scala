@@ -1,11 +1,15 @@
 package jk_5.nailed.web.webserver
 
-import io.netty.channel.{ChannelFuture, ChannelFutureListener, ChannelInitializer}
+import io.netty.channel._
 import io.netty.channel.socket.SocketChannel
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.handler.codec.http.{HttpResponseEncoder, HttpRequestDecoder}
+import io.netty.channel.ChannelHandler.Sharable
+import io.netty.handler.timeout.{ReadTimeoutHandler, ReadTimeoutException}
+import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, ProtocolHttp}
+import jk_5.nailed.web.webserver.http.handlers.{WebServerHandlerMappackList, WebServerHandlerMappackData, WebServerHandlerHtml}
+import jk_5.nailed.web.webserver.websocket.WebServerHandlerWebsocket
 
 /**
  * No description given
@@ -27,10 +31,34 @@ object WebServer {
 }
 
 object Pipeline extends ChannelInitializer[SocketChannel] {
+
+  val webserverMultiplexer = new MultiplexingUrlResolver
+
+  ProtocolMultiplexer.addHandler(ProtocolHttp)
+
+  this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[WebServerHandlerMappackList])
+  this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[WebServerHandlerMappackData])
+  this.webserverMultiplexer.addHandler("/websocket/", classOf[WebServerHandlerWebsocket])
+  this.webserverMultiplexer.addHandler("/(.*)", classOf[WebServerHandlerHtml])
+
+  val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")
+
   def initChannel(ch: SocketChannel){
     val pipe = ch.pipeline()
 
-    pipe.addLast("httpDecoder", new HttpRequestDecoder)
-    pipe.addLast("httpEncoder", new HttpResponseEncoder)
+    //pipe.addLast("sslDetector", new SslDetector)
+    pipe.addLast("timeoutHandler", new ReadTimeoutHandler(10))
+    pipe.addLast("timeoutDetector", ReadTimeoutDetector)
+    pipe.addLast("protocolMultiplexer", new ProtocolMultiplexer)
+  }
+}
+
+@Sharable
+object ReadTimeoutDetector extends ChannelHandlerAdapter {
+  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable){
+    cause match{
+      case e: ReadTimeoutException => ctx.close()
+      case e => ctx.fireExceptionCaught(e)
+    }
   }
 }

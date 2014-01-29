@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Nailed</title>
+
+        <style>
+            [ng-cloak] {
+                display: none;
+            }
+        </style>
+
+        <script>
+                /*
+                 * AngularJS v1.2.6
+                 * (c) 2010-2014 Google, Inc. http://angularjs.org
+                 * License: MIT
+                 */
+                (function(){'use strict';function d(a){return function(){var c=arguments[0],b,c="["+(a?a+":":"")+c+"] http://errors.angularjs.org/1.2.6/"+(a?a+"/":"")+c;for(b=1;b<arguments.length;b++)c=c+(1==b?"?":"&")+"p"+(b-1)+"="+encodeURIComponent("function"==typeof arguments[b]?arguments[b].toString().replace(/ \{[\s\S]*$/,""):"undefined"==typeof arguments[b]?"undefined":"string"!=typeof arguments[b]?JSON.stringify(arguments[b]):arguments[b]);return Error(c)}}(function(a){var c=d("$injector"),b=d("ng");a=a.angular||(a.angular={});a.$$minErr=a.$$minErr||d;return a.module||(a.module=function(){var a={};return function(e,d,f){if("hasOwnProperty"===e)throw b("badname","module");d&&a.hasOwnProperty(e)&&(a[e]=null);return a[e]||(a[e]=function(){function a(c,d,e){return function(){b[e||"push"]([c,d,arguments]);return g}}if(!d)throw c("nomod",e);var b=[],h=[],k=a("$injector","invoke"),g={_invokeQueue:b,_runBlocks:h,requires:d,name:e,provider:a("$provide","provider"),factory:a("$provide","factory"),service:a("$provide","service"),value:a("$provide","value"),constant:a("$provide","constant","unshift"),animation:a("$animateProvider","register"),filter:a("$filterProvider","register"),controller:a("$controllerProvider","register"),directive:a("$compileProvider","directive"),config:k,run:function(a){h.push(a);return this}};f&&k(f);return g}())}}())})(window)})(window);
+
+                /*
+                 * $script.js v1.3
+                 * https://github.com/ded/script.js
+                 * Copyright: @ded & @fat - Dustin Diaz, Jacob Thornton 2011
+                 * Follow our software http://twitter.com/dedfat
+                 * License: MIT
+                 */
+                (function(e,t,n){typeof module!="undefined"&&module.exports?module.exports=n():typeof define=="function"&&define.amd?define(n):t[e]=n()})("$script",this,function(){function v(e,t){for(var n=0,r=e.length;n<r;++n)if(!t(e[n]))return f;return 1}function m(e,t){v(e,function(e){return!t(e)})}function g(e,t,a){function d(e){return e.call?e():r[e]}function b(){if(!--p){r[h]=1,c&&c();for(var e in s)v(e.split("|"),d)&&!m(s[e],d)&&(s[e]=[])}}e=e[l]?e:[e];var f=t&&t.call,c=f?t:a,h=f?e.join(""):t,p=e.length;return setTimeout(function(){m(e,function(e){if(e===null)return b();if(u[e])return h&&(i[h]=1),u[e]==2&&b();u[e]=1,h&&(i[h]=1),y(!n.test(e)&&o?o+e+".js":e,b)})},0),g}function y(n,r){var i=e.createElement("script"),s=f;i.onload=i.onerror=i[d]=function(){if(i[h]&&!/^c|loade/.test(i[h])||s)return;i.onload=i[d]=null,s=1,u[n]=2,r()},i.async=1,i.src=n,t.insertBefore(i,t.firstChild)}var e=document,t=e.getElementsByTagName("head")[0],n=/^https?:\/\//,r={},i={},s={},o,u={},a="string",f=!1,l="push",c="DOMContentLoaded",h="readyState",p="addEventListener",d="onreadystatechange";return!e[h]&&e[p]&&(e[p](c,function b(){e.removeEventListener(c,b,f),e[h]="complete"},f),e[h]="loading"),g.get=y,g.order=function(e,t,n){(function r(i){i=e.shift(),e.length?g(i,r):g(i,t,n)})()},g.path=function(e){o=e},g.ready=function(e,t,n){e=e[l]?e:[e];var i=[];return!m(e,function(e){r[e]||i[l](e)})&&v(e,function(e){return r[e]})?t():!function(e){s[e]=s[e]||[],s[e][l](t),n&&n(i)}(e.join("|")),g},g.done=function(e){g([null],e)},g})
+
+                $script.path('/lib/');
+                $script([
+                    "html5shiv/js/html5shiv",
+                    "dateformat/js/dateformat",
+                    "jquery/js/jquery-1.10.2.min"
+                ], function(){
+                    $script([
+                        "bootstrap/js/bootstrap.min",
+                        "angular/js/angular.min"
+                    ], function(){
+                        $script.path('/app/nailedweb/js/')
+                        $script([
+                            "networkmanager",
+                            "logger"
+                        ], function(){
+                            $script([
+                                "nailedcore"
+                            ], function(){
+                                $script([
+                                    "angular/routes",
+                                    "angular/controllers",
+                                    "angular/directives",
+                                    "angular/filters",
+                                    "angular/services"
+                                ], function(){
+                                    $script([
+                                        "main"
+                                    ], function(){
+                                        angular.bootstrap(document, ["nailed"]);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            </script>
+
+        <link href="/lib/normalize/css/normalize.css" rel="stylesheet" type="text/css"/>
+        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="/lib/fontawesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+        <link href="/app/nailedweb/css/base.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body ng-cloak ng-controller="BaseController">
+        <div id="wrapper">
+            <header class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nx-navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#/">
+                            Nailed
+                            <!--<img src="/app/nailedweb/images/logo.png" alt="logo">-->
+                        </a>
+                    </div>
+                    <nav class="collapse navbar-collapse nx-navbar-collapse" role="navigation">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#/mappacks">Mappacks</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{userInfo.fullName}} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li class="divider"></li>
+                                    <li><a href="#">Log Out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+            <div class="content">
+                <div ng-view></div>
+                <span ng-show="isViewLoading">Loading the view...</span>
+            </div>
+        </div>
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted">Nailed-Web version: <span>{{nailedVersion}}</span></p>
+            </div>
+        </div>
+    </body>
+</html>

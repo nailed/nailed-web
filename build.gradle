@@ -25,6 +25,7 @@ processResources{
 dependencies{
     compile 'org.scala-lang:scala-library:2.10.2'
     compile 'io.netty:netty-all:5.0.0.Alpha1'
+    compile 'jk_5.jsonlibrary:jsonlibrary:0.1-SNAPSHOT'
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'

@@ -1,5 +1,7 @@
 package jk_5.nailed.web
 
+import jk_5.nailed.web.webserver.{MimeTypesLookup, WebServer}
+
 /**
  * No description given
  *
@@ -7,7 +9,10 @@ package jk_5.nailed.web
  */
 object NailedWeb {
 
-  def main(args: Array[String]){
+  val version = "0.1-SNAPSHOT"
 
+  def main(args: Array[String]){
+    MimeTypesLookup.load()
+    WebServer.start()
   }
 }
