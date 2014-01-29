@@ -27,6 +27,7 @@ class ProtocolMultiplexer extends ByteToMessageDecoder {
     if(handler.isEmpty){
       in.clear()
       ctx.close()
+      return
     }
     ctx.pipeline().remove(ReadTimeoutDetector.getClass)
     ctx.pipeline().remove(classOf[ReadTimeoutHandler])

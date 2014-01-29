@@ -1,10 +1,10 @@
 package jk_5.nailed.web.webserver
 
 import scala.collection.immutable
-import jk_5.nailed.web.webserver.packet.{PacketCloseConnection, Packet}
+import jk_5.nailed.web.webserver.packet._
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
-import java.util.concurrent.Executors
+import jk_5.nailed.web.NailedWeb
 
 /**
  * No description given
@@ -13,7 +13,10 @@ import java.util.concurrent.Executors
  */
 object PacketManager {
   private final val packets = immutable.HashMap[String, Class[_ <: Packet]](
-    "close" -> classOf[PacketCloseConnection]
+    "close" -> classOf[PacketCloseConnection],
+    "keepalive" -> classOf[PacketKeepAlive],
+    "auth" -> classOf[PacketAuthenticate],
+    "authResponse" -> classOf[PacketAuthResponse]
   )
 
   def getPacketID(cl: Class[_ <: Packet]): String = this.packets.find(p => p._2 == cl).get._1
@@ -23,17 +26,13 @@ object PacketManager {
 @Sharable
 object PacketHandler extends SimpleChannelInboundHandler[Packet] {
 
-  final val worker = Executors.newCachedThreadPool()
-
   def messageReceived(ctx: ChannelHandlerContext, packet: Packet){
-    ctx.channel().attr(NetworkRegistry.ATTR_NETWORKHANDLER).setIfAbsent(new DummyNetworkHandler(ctx.channel()))
     val handler = ctx.channel().attr(NetworkRegistry.ATTR_NETWORKHANDLER).get()
-    this.worker.execute(new ProcessPacketTask(packet, handler))
+    NailedWeb.worker.execute(new ProcessPacketTask(packet, handler))
   }
 
   override def userEventTriggered(ctx: ChannelHandlerContext, event: AnyRef){
     ctx.fireUserEventTriggered(event)
-    ctx.channel().attr(NetworkRegistry.ATTR_NETWORKHANDLER).setIfAbsent(new DummyNetworkHandler(ctx.channel()))
     ctx.channel().attr(NetworkRegistry.ATTR_NETWORKHANDLER).get().onPipelineEvent(event)
   }
 

@@ -25,12 +25,12 @@
     window.NetworkManager.prototype.setWebsocketUrl = function(url){
         this.websocketUrl = url;
     }
-    window.NetworkManager.prototype.connectToServer = function() {
+    window.NetworkManager.prototype.connectToServer = function(callback) {
         var self = this;
         this.websocket = new WebSocket(this.websocketUrl);
         this.websocket.onopen = function(){
             self.Nailed.logger.info("Connected to the server!");
-            self.sendPacket(new PacketAuthenticate(getParameterByName("secret")));
+            callback(self);
         }
         this.websocket.onclose = function(){
             self.Nailed.logger.info("Server connection closed!");
@@ -50,6 +50,10 @@
             self.Nailed.handleFatal("Server connection failed!");
         }
     }
+    window.NetworkManager.prototype.disconnect = function(reason) {
+        this.sendPacket(new PacketCloseConnection(reason));
+        this.websocket.close();
+    }
 
     window.NetworkManager.prototype.sendPacket = function(packet){
         if(packet == null || packet == undefined) return;
@@ -61,7 +65,7 @@
     }
 
     window.NetworkManager.prototype.registerPackets = function(){
-        this.registerPacket(0x0, "PacketKeepAlive", function(){
+        this.registerPacket("keepalive", "PacketKeepAlive", function(){
             this.read = function(data){
                 this.randomId = data.randomId;
             }
@@ -69,20 +73,27 @@
                 data.randomId = this.randomId;
             }
         });
-        this.registerPacket(0x1, "PacketAuthenticate", function(_secret){
-            if(_secret !== undefined) this.secret = _secret;
+        this.registerPacket("auth", "PacketAuthenticate", function(_username, _password){
+            if(_username !== undefined) this.username = _username;
+            if(_password !== undefined) this.password = _password;
             this.write = function(data){
-                data.secret = this.secret;
+                data.email = this.username;
+                data.password = this.password;
+                data.type = "client";
             }
         });
-        this.registerPacket(0x2, "PacketAuthenticationSuccess", function(_secret){
+        this.registerPacket("authResponse", "PacketAuthenticationSuccess", function(){
             this.read = function(data){
-                this.userInfo = data.userInfo
+                this.success = data.success
+                this.userData = data.userData
             }
         });
-        this.registerPacket(0x3, "PacketCloseConnection", function(){
+        this.registerPacket("close", "PacketCloseConnection", function(){
             this.read = function(data){
                 this.reason = data.reason;
+            }
+            this.write = function(data){
+                data.reason = this.reason;
             }
         });
     }

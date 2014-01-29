@@ -2,7 +2,7 @@ package jk_5.nailed.web.webserver.websocket
 
 import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http.{HttpHeaders, FullHttpRequest}
-import jk_5.nailed.web.webserver.{PacketHandler, RoutedHandler}
+import jk_5.nailed.web.webserver.{NetworkRegistry, PacketHandler, RoutedHandler}
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.handler.timeout.IdleStateHandler
@@ -29,6 +29,7 @@ class WebServerHandlerWebsocket extends SimpleChannelInboundHandler[FullHttpRequ
       pipe.addLast("idleStateHandler", new IdleStateHandler(10, 30, 60))
       pipe.addLast("packetHandler", PacketHandler)
       pipe.addLast("websocketHandler", handler)
+      ctx.channel().attr(NetworkRegistry.ATTR_NETWORKHANDLER).set(new NetworkHandlerWebsocket(ctx.channel()))
     }
   }
 }

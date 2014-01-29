@@ -3,8 +3,6 @@ package jk_5.nailed.web.webserver
 import io.netty.channel.{Channel, ChannelFuture}
 import io.netty.handler.timeout.{IdleStateEvent, IdleState}
 import io.netty.util.AttributeKey
-import scala.collection.mutable
-import jk_5.nailed.web.webserver.websocket.NetworkHandlerWebsocket
 import jk_5.nailed.web.webserver.packet.{PacketCloseConnection, Packet}
 
 /**
@@ -13,16 +11,10 @@ import jk_5.nailed.web.webserver.packet.{PacketCloseConnection, Packet}
  * @author jk-5
  */
 object NetworkRegistry {
-
   final val ATTR_NETWORKHANDLER: AttributeKey[NetworkHandler] = AttributeKey.valueOf("NetworkHandler")
-
-  private final val decoderToHandlerClass = mutable.HashMap[String, Class[_ <: NetworkHandler]](
-    "websocket" -> classOf[NetworkHandlerWebsocket]
-  )
-  @inline def getHandlerClass(decoder: String) = this.decoderToHandlerClass.get(decoder)
 }
 
-abstract class NetworkHandler(private final val channel: Channel) {
+abstract class NetworkHandler(private final val channel: Channel, private var connection: Connection = new NullConnection) {
 
   def sendPacket(packet: Packet) = this.channel.writeAndFlush(packet)
   def closeConnection(reason: String): ChannelFuture = {
@@ -30,18 +22,11 @@ abstract class NetworkHandler(private final val channel: Channel) {
     this.channel.close()
   }
   def closeConnection(): ChannelFuture = this.closeConnection("No reason given")
-  private def onHandlerRegistered() = {}
-
-  final def needsAuthentication = this.isInstanceOf[DummyNetworkHandler]
-
-  final def handlerRegistered(){
-    this.onHandlerRegistered()
-  }
 
   def onPipelineEvent(event: AnyRef){
     event match {
       case e: IdleStateEvent => e.state() match {
-        case IdleState.READER_IDLE => if(this.needsAuthentication){
+        case IdleState.READER_IDLE => if(!this.connection.isAuthenticated){
           this.closeConnection("Not authenticated after 10 seconds!")
         }
         case IdleState.WRITER_IDLE => //TODO: Try ping
@@ -52,6 +37,6 @@ abstract class NetworkHandler(private final val channel: Channel) {
   }
 
   final def getChannel = this.channel
+  final def getConnection = this.connection
+  final def setConnection(connection: Connection) = this.connection = connection
 }
-
-class DummyNetworkHandler(_channel: Channel) extends NetworkHandler(_channel)

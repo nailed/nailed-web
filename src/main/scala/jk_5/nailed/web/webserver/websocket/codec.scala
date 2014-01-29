@@ -34,7 +34,7 @@ object WebSocketPacketDecoder extends MessageToMessageDecoder[TextWebSocketFrame
       packet.setDecoder("websocket")
       out.add(packet)
     }catch{
-      case e: Exception => out.add(msg)
+      case e: Exception => out.add(msg); e.printStackTrace()
     }
   }
 }

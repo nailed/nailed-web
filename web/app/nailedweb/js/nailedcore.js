@@ -3,7 +3,7 @@
     function NailedCore(win, jQ) {
         this.logger = new win.NailedLogger();
         this.networkManager = new win.NetworkManager(this);
-        this.userInfo = {"fullName":""};
+        this.userInfo = {"authenticated":false};
 
         win.NetworkManager = undefined;
         win.NailedLogger = undefined;
@@ -34,12 +34,30 @@
         if(packet instanceof PacketKeepAlive){
             this.networkManager.sendPacket(packet);
         }else if(packet instanceof PacketAuthenticationSuccess){
-            this.setUserInfo(packet.userInfo)
+            if(packet.success){
+                packet.userData.authenticated = true;
+                this.setUserInfo(packet.userData);
+            }else{
+                alert("Wrong email/password");
+            }
         }else if(packet instanceof PacketCloseConnection){
 
         }
     }
 
     window.Nailed = new NailedCore(window, $);
+
+    $("body").on("click", "#signInButton", function(){
+        window.Nailed.networkManager.connectToServer(function(handler){
+            handler.sendPacket(new PacketAuthenticate($("input#authEmail").val(), $("input#authPassword").val()));
+        });
+    });
+
+    $("body").on("click", "#signOutButton", function(){
+        $("input#authEmail").val("");
+        $("input#authPassword").val("");
+        window.Nailed.networkManager.disconnect("Logout");
+        window.Nailed.setUserInfo({"authenticated":false});
+    });
 
 })(window, jQuery);

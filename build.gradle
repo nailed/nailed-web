@@ -26,6 +26,8 @@ dependencies{
     compile 'org.scala-lang:scala-library:2.10.2'
     compile 'io.netty:netty-all:5.0.0.Alpha1'
     compile 'jk_5.jsonlibrary:jsonlibrary:0.1-SNAPSHOT'
+    compile 'com.lambdaworks:scrypt:1.4.0'
+    compile 'com.ning:async-http-client:1.7.20'
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'
