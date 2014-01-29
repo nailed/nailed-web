@@ -1,0 +1,11 @@
+# Idea project files
+.idea
+*.iml
+*.iws
+*.ipr
+out
+classes
+
+# Gradle folders
+.gradle
+build

@@ -1,0 +1,35 @@
+apply plugin:'scala'
+apply plugin:'idea'
+
+group = 'jk_5.nailed'
+version = '0.1-SNAPSHOT'
+archivesBaseName = 'Nailed-Web'
+
+repositories{
+    mavenLocal()
+    mavenCentral()
+}
+
+jar{
+    manifest{
+        attributes 'Version': project.version
+    }
+}
+
+processResources{
+    eachFile{
+        expand 'version': project.version
+    }
+}
+
+dependencies{
+    compile 'org.scala-lang:scala-library:2.10.2'
+    compile 'io.netty:netty-all:5.0.0.Alpha1'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+}
+
+task wrapper(type: Wrapper){
+	gradleVersion = '1.7'
+}
