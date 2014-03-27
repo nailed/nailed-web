@@ -19,7 +19,6 @@ object SessionManager {
   def getSession(user: User, password: String): Option[AuthSession] = {
     if(this.checkPassword(user, password)){
       val session = new AuthSession(user.getID)
-      session.saveToDatabase()
       this.sessions.add(session)
       return Some(session)
     }
@@ -28,6 +27,13 @@ object SessionManager {
 
   def getSession(secret: String): Option[AuthSession] = {
     this.sessions.find(_.getID.toString == secret)
+  }
+
+  def dropSession(secret: String): Boolean = {
+    val session = this.sessions.find(_.getID.toString == secret)
+    if(session.isDefined){
+      this.sessions.remove(session.get)
+    }else false
   }
 }
 

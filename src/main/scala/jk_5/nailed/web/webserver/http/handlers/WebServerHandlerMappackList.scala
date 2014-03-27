@@ -16,7 +16,7 @@ class WebServerHandlerMappackList extends SimpleChannelInboundHandler[FullHttpRe
 
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     val list = new JsonArray
-    val data = new JsonObject().add("mappacks", list)
+    val data = new JsonObject().add("status", "ok").add("mappacks", list)
     ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(data.stringify, CharsetUtil.UTF_8)))
   }
 }

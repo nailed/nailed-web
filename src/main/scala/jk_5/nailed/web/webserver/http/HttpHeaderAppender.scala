@@ -16,15 +16,14 @@ object HttpHeaderAppender extends ChannelHandlerAdapter {
   override def write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise){
     msg match {
       case res: HttpResponse => {
-        res.headers().set(HttpHeaders.Names.SERVER, "nexus-scala/%s".format(NailedWeb.version))
+        res.headers().set(HttpHeaders.Names.SERVER, "nailed-web/%s".format(NailedWeb.version))
         res.headers().set(HttpHeaders.Names.DATE, WebServerUtils.formatter.format(new Date))
         if(!res.headers().contains(HttpHeaders.Names.CONTENT_TYPE)) res.headers().add(HttpHeaders.Names.CONTENT_TYPE, "application/json")
         res match{
-          case e: FullHttpResponse => {
+          case e: FullHttpResponse =>
             if(!e.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)){
               e.headers().set(HttpHeaders.Names.CONTENT_LENGTH, e.content().readableBytes())
             }
-          }
           case e =>
         }
       }

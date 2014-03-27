@@ -15,7 +15,7 @@ import io.netty.util.CharsetUtil
 class WebServerHandlerMappackData extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
 
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-    val data = new JsonObject().add("id", "nail")
+    val data = new JsonObject().add("status", "ok").add("id", "nail")
     ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(data.stringify, CharsetUtil.UTF_8)))
   }
 }

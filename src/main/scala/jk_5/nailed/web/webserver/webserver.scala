@@ -8,8 +8,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.handler.timeout.{ReadTimeoutHandler, ReadTimeoutException}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, ProtocolHttp}
-import jk_5.nailed.web.webserver.http.handlers.{WebServerHandlerMappackList, WebServerHandlerMappackData, WebServerHandlerHtml}
-import jk_5.nailed.web.webserver.websocket.WebServerHandlerWebsocket
+import jk_5.nailed.web.webserver.http.handlers._
+import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 
 /**
  * No description given
@@ -35,10 +35,12 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   val webserverMultiplexer = new MultiplexingUrlResolver
 
   ProtocolMultiplexer.addHandler(ProtocolHttp)
+  ProtocolMultiplexer.addHandler(ProtocolIpc)
 
   this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[WebServerHandlerMappackList])
   this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[WebServerHandlerMappackData])
-  this.webserverMultiplexer.addHandler("/websocket/", classOf[WebServerHandlerWebsocket])
+  this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
+  this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
   this.webserverMultiplexer.addHandler("/(.*)", classOf[WebServerHandlerHtml])
 
   val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")

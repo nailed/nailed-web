@@ -1,4 +1,4 @@
-(function(window, $){
+(function(window){
 
     window.NailedLogger = function(){}
 
@@ -29,4 +29,4 @@
         alert("Dependency " + name + " is missing");
     }
 
-})(window, jQuery);
+})(window);

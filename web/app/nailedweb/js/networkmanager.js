@@ -1,4 +1,4 @@
-(function(window, $) {
+(function(window) {
 
     function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -98,4 +98,4 @@
         });
     }
 
-})(window, jQuery);
+})(window);

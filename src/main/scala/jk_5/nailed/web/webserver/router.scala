@@ -16,22 +16,20 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any){
     msg match {
-      case m: FullHttpRequest => {
+      case m: FullHttpRequest =>
         val url = m.getUri
         val urlData = this.resolver.getValueForURL(url)
         if(urlData.isEmpty) ctx.pipeline().replace(this.handlerName, this.handlerName, NotFoundHandler)
         else{
           val handler = urlData.get.getHandler.newInstance()
           handler match{
-            case h: RoutedHandler => {
+            case h: RoutedHandler =>
               h.setURLData(urlData.get)
               h.setRouterHandler(this)
-            }
             case h =>
           }
           ctx.pipeline().replace(this.handlerName, this.handlerName, handler)
         }
-      }
       case m =>
     }
     msg match {
