@@ -1,33 +1,41 @@
 <div class="container">
     <h1>Register</h1>
     <div class="col-sm-8 well">
+        <div ng-show="register.error.visible" ng-class="register.error.type" class="alert">
+            {{register.error.message}}
+        </div>
         <form class="form-horizontal">
             <div class="form-group has-feedback">
                 <label for="registerEmail" class="col-sm-3 control-label">Email address</label>
-                <div class="col-sm-9">
-                    <input id="registerEmail" class="form-control" type="email" placeholder="Enter your email address"/>
-                    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+                <div ng-class="register.emailError" class="col-sm-9">
+                    <input ng-model="register.email" id="registerEmail" class="form-control" type="email" placeholder="Enter your email address"/>
+                    <span ng-class="register.emailClass" class="glyphicon form-control-feedback"></span>
                 </div>
             </div>
             <div class="form-group has-feedback">
                 <label for="registerFullname" class="col-sm-3 control-label">Your name</label>
                 <div class="col-sm-9">
-                    <input id="registerFullname" class="form-control" type="text" placeholder="Enter your full name"/>
-                    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    <input ng-model="register.name" id="registerFullname" class="form-control" type="text" placeholder="Enter your full name"/>
+                    <span ng-class="register.nameClass" class="glyphicon form-control-feedback"></span>
                 </div>
             </div>
             <div class="form-group has-feedback">
                 <label for="registerPassword" class="col-sm-3 control-label">Password</label>
                 <div class="col-sm-9">
-                    <input id="registerPassword" class="form-control" type="password" placeholder="Enter a password"/>
-                    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    <input ng-model="register.password" id="registerPassword" class="form-control" type="password" placeholder="Enter a password"/>
+                    <span ng-class="register.passwordClass" class="glyphicon form-control-feedback"></span>
                 </div>
             </div>
             <div class="form-group has-feedback">
                 <label for="registerPasswordConfirm" class="col-sm-3 control-label">Confirm password</label>
                 <div class="col-sm-9">
-                    <input id="registerPasswordConfirm" class="form-control" type="password" placeholder="Confirm your password"/>
-                    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    <input ng-model="register.passwordVerify" id="registerPasswordConfirm" class="form-control" type="password" placeholder="Confirm your password"/>
+                    <span ng-class="register.verifyClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button ng-class="register.buttonClass" ng-click="register.register()" type="submit" class="btn btn-default">{{register.buttonContent}}</button>
                 </div>
             </div>
         </form>

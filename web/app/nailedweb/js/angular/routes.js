@@ -3,7 +3,6 @@ angular.module("nailed", [
     "nailed.controllers",
     "nailed.services"
 ])
-//, controller: "PlayoutController"
 .config(["$routeProvider", function(router){
     router.when("/", {templateUrl: "/pages/home.html"});
     router.when("/mappacks", {templateUrl: "/pages/mappacks.html"});

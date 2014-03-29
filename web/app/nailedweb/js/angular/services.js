@@ -35,11 +35,22 @@ var UserService = services.factory('UserService', [
                     }
                 });
             },
-            onRegistered: function(data){
-                this.loggedIn = true;
-                this.email = data.user.email;
-                this.fullname = data.user.fullName;
-                this.session = data.session.id;
+            register: function(data, callback) {
+                return $http
+                .post('/api/register/', "email=" + encodeURIComponent(data.email) + "&password=" + encodeURIComponent(data.password) + "&name=" + encodeURIComponent(data.name))
+                .success(function(data, status, headers, config) {
+                    if(data.status == "ok"){
+                        ret.loggedIn = true;
+                        ret.session = data.session.id;
+                        ret.email = data.user.email;
+                        ret.fullname = data.user.fullName;
+                        callback(true, 'OK');
+                        return;
+                    }
+                    return callback(false, data.error);
+                }).error(function(data, status, headers, config) {
+                    return callback(false, data.error);
+                });
             }
         };
         return ret;

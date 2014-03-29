@@ -40,6 +40,12 @@ class WebServerHandlerRegister extends SimpleChannelInboundHandler[FullHttpReque
       val pass = passOpt.get
       val email = emailOpt.get
       val name = nameOpt.get
+      if(UserDatabase.getUser(email).isDefined){
+        val res = new JsonObject().add("status", "error").add("error", "An user with that email address already exists")
+        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
+        data.destroy()
+        return
+      }
       val user = UserDatabase.createUser(email, pass, name)
       val session = SessionManager.getSession(user, pass)
       val res = new JsonObject().add("status", "ok").add("user", user.getUserInfo).add("session", session.get.toJson)

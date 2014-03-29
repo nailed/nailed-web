@@ -107,7 +107,7 @@
                             <div class="form-group">
                                 <input id="authPassword" type="password" placeholder="Password" class="form-control" ng-model="auth.password">
                             </div>
-                            <button id="signInButton" type="submit" class="btn btn-success" ng-click="login(auth)">Sign in</button>
+                            <button ng-class="auth.signInClass" id="signInButton" type="submit" class="btn btn-success" ng-click="login(auth)">{{auth.signInText}}</button>
                             <button id="signUpButton" type="submit" class="btn btn-info" click-page="/register">Register</button>
                         </form>
                     </nav>
