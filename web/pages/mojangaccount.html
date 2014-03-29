@@ -1,0 +1,40 @@
+<div class="container">
+    <h1>Link your mojang/minecraft account</h1>
+    <p>
+        You can link your mojang or minecraft account to your Nailed account, so we know for sure it's you who is playing.
+        Because of that, you do not longer need to log in ingame.
+    </p>
+    <p>
+        We do <b>not</b> store your password in our database. We only send it to the mojang servers and ask if the account is valid.
+        After we asked that, we remove your username and password from our database and we only store if your account is valid or not.
+    </p>
+    <p>
+        Still don't trust it? You can have a look at the <a href="https://github.com/nailed/nailed-web/">source code</a>
+    </p>
+    <div class="col-sm-8 well">
+        <div ng-show="linkMojang.error.visible" ng-class="linkMojang.error.type" class="alert">
+            {{linkMojang.error.message}}
+        </div>
+        <form class="form-horizontal">
+            <div class="form-group has-feedback">
+                <label for="linkEmail" class="col-sm-3 control-label">Email or Username</label>
+                <div class="col-sm-9">
+                    <input ng-model="linkMojang.email" id="linkEmail" class="form-control" type="text" placeholder="Enter your email address or username"/>
+                    <span ng-class="linkMojang.emailClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label for="linkPassword" class="col-sm-3 control-label">Password</label>
+                <div class="col-sm-9">
+                    <input ng-model="linkMojang.password" id="linkPassword" class="form-control" type="password" placeholder="Enter a password"/>
+                    <span ng-class="linkMojang.passwordClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button ng-class="linkMojang.buttonClass" ng-click="linkMojang.link()" type="submit" class="btn btn-default">{{linkMojang.buttonContent}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

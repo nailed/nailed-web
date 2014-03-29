@@ -18,4 +18,5 @@ class AuthSession(private var userID: UID) {
 
   @inline def getUser = UserDatabase.getUser(this.userID)
   @inline def getID = this.id
+  @inline def getUserID = this.userID
 }

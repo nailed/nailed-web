@@ -32,9 +32,11 @@ object SessionManager {
   def dropSession(secret: String): Boolean = {
     val session = this.sessions.find(_.getID.toString == secret)
     if(session.isDefined){
-      this.sessions.remove(session.get)
+      this.dropSession(session.get)
     }else false
   }
+
+  def dropSession(session: AuthSession): Boolean = this.sessions.remove(session)
 }
 
 class CreateSCryptHashTask(private final val input: String, private final val cpuCost: Int = 16384, private final val memoryCost: Int = 8, private final val parallel: Int = 1) extends Callable[String] {

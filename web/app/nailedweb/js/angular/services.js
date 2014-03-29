@@ -24,14 +24,14 @@ var UserService = services.factory('UserService', [
                     return callback(false, data.error);
                 });
             },
-            logout: function() {
-                return $http.delete('/api/login/', {params: {session: ret.session}})
-                .success(function(data, status, headers, config){
+            logout: function(callback) {
+                return $http.delete('/api/login/').success(function(data, status, headers, config){
                     if(data.status == "ok"){
                         ret.loggedIn = false;
                         ret.session = "";
                         ret.email = "";
                         ret.fullname = "";
+                        callback();
                     }
                 });
             },

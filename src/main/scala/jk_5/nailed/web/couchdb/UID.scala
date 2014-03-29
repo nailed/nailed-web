@@ -25,8 +25,10 @@ import java.util.UUID
  */
 object UID {
   def randomUID = new UID(UUID.randomUUID().toString.replaceAll("-", ""))
+  def apply(uid: String) = new UID(uid)
 }
 
 class UID(private final val uid: String) {
   override def toString = this.uid
+  override def equals(that: Any) = that.isInstanceOf[UID] && that.asInstanceOf[UID].uid == this.uid
 }

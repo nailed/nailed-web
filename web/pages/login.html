@@ -1,0 +1,29 @@
+<div class="container">
+    <h1>Login</h1>
+    <div class="col-sm-8 well">
+        <div ng-show="login.error.visible" ng-class="login.error.type" class="alert">
+            {{login.error.message}}
+        </div>
+        <form class="form-horizontal">
+            <div class="form-group has-feedback">
+                <label for="loginEmail" class="col-sm-3 control-label">Email</label>
+                <div class="col-sm-9">
+                    <input ng-model="login.email" id="loginEmail" class="form-control" type="email" placeholder="Enter your email address"/>
+                    <span ng-class="login.emailClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label for="loginPassword" class="col-sm-3 control-label">Password</label>
+                <div class="col-sm-9">
+                    <input ng-model="login.password" id="loginPassword" class="form-control" type="password" placeholder="Enter your password"/>
+                    <span ng-class="login.passwordClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button ng-class="login.buttonClass" ng-click="login.login()" type="submit" class="btn btn-default">{{login.buttonContent}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

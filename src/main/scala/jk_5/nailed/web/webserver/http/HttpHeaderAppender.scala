@@ -15,9 +15,9 @@ import java.util.Date
 object HttpHeaderAppender extends ChannelHandlerAdapter {
   override def write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise){
     msg match {
-      case res: HttpResponse => {
+      case res: HttpResponse =>
         res.headers().set(HttpHeaders.Names.SERVER, "nailed-web/%s".format(NailedWeb.version))
-        res.headers().set(HttpHeaders.Names.DATE, WebServerUtils.formatter.format(new Date))
+        res.headers().set(HttpHeaders.Names.DATE, HttpHeaderDateFormat.get.format(new Date))
         if(!res.headers().contains(HttpHeaders.Names.CONTENT_TYPE)) res.headers().add(HttpHeaders.Names.CONTENT_TYPE, "application/json")
         res match{
           case e: FullHttpResponse =>
@@ -26,7 +26,6 @@ object HttpHeaderAppender extends ChannelHandlerAdapter {
             }
           case e =>
         }
-      }
       case e =>
     }
     ctx.write(msg, promise)

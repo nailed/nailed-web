@@ -1,9 +1,10 @@
-package jk_5.nailed.web.webserver.ipc
+package jk_5.nailed.web.webserver.ipc.codec
 
 import io.netty.handler.codec.{CorruptedFrameException, ByteToMessageCodec}
 import io.netty.buffer.{Unpooled, ByteBuf}
 import io.netty.channel.ChannelHandlerContext
 import java.util
+import jk_5.nailed.web.webserver.ipc.PacketUtils
 
 /**
  * No description given

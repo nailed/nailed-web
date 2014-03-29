@@ -95,16 +95,19 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.fullname}} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="#/linkMojang">Link your mojang account</a></li>
                                     <li class="divider"></li>
                                     <li><a id="signOutButton" href="javascript:void(0)" ng-click="logout()">Log Out</a></li>
                                 </ul>
                             </li>
                         </ul>
-                        <form ng-hide="user.loggedIn" class="navbar-form navbar-right">
-                            <div class="form-group">
-                                <input id="authEmail" type="text" placeholder="Email" class="form-control" ng-model="auth.email">
+                        <form ng-hide="user.loggedIn || hideLoginHeader" class="navbar-form navbar-right">
+                            <div ng-class="auth.emailClass" class="form-group">
+                                <label class="sr-only" for="authEmail">Email</label>
+                                <input id="authEmail" type="email" placeholder="Email" class="form-control" ng-model="auth.email">
                             </div>
-                            <div class="form-group">
+                            <div ng-class="auth.passwordClass" class="form-group">
+                                <label class="sr-only" for="authPassword">Password</label>
                                 <input id="authPassword" type="password" placeholder="Password" class="form-control" ng-model="auth.password">
                             </div>
                             <button ng-class="auth.signInClass" id="signInButton" type="submit" class="btn btn-success" ng-click="login(auth)">{{auth.signInText}}</button>

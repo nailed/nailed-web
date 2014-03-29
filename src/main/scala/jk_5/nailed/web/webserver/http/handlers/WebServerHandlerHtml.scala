@@ -3,10 +3,8 @@ package jk_5.nailed.web.webserver.http.handlers
 import io.netty.channel._
 import io.netty.handler.codec.http._
 import java.io.{FileNotFoundException, RandomAccessFile, File}
-import java.text.SimpleDateFormat
-import java.util.Locale
 import io.netty.handler.stream.ChunkedFile
-import jk_5.nailed.web.webserver.http.WebServerUtils
+import jk_5.nailed.web.webserver.http.{HttpHeaderDateFormat, WebServerUtils}
 import jk_5.nailed.web.webserver.{RoutedHandler, UrlEscaper}
 
 /**
@@ -53,7 +51,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
     }
     val ifModifiedSince = req.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE)
     if(ifModifiedSince != null && !ifModifiedSince.isEmpty){
-      val dateFormatter = new SimpleDateFormat(WebServerUtils.HTTP_DATE_FORMAT, Locale.US)
+      val dateFormatter = HttpHeaderDateFormat.get
       val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
       val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
       val fileLastModifiedSeconds = file.lastModified() / 1000

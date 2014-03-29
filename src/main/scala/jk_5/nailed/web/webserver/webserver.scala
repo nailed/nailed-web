@@ -41,6 +41,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[WebServerHandlerMappackData])
   this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
   this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
+  this.webserverMultiplexer.addHandler("/api/link/", classOf[WebServerHandlerLinkMojang])
   this.webserverMultiplexer.addHandler("/(.*)", classOf[WebServerHandlerHtml])
 
   val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")

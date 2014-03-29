@@ -4,11 +4,11 @@ import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.RoutedHandler
 import jk_5.nailed.web.auth.{UserDatabase, SessionManager}
-import io.netty.handler.codec.http.multipart.{Attribute, HttpPostRequestDecoder}
-import scala.Some
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder
 import io.netty.buffer.Unpooled
 import io.netty.util.CharsetUtil
 import jk_5.jsonlibrary.JsonObject
+import jk_5.nailed.web.webserver.http.WebServerUtils
 
 /**
  * No description given
@@ -19,18 +19,12 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
   override def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.POST){
       val data = new HttpPostRequestDecoder(msg)
-      var emailOpt: Option[String] = None
-      if(data.getBodyHttpData("email") != null){
-        emailOpt = Some(data.getBodyHttpData("email").asInstanceOf[Attribute].getValue)
-      }
-      var passOpt: Option[String] = None
-      if(data.getBodyHttpData("password") != null){
-        passOpt = Some(data.getBodyHttpData("password").asInstanceOf[Attribute].getValue)
-      }
+      val emailOpt = WebServerUtils.getPostEntry(data, "email")
+      val passOpt = WebServerUtils.getPostEntry(data, "password")
+      data.destroy()
       if(emailOpt.isEmpty || passOpt.isEmpty){
         val res = new JsonObject().add("status", "error").add("error", "Invalid request: email or password undefined")
         ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-        data.destroy()
         return
       }
       val pass = passOpt.get
@@ -39,30 +33,30 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
       if(user.isEmpty){
         val res = new JsonObject().add("status", "error").add("error", "Unknown email address")
         ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-        data.destroy()
         return
       }
       val session = SessionManager.getSession(user.get, pass)
       if(session.isEmpty){
         val res = new JsonObject().add("status", "error").add("error", "Invalid password")
         ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-        data.destroy()
         return
       }
       val res = new JsonObject().add("status", "ok").add("session", session.get.toJson).add("user", user.get.getUserInfo)
-      ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-      data.destroy()
+      val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8))
+      WebServerUtils.setCookie(r, "uid", user.get.getID.toString)
+      WebServerUtils.setCookie(r, "sessid", session.get.getID.toString)
+      ctx.writeAndFlush(r)
     }else if(msg.getMethod == HttpMethod.DELETE){
-      val data = new QueryStringDecoder(msg.getUri)
-      val params = data.parameters().get("session")
-      if(params.size() != 1){
-        val res = new JsonObject().add("status", "error").add("error", "Unknown Session")
-        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-        return
+      val session = WebServerUtils.checkSession(ctx, msg)
+      if(session.isDefined){
+        val removed = SessionManager.dropSession(session.get)
+        val response = WebServerUtils.jsonResponse(new JsonObject().add("status", "ok").add("removed", removed))
+        if(removed){
+          WebServerUtils.removeCookie(response, "uid")
+          WebServerUtils.removeCookie(response, "sessid")
+        }
+        ctx.writeAndFlush(response)
       }
-      val removed = SessionManager.dropSession(params.get(0))
-      val res = new JsonObject().add("status", "ok").add("removed", removed)
-      ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
-    }
+    }else WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
   }
 }
