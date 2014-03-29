@@ -2,10 +2,10 @@ package jk_5.nailed.web.webserver.http.handlers
 
 import jk_5.nailed.web.webserver.RoutedHandler
 import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
-import io.netty.handler.codec.http.{HttpResponseStatus, HttpVersion, DefaultFullHttpResponse, FullHttpRequest}
-import io.netty.buffer.Unpooled
+import io.netty.handler.codec.http.FullHttpRequest
 import jk_5.jsonlibrary.JsonObject
-import io.netty.util.CharsetUtil
+import jk_5.nailed.web.mappack.MappackRegistry
+import jk_5.nailed.web.webserver.http.WebServerUtils
 
 /**
   * No description given
@@ -15,7 +15,12 @@ import io.netty.util.CharsetUtil
 class WebServerHandlerMappackData extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
 
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-    val data = new JsonObject().add("status", "ok").add("id", "nail")
-    ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(data.stringify, CharsetUtil.UTF_8)))
+    val mappackId = this.getURLData.getParameters.get("part1").get
+    val mappack = MappackRegistry.getById(mappackId)
+    if(mappack.isEmpty){
+      WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "Mappack not found"))
+      return
+    }
+    WebServerUtils.sendJson(ctx, new JsonObject().add("status", "ok").add("mappack", mappack.get.toJson))
   }
 }

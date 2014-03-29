@@ -50,4 +50,7 @@ object WebServerUtils {
     response.headers().set(HttpHeaders.Names.CACHE_CONTROL, "private, max-age=" + this.HTTP_CACHE_SECONDS)
     response.headers().set(HttpHeaders.Names.LAST_MODIFIED, formatter.format(new Date(file.lastModified())))
   }
+  def sendJson(ctx: ChannelHandlerContext, json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK){
+    ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.stringify, CharsetUtil.UTF_8)))
+  }
 }
