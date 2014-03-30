@@ -27,22 +27,28 @@ object WebServerUtils {
 
   def sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture =
     this.sendJson(ctx, new JsonObject().add("status", "error").add("error", status.toString), status)
+
   def sendHeaders(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status)
     ctx.writeAndFlush(response)
   }
+
   def sendRedirect(ctx: ChannelHandlerContext, destination: String): ChannelFuture = {
     val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND)
     response.headers().set(HttpHeaders.Names.LOCATION, destination)
     ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
   }
+
   def sendNotModified(ctx: ChannelHandlerContext, file: File): ChannelFuture = {
     val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_MODIFIED)
     this.setContentType(response, file)
     ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
   }
+
   def setContentLength(response: HttpResponse, fileLength: Long) = HttpHeaders.setContentLength(response, fileLength)
+
   def setContentType(response: HttpResponse, file: File) = response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeType(file))
+
   def setDateAndCacheHeaders(response: HttpResponse, file: File){
     val time = Calendar.getInstance()
     time.add(Calendar.SECOND, this.HTTP_CACHE_SECONDS)
@@ -50,10 +56,13 @@ object WebServerUtils {
     response.headers().set(HttpHeaders.Names.CACHE_CONTROL, "private, max-age=" + this.HTTP_CACHE_SECONDS)
     response.headers().set(HttpHeaders.Names.LAST_MODIFIED, HttpHeaderDateFormat.get.format(new Date(file.lastModified())))
   }
+
   def jsonResponse(json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.stringify, CharsetUtil.UTF_8))
+
   def sendJson(ctx: ChannelHandlerContext, json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
     ctx.writeAndFlush(this.jsonResponse(json, status))
+
   def removeCookie(resp: HttpResponse, name: String){
     val cookie = new DefaultCookie(name, "")
     cookie.setMaxAge(Long.MinValue + 1)
@@ -61,6 +70,7 @@ object WebServerUtils {
     cookie.setDiscard(true)
     this.setCookie(resp, cookie)
   }
+
   def checkSession(ctx: ChannelHandlerContext, req: HttpRequest): Option[AuthSession] = {
     val cookieString = req.headers().get(HttpHeaders.Names.COOKIE)
     var allow = false
@@ -107,29 +117,35 @@ object WebServerUtils {
       None
     }else Some(session)
   }
+
   def getPostEntry(data: HttpPostRequestDecoder, entry: String): Option[String] = {
     if(data.getBodyHttpData(entry) != null){
       Some(data.getBodyHttpData(entry).asInstanceOf[Attribute].getValue)
     }else None
   }
+
   def setCookie(response: HttpResponse, key: String, value: String){
     val cookie = new DefaultCookie(key, value)
     cookie.setPath("/")
     this.setCookie(response, cookie)
   }
+
   def setCookie(response: HttpResponse, cookie: Cookie){
     response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie))
   }
+
   def setSession(response: HttpResponse, session: AuthSession){
     val rand = getRandomFromUid(session.getID)
     this.setCookie(response, "uid" + rand, session.getUser.get.getID.toString)
     this.setCookie(response, "sessid" + rand, session.getID.toString)
   }
+
   def removeSession(response: HttpResponse, session: AuthSession){
     val rand = getRandomFromUid(session.getID)
     this.removeCookie(response, "uid" + rand)
     this.removeCookie(response, "sessid" + rand)
   }
+
   def getRandomFromUid(uid: UID): String = {
     val id = uid.toString
     new mutable.StringBuilder() append id.charAt(2) append id.charAt(4) append id.charAt(6) append id.charAt(8) append id.charAt(10) append id.charAt(12) toString()
