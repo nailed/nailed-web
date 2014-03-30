@@ -4,6 +4,7 @@ import scala.collection.mutable
 import scala.collection.JavaConversions._
 import java.util.Properties
 import java.io.File
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -13,8 +14,10 @@ import java.io.File
 object MimeTypesLookup {
   private final val map = mutable.HashMap[String, String]()
   private final val default = "application/octet-stream"
+  private final val logger = LogManager.getLogger
 
   def load(){
+    logger.info("Reading mimetype config")
     val stream = MimeTypesLookup.getClass.getResourceAsStream("/mimetypes.cfg")
     val props = new Properties()
     props.load(stream)

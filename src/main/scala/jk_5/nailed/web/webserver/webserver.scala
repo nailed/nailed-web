@@ -10,6 +10,7 @@ import io.netty.handler.timeout.{ReadTimeoutHandler, ReadTimeoutException}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, ProtocolHttp}
 import jk_5.nailed.web.webserver.http.handlers._
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -19,13 +20,14 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 object WebServer {
   val boss = new NioEventLoopGroup()
   val worker = new NioEventLoopGroup()
+  val logger = LogManager.getLogger
 
   def start(){
-    println("Starting webserver on port 9001")
+    this.logger.info("Starting webserver on port 9001")
     val b = new ServerBootstrap().group(this.boss, this.worker).channel(classOf[NioServerSocketChannel]).childHandler(Pipeline)
     b.localAddress("0.0.0.0", 9001)
     b.bind().addListener(new ChannelFutureListener {
-      def operationComplete(future: ChannelFuture) = println("Webserver running!")
+      def operationComplete(future: ChannelFuture) = logger.info("Webserver running!")
     })
   }
 }

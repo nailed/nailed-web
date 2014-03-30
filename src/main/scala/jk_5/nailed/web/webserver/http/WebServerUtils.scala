@@ -8,10 +8,12 @@ import io.netty.util.CharsetUtil
 import java.io.File
 import jk_5.nailed.web.webserver.MimeTypesLookup
 import jk_5.jsonlibrary.JsonObject
-import jk_5.nailed.web.auth.{AuthSession, SessionManager, UserDatabase}
+import jk_5.nailed.web.auth.{AuthSession, SessionManager}
 import jk_5.nailed.web.couchdb.UID
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import io.netty.handler.codec.http.multipart.{HttpPostRequestDecoder, Attribute}
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -21,6 +23,7 @@ import io.netty.handler.codec.http.multipart.{HttpPostRequestDecoder, Attribute}
 object WebServerUtils {
 
   final val HTTP_CACHE_SECONDS = 60
+  private final val logger = LogManager.getLogger
 
   def sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture =
     this.sendJson(ctx, new JsonObject().add("status", "error").add("error", status.toString), status)
@@ -60,30 +63,49 @@ object WebServerUtils {
   }
   def checkSession(ctx: ChannelHandlerContext, req: HttpRequest): Option[AuthSession] = {
     val cookieString = req.headers().get(HttpHeaders.Names.COOKIE)
-    if(cookieString != null){
-      val cookies = CookieDecoder.decode(cookieString)
-      val ses = cookies.find(_.getName == "sessid")
-      val uid = cookies.find(_.getName == "uid")
-      if(ses.isEmpty || uid.isEmpty){
-        this.sendJson(ctx, new JsonObject().add("status", "error").add("error", "No session cookie was found"), HttpResponseStatus.UNAUTHORIZED)
-        None
-      }else{
-        val user = UserDatabase.getUser(UID(uid.get.getValue))
-        val session = SessionManager.getSession(ses.get.getValue)
-        if(session.isEmpty || user.isEmpty){
-          WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "No session cookie was found"), HttpResponseStatus.UNAUTHORIZED)
-          return None
+    var allow = false
+    var session: AuthSession = null
+    var userid: UID = null
+    if(cookieString == null){
+      val args = new QueryStringDecoder(req.getUri)
+      if(args.parameters().containsKey("uid") && args.parameters().containsKey("sessid")){
+        val u = args.parameters().get("uid").get(0)
+        val s = args.parameters().get("sessid").get(0)
+        val sess = SessionManager.getSession(s)
+        if(sess.isDefined && sess.get.getUserID.toString == u){
+          session = sess.get
+          userid = UID(u)
+          allow = true
         }
-        if(session.get.getUserID != user.get.getID){
-          WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "That session does not belong to you"), HttpResponseStatus.UNAUTHORIZED)
-          return None
-        }
-        Some(session.get)
       }
     }else{
-      this.sendJson(ctx, new JsonObject().add("status", "error").add("error", "No session cookie was found"), HttpResponseStatus.UNAUTHORIZED)
-      None
+      val cookies = CookieDecoder.decode(cookieString)
+      val ids = mutable.ArrayBuffer[Cookie]()
+      val sessions = mutable.ArrayBuffer[Cookie]()
+      cookies.foreach(c => {
+        if(c.getName.startsWith("uid")){
+          ids += c
+        }else if(c.getName.startsWith("sessid")){
+          sessions += c
+        }
+      })
+      sessions.foreach(c => {
+        val r = c.getName.substring(6)
+        val uid = ids.find(_.getName == "uid" + r)
+        if(uid.isDefined){
+          val sess = SessionManager.getSession(c.getValue)
+          if(sess.isDefined && sess.get.getUserID.toString == uid.get.getValue){
+            session = sess.get
+            userid = UID(uid.get.getValue)
+            allow = true
+          }
+        }
+      })
     }
+    if(!allow){
+      this.sendJson(ctx, new JsonObject().add("status", "error").add("error", "No valid session was found"), HttpResponseStatus.UNAUTHORIZED)
+      None
+    }else Some(session)
   }
   def getPostEntry(data: HttpPostRequestDecoder, entry: String): Option[String] = {
     if(data.getBodyHttpData(entry) != null){
@@ -93,10 +115,23 @@ object WebServerUtils {
   def setCookie(response: HttpResponse, key: String, value: String){
     val cookie = new DefaultCookie(key, value)
     cookie.setPath("/")
-    //response.headers().add(HttpHeaders.Names.SET_COOKIE, key + "=" + value + "; path=/")
     this.setCookie(response, cookie)
   }
   def setCookie(response: HttpResponse, cookie: Cookie){
     response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie))
+  }
+  def setSession(response: HttpResponse, session: AuthSession){
+    val rand = getRandomFromUid(session.getID)
+    this.setCookie(response, "uid" + rand, session.getUser.get.getID.toString)
+    this.setCookie(response, "sessid" + rand, session.getID.toString)
+  }
+  def removeSession(response: HttpResponse, session: AuthSession){
+    val rand = getRandomFromUid(session.getID)
+    this.removeCookie(response, "uid" + rand)
+    this.removeCookie(response, "sessid" + rand)
+  }
+  def getRandomFromUid(uid: UID): String = {
+    val id = uid.toString
+    new mutable.StringBuilder() append id.charAt(2) append id.charAt(4) append id.charAt(6) append id.charAt(8) append id.charAt(10) append id.charAt(12) toString()
   }
 }

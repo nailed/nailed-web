@@ -5,6 +5,7 @@ import java.util.concurrent.Executors
 import jk_5.nailed.web.couchdb.CouchDB
 import java.io.File
 import jk_5.nailed.web.config.ConfigFile
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -20,7 +21,11 @@ object NailedWeb {
   private final val CONFIG_DIR = new File("config")
   private var config: ConfigFile = null
 
+  private final val logger = LogManager.getLogger
+
   def main(args: Array[String]){
+    this.logger.info("Starting Server")
+    this.logger.info("Reading Config")
     if(!this.CONFIG_DIR.exists()) this.CONFIG_DIR.mkdirs()
     this.config = new ConfigFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
 
@@ -30,4 +35,12 @@ object NailedWeb {
   }
 
   @inline def getConfig = this.config
+}
+
+object LogUtils {
+  def mask(input: String): String = {
+    val build = new StringBuilder
+    for(i <- 1 to input.size) build.append("*")
+    build.toString()
+  }
 }

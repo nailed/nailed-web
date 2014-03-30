@@ -35,8 +35,7 @@ class WebServerHandlerRegister extends SimpleChannelInboundHandler[FullHttpReque
       val user = UserDatabase.createUser(email, pass, name)
       val session = SessionManager.getSession(user, pass)
       val r = WebServerUtils.jsonResponse(new JsonObject().add("status", "ok").add("user", user.getUserInfo).add("session", session.get.toJson))
-      WebServerUtils.setCookie(r, "uid", user.getID.toString)
-      WebServerUtils.setCookie(r, "sessid", session.get.getID.toString)
+      WebServerUtils.setSession(r, session.get)
       ctx.writeAndFlush(r)
     }else WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
   }

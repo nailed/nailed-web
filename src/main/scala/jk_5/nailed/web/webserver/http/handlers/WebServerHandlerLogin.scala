@@ -43,8 +43,7 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
       }
       val res = new JsonObject().add("status", "ok").add("session", session.get.toJson).add("user", user.get.getUserInfo)
       val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8))
-      WebServerUtils.setCookie(r, "uid", user.get.getID.toString)
-      WebServerUtils.setCookie(r, "sessid", session.get.getID.toString)
+      WebServerUtils.setSession(r, session.get)
       ctx.writeAndFlush(r)
     }else if(msg.getMethod == HttpMethod.DELETE){
       val session = WebServerUtils.checkSession(ctx, msg)
@@ -52,8 +51,7 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
         val removed = SessionManager.dropSession(session.get)
         val response = WebServerUtils.jsonResponse(new JsonObject().add("status", "ok").add("removed", removed))
         if(removed){
-          WebServerUtils.removeCookie(response, "uid")
-          WebServerUtils.removeCookie(response, "sessid")
+          WebServerUtils.removeSession(response, session.get)
         }
         ctx.writeAndFlush(response)
       }
