@@ -4,9 +4,6 @@ import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.RoutedHandler
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder
-import jk_5.jsonlibrary.JsonObject
-import io.netty.buffer.Unpooled
-import io.netty.util.CharsetUtil
 import jk_5.nailed.web.webserver.http.WebServerUtils
 import jk_5.nailed.web.auth.mojang.Yggdrasil
 import jk_5.nailed.web.auth.mojang.Yggdrasil.YggdrasilCallback
@@ -26,8 +23,7 @@ class WebServerHandlerLinkMojang extends SimpleChannelInboundHandler[FullHttpReq
         val passOpt = WebServerUtils.getPostEntry(data, "password")
         data.destroy()
         if(emailOpt.isEmpty || passOpt.isEmpty){
-          val res = new JsonObject().add("status", "error").add("error", "Invalid request: email or password undefined")
-          ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
+          WebServerUtils.sendError(ctx, "Invalid request: email or password undefined", HttpResponseStatus.BAD_REQUEST)
           return
         }
         val pass = passOpt.get
@@ -38,10 +34,10 @@ class WebServerHandlerLinkMojang extends SimpleChannelInboundHandler[FullHttpReq
             user.getAuthData.uid = uid
             user.getAuthData.verified = true
             user.saveToDatabase()
-            WebServerUtils.sendJson(ctx, new JsonObject().add("status", "ok"))
+            WebServerUtils.sendOK(ctx)
           }
           override def onError(msg: String){
-            WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", msg))
+            WebServerUtils.sendError(ctx, msg)
           }
         })
       }

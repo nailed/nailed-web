@@ -16,8 +16,8 @@ class WebServerHandlerMappackList extends SimpleChannelInboundHandler[FullHttpRe
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.GET){
       val list = new JsonArray
-      val data = new JsonObject().add("status", "ok").add("mappacks", list)
-      WebServerUtils.sendJson(ctx, data)
+      val data = new JsonObject().add("mappacks", list)
+      WebServerUtils.sendOK(ctx, data)
     }else WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
   }
 }

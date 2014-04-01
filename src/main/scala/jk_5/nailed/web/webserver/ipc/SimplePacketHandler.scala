@@ -11,5 +11,13 @@ import jk_5.nailed.web.webserver.ipc.packet.IpcPacket
  */
 @Sharable
 object SimplePacketHandler extends SimpleChannelInboundHandler[IpcPacket] {
-  override def messageReceived(ctx: ChannelHandlerContext, msg: IpcPacket) = msg.processPacket()
+  override def messageReceived(ctx: ChannelHandlerContext, msg: IpcPacket){
+    var gameserver = Option(ctx.channel().attr(ProtocolIpc.gameServer).get())
+    if(gameserver.isEmpty){
+      val srv = new FakeGameServer(ctx.channel())
+      ctx.channel().attr(ProtocolIpc.gameServer).set(srv)
+      gameserver = Some(srv)
+    }
+    msg.processPacket(gameserver.get)
+  }
 }

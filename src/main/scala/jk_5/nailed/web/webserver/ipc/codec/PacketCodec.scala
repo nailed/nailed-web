@@ -6,6 +6,8 @@ import io.netty.handler.codec.ByteToMessageCodec
 import jk_5.nailed.web.webserver.ipc.packet.{PacketInitConnection, IpcPacket}
 import scala.collection.mutable
 import java.util
+import jk_5.nailed.web.webserver.ipc.ProtocolIpc
+import jk_5.nailed.web.game.ServerRegistry
 
 /**
  * No description given
@@ -43,5 +45,12 @@ class PacketCodec extends ByteToMessageCodec[IpcPacket] {
     val packet = this.idToClass.get(id).get.newInstance()
     packet.decode(in)
     out.add(packet)
+  }
+
+  override def channelInactive(ctx: ChannelHandlerContext){
+    ProtocolIpc.logger.trace(ProtocolIpc.connectionMarker, "IPC Connection closed")
+    val srv = ctx.channel().attr(ProtocolIpc.gameServer).getAndRemove
+    ServerRegistry.removeServer(srv)
+    ctx.fireChannelInactive()
   }
 }

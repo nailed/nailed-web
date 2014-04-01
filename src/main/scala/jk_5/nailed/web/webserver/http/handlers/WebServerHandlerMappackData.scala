@@ -19,10 +19,10 @@ class WebServerHandlerMappackData extends SimpleChannelInboundHandler[FullHttpRe
       val mappackId = this.getURLData.getParameters.get("part1").get
       val mappack = MappackRegistry.getById(mappackId)
       if(mappack.isEmpty){
-        WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "Mappack not found"))
+        WebServerUtils.sendError(ctx, "Mappack not found")
         return
       }
-      WebServerUtils.sendJson(ctx, new JsonObject().add("status", "ok").add("mappack", mappack.get.toJson))
+      WebServerUtils.sendOK(ctx, new JsonObject().add("mappack", mappack.get.toJson))
     }else WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
   }
 }

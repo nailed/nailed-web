@@ -25,8 +25,10 @@ object WebServerUtils {
   final val HTTP_CACHE_SECONDS = 60
   private final val logger = LogManager.getLogger
 
-  def sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture =
-    this.sendJson(ctx, new JsonObject().add("status", "error").add("error", status.toString), status)
+  def sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture = this.sendError(ctx, status.toString, status)
+
+  def sendError(ctx: ChannelHandlerContext, message: String, status: HttpResponseStatus = HttpResponseStatus.OK): ChannelFuture =
+    this.sendJson(ctx, new JsonObject().add("status", "error").add("error", message), status)
 
   def sendHeaders(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status)
@@ -150,4 +152,9 @@ object WebServerUtils {
     val id = uid.toString
     new mutable.StringBuilder() append id.charAt(2) append id.charAt(4) append id.charAt(6) append id.charAt(8) append id.charAt(10) append id.charAt(12) toString()
   }
+
+  def sendOK(ctx: ChannelHandlerContext, data: JsonObject = new JsonObject): ChannelFuture = this.sendJson(ctx, data.add("status", "ok"))
+
+  def okResponse(json: JsonObject = new JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
+    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.add("status", "ok").stringify, CharsetUtil.UTF_8))
 }

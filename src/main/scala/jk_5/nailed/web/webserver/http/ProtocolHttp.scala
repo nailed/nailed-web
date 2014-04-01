@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver.http
 
 import jk_5.nailed.web.webserver.{Pipeline, MultiplexedProtocol}
-import io.netty.channel.ChannelPipeline
+import io.netty.channel.Channel
 import io.netty.handler.codec.http.{HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 
@@ -22,7 +22,8 @@ object ProtocolHttp extends MultiplexedProtocol {
       byte1 == 'T' && byte2 == 'R' || // TRACE
       byte1 == 'C' && byte2 == 'O'    // CONNECT
   }
-  def configurePipeline(pipe: ChannelPipeline){
+  def configureChannel(channel: Channel){
+    val pipe = channel.pipeline()
     pipe.addLast("httpDecoder", new HttpRequestDecoder)                 //Downstream
     pipe.addLast("httpEncoder", new HttpResponseEncoder)                //Upstream
     //pipe.addLast("compressor", new HttpContentCompressor(6))

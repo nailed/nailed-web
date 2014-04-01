@@ -22,19 +22,19 @@ class WebServerHandlerRegister extends SimpleChannelInboundHandler[FullHttpReque
       val nameOpt = WebServerUtils.getPostEntry(data, "name")
       data.destroy()
       if(emailOpt.isEmpty || passOpt.isEmpty || nameOpt.isEmpty){
-        WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "Invalid request: email, password or name undefined"), HttpResponseStatus.BAD_REQUEST)
+        WebServerUtils.sendError(ctx, "Invalid request: email, password or name undefined", HttpResponseStatus.BAD_REQUEST)
         return
       }
       val pass = passOpt.get
       val email = emailOpt.get
       val name = nameOpt.get
       if(UserDatabase.getUser(email).isDefined){
-        WebServerUtils.sendJson(ctx, new JsonObject().add("status", "error").add("error", "An user with that email address already exists"), HttpResponseStatus.BAD_REQUEST)
+        WebServerUtils.sendError(ctx, "An user with that email address already exists", HttpResponseStatus.BAD_REQUEST)
         return
       }
       val user = UserDatabase.createUser(email, pass, name)
       val session = SessionManager.getSession(user, pass)
-      val r = WebServerUtils.jsonResponse(new JsonObject().add("status", "ok").add("user", user.getUserInfo).add("session", session.get.toJson))
+      val r = WebServerUtils.okResponse(new JsonObject().add("user", user.getUserInfo).add("session", session.get.toJson))
       WebServerUtils.setSession(r, session.get)
       ctx.writeAndFlush(r)
     }else WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)

@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver
 
 import io.netty.handler.codec.ByteToMessageDecoder
-import io.netty.channel.{ChannelPipeline, ChannelHandlerContext}
+import io.netty.channel.{Channel, ChannelHandlerContext}
 import io.netty.buffer.ByteBuf
 import java.util
 import io.netty.handler.timeout.ReadTimeoutHandler
@@ -31,12 +31,12 @@ class ProtocolMultiplexer extends ByteToMessageDecoder {
     }
     ctx.pipeline().remove(ReadTimeoutDetector.getClass)
     ctx.pipeline().remove(classOf[ReadTimeoutHandler])
-    handler.get.configurePipeline(ctx.pipeline())
+    handler.get.configureChannel(ctx.channel())
     ctx.pipeline().remove(this)
   }
 }
 
 trait MultiplexedProtocol{
   def matches(byte1: Int, byte2: Int): Boolean
-  def configurePipeline(pipeline: ChannelPipeline)
+  def configureChannel(channel: Channel)
 }

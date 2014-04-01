@@ -79,7 +79,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
 
     var sendFileFuture: ChannelFuture = null
     if(this.useSendFile) sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel, 0, fileLength), ctx.newProgressivePromise())
-    else sendFileFuture = ctx.write(new ChunkedFile(raf, 0, fileLength, 8192), ctx.newProgressivePromise())
+    else sendFileFuture = ctx.write(new ChunkedFile(raf, 0, fileLength, 8192), ctx.newProgressivePromise()) //Need this because SSL doesn't support sendfile()
 
     val lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
     if(!HttpHeaders.isKeepAlive(req)) lastContentFuture.addListener(ChannelFutureListener.CLOSE)

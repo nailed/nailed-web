@@ -5,8 +5,6 @@ import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.RoutedHandler
 import jk_5.nailed.web.auth.{UserDatabase, SessionManager}
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder
-import io.netty.buffer.Unpooled
-import io.netty.util.CharsetUtil
 import jk_5.jsonlibrary.JsonObject
 import jk_5.nailed.web.webserver.http.WebServerUtils
 
@@ -23,33 +21,29 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
       val passOpt = WebServerUtils.getPostEntry(data, "password")
       data.destroy()
       if(emailOpt.isEmpty || passOpt.isEmpty){
-        val res = new JsonObject().add("status", "error").add("error", "Invalid request: email or password undefined")
-        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
+        WebServerUtils.sendError(ctx, "Invalid request: email or password undefined", HttpResponseStatus.BAD_REQUEST)
         return
       }
       val pass = passOpt.get
       val email = emailOpt.get
       val user = UserDatabase.getUser(email)
       if(user.isEmpty){
-        val res = new JsonObject().add("status", "error").add("error", "Unknown email address")
-        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
+        WebServerUtils.sendError(ctx, "Unknown email addres", HttpResponseStatus.UNAUTHORIZED)
         return
       }
       val session = SessionManager.getSession(user.get, pass)
       if(session.isEmpty){
-        val res = new JsonObject().add("status", "error").add("error", "Invalid password")
-        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8)))
+        WebServerUtils.sendError(ctx, "Invalid password", HttpResponseStatus.UNAUTHORIZED)
         return
       }
-      val res = new JsonObject().add("status", "ok").add("session", session.get.toJson).add("user", user.get.getUserInfo)
-      val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res.stringify, CharsetUtil.UTF_8))
+      val r = WebServerUtils.okResponse(new JsonObject().add("session", session.get.toJson).add("user", user.get.getUserInfo))
       WebServerUtils.setSession(r, session.get)
       ctx.writeAndFlush(r)
     }else if(msg.getMethod == HttpMethod.DELETE){
       val session = WebServerUtils.checkSession(ctx, msg)
       if(session.isDefined){
         val removed = SessionManager.dropSession(session.get)
-        val response = WebServerUtils.jsonResponse(new JsonObject().add("status", "ok").add("removed", removed))
+        val response = WebServerUtils.okResponse(new JsonObject().add("removed", removed))
         if(removed){
           WebServerUtils.removeSession(response, session.get)
         }
