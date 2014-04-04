@@ -17,7 +17,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
   private final val htdocs = System.getProperty("webserver.htdocslocation", "web")
   private final val htdocsLocation = if(htdocs.endsWith("/")) htdocs.substring(0,htdocs.length -1) else htdocs
 
-  def messageReceived(ctx: ChannelHandlerContext, req: FullHttpRequest){
+  def channelRead0(ctx: ChannelHandlerContext, req: FullHttpRequest){
     if(req.getMethod != HttpMethod.GET){
       WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
       return

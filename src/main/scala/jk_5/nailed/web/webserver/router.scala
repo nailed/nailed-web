@@ -2,7 +2,7 @@ package jk_5.nailed.web.webserver
 
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.handler.codec.http.{HttpResponseStatus, FullHttpRequest}
-import io.netty.channel.{ChannelHandlerAdapter, ChannelHandler, ChannelHandlerContext}
+import io.netty.channel.{ChannelInboundHandlerAdapter, ChannelHandler, ChannelHandlerContext}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, WebServerUtils, NotFoundHandler}
 import io.netty.util.ReferenceCounted
 
@@ -12,7 +12,7 @@ import io.netty.util.ReferenceCounted
  * @author jk-5
  */
 @Sharable
-class RouterHandler(private val resolver: MultiplexingUrlResolver, private val handlerName: String) extends ChannelHandlerAdapter {
+class RouterHandler(private val resolver: MultiplexingUrlResolver, private val handlerName: String) extends ChannelInboundHandlerAdapter {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any){
     msg match {

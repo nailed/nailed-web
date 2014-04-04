@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver.http
 
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.channel.{ChannelHandlerAdapter, ChannelPromise, ChannelHandlerContext}
+import io.netty.channel._
 import io.netty.handler.codec.http.{FullHttpResponse, HttpHeaders, HttpResponse}
 import jk_5.nailed.web.NailedWeb
 import java.util.Date
@@ -12,7 +12,7 @@ import java.util.Date
  * @author jk-5
  */
 @Sharable
-object HttpHeaderAppender extends ChannelHandlerAdapter {
+object HttpHeaderAppender extends ChannelOutboundHandlerAdapter {
   override def write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise){
     msg match {
       case res: HttpResponse =>

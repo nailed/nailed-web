@@ -6,6 +6,9 @@
 
         win.NetworkManager = undefined;
         win.NailedLogger = undefined;
+
+        //Initialize soundcloud api
+        SC.initialize({client_id: "cf33b0ff49ce042b704c49de99a08818"});
     }
 
     NailedCore.prototype.getScope = function(){
