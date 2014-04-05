@@ -1,6 +1,7 @@
 angular.module('nailed.controllers', [])
     .controller('BaseController', ["$scope", "$location", "$http", "UserService", "$route", function($scope, $location, $http, $user, $route) {
         $scope.auth = [];
+        $scope.socket = {};
         $scope.isViewLoading = false;
         $scope.auth.signInText = "Sign in";
         $scope.auth.signInClass = "";
@@ -40,6 +41,8 @@ angular.module('nailed.controllers', [])
                     }else if(message == "Invalid password"){
                         $scope.auth.passwordClass = "has-error";
                     }
+                }else{
+                    $scope.socket = io.connect(null,{'force new connection':true});
                 }
                 $location.path("/");
             });
@@ -51,6 +54,7 @@ angular.module('nailed.controllers', [])
                 //TODO: we need to refresh access here. Forcing this is ugly, maybe.
                 $location.path("/");
             });
+            $scope.socket.disconnect();
         }
     }])
     .controller("MappackDetailController", function($scope, $routeParams, $http) {
