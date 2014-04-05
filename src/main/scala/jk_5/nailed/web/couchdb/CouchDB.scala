@@ -37,10 +37,10 @@ object CouchDB {
   def newID = UID.randomUID
 
   def load(){
-    this.serverHostname = NailedWeb.getConfig.getTag("database").useBraces.setComment("Database options").getTag("hostname").setComment("The IP/Address for the couchdb server").getValue("localhost")
-    this.serverPort = NailedWeb.getConfig.getTag("database").useBraces.setComment("Database options").getTag("port").setComment("The port for the couchdb server").getIntValue(5984)
-    this.databaseName = NailedWeb.getConfig.getTag("database").useBraces.setComment("Database options").getTag("name").setComment("The name of the couchdb database that Nailed will use").getValue("nailed")
-    this.ssl = NailedWeb.getConfig.getTag("database").useBraces.setComment("Database options").getTag("ssl").setComment("Should we use SSL?").getBooleanValue(default = false)
+    this.serverHostname = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("hostname").setComment("The IP/Address for the couchdb server").asString("localhost")
+    this.serverPort = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("port").setComment("The port for the couchdb server").asInt(5984)
+    this.databaseName = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("name").setComment("The name of the couchdb database that Nailed will use").asString("nailed")
+    this.ssl = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("ssl").setComment("Should we use SSL?").asBoolean(default = false)
   }
 
   def getObjectFromID[T <: TCouchDBSerializable](id: UID, obj: T): T = {

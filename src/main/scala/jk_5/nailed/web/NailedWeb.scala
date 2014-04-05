@@ -4,8 +4,8 @@ import jk_5.nailed.web.webserver.{MimeTypesLookup, WebServer}
 import java.util.concurrent.Executors
 import jk_5.nailed.web.couchdb.CouchDB
 import java.io.File
-import jk_5.nailed.web.config.ConfigFile
 import org.apache.logging.log4j.LogManager
+import jk_5.commons.config.ConfigFile
 
 /**
  * No description given
@@ -27,7 +27,7 @@ object NailedWeb {
     this.logger.info("Starting Server")
     this.logger.info("Reading Config")
     if(!this.CONFIG_DIR.exists()) this.CONFIG_DIR.mkdirs()
-    this.config = new ConfigFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
+    this.config = ConfigFile.fromFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
 
     CouchDB.load()
     MimeTypesLookup.load()
