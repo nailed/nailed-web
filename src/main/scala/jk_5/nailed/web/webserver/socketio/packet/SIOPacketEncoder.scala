@@ -4,7 +4,6 @@ import io.netty.handler.codec.MessageToMessageEncoder
 import io.netty.channel.ChannelHandlerContext
 import java.util
 import io.netty.channel.ChannelHandler.Sharable
-import com.corundumstudio.socketio.parser.Event
 import jk_5.jsonlibrary.{JsonArray, JsonObject}
 
 /**

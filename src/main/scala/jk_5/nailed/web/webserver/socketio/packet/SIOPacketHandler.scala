@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager
 object SIOPacketHandler extends SimpleChannelInboundHandler[SIOPacket] {
 
   val logger = LogManager.getLogger
-  override def channelRead0(ctx: ChannelHandlerContext, msg: SIOPacket){
+  override def messageReceived(ctx: ChannelHandlerContext, msg: SIOPacket){
     val client = ctx.channel().attr(ClientRegistry.sioClient).get()
     msg match {
       case p: HeartbeatSIOPacket => HeartbeatHandler.onHeartbeat(client)

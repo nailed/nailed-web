@@ -14,7 +14,7 @@ import jk_5.nailed.web.webserver.http.WebServerUtils
   */
 class WebServerHandlerMappackData extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
 
-  def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.GET){
       val mappackId = this.getURLData.getParameters.get("part1").get
       val mappack = MappackRegistry.getById(mappackId)

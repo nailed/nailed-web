@@ -13,7 +13,7 @@ import jk_5.nailed.web.game.ServerRegistry
  * @author jk-5
  */
 class WebServerHandlerServerList extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
-  override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  override def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.GET){
       val list = new JsonArray
       ServerRegistry.getServers.foreach(s => list.add(s.toJson))

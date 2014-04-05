@@ -6,7 +6,6 @@ import jk_5.nailed.web.couchdb.CouchDB
 import java.io.File
 import jk_5.nailed.web.config.ConfigFile
 import org.apache.logging.log4j.LogManager
-import jk_5.nailed.web.webserver.socketio.SIOServer
 
 /**
  * No description given
@@ -33,7 +32,6 @@ object NailedWeb {
     CouchDB.load()
     MimeTypesLookup.load()
     WebServer.start()
-    SIOServer.start()
   }
 
   @inline def getConfig = this.config

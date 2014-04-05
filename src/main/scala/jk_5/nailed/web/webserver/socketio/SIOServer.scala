@@ -1,4 +1,4 @@
-package jk_5.nailed.web.webserver.socketio
+/*package jk_5.nailed.web.webserver.socketio
 
 import com.corundumstudio.socketio.{AckRequest, SocketIOClient, Configuration, SocketIOServer}
 import com.corundumstudio.socketio.listener.DataListener
@@ -36,3 +36,4 @@ class TestObject {
   var something: String = ""
   var somethingElse: String = ""
 }
+*/

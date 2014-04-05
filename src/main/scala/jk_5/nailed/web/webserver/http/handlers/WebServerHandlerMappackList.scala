@@ -13,7 +13,7 @@ import jk_5.nailed.web.webserver.http.WebServerUtils
  */
 class WebServerHandlerMappackList extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
 
-  def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.GET){
       val list = new JsonArray
       val data = new JsonObject().add("mappacks", list)

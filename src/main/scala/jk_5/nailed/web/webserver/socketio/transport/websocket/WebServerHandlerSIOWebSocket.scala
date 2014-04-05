@@ -14,7 +14,7 @@ import jk_5.nailed.web.webserver.socketio.{HeartbeatHandler, ClientRegistry}
  *
  * @author jk-5
  */
-class WebServerHandlerSIOWebSocket extends ChannelInboundHandlerAdapter with RoutedHandler {
+class WebServerHandlerSIOWebSocket extends ChannelHandlerAdapter with RoutedHandler {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
     case msg: FullHttpRequest =>
@@ -28,7 +28,7 @@ class WebServerHandlerSIOWebSocket extends ChannelInboundHandlerAdapter with Rou
         val factory = new WebSocketServerHandshakerFactory(path, null, false)
         val handshaker = factory.newHandshaker(msg)
         if(handshaker == null){
-          WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel())
+          WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(ctx.channel())
           msg.release()
           return
         }

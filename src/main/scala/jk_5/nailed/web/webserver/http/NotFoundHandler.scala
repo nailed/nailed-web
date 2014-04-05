@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.{HttpResponseStatus, FullHttpRequest}
 @Sharable
 object NotFoundHandler extends SimpleChannelInboundHandler[FullHttpRequest] {
 
-  def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
   }
 }

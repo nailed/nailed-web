@@ -27,7 +27,7 @@ object WebServerHandlerSIOHandshake {
 
 class WebServerHandlerSIOHandshake extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
 
-  override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  override def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     val session = WebServerUtils.checkSession(ctx, msg)
     if(session.isDefined){
       val uid = UUID.randomUUID()

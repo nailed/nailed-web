@@ -12,7 +12,7 @@ import java.util.Date
  * @author jk-5
  */
 @Sharable
-object HttpHeaderAppender extends ChannelOutboundHandlerAdapter {
+object HttpHeaderAppender extends ChannelHandlerAdapter {
   override def write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise){
     msg match {
       case res: HttpResponse =>
