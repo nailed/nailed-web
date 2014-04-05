@@ -6,6 +6,7 @@ import jk_5.nailed.web.webserver.ipc.codec.{PacketCodec, VarintFrameCodec}
 import io.netty.util.AttributeKey
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import jk_5.nailed.web.game.GameServer
+import io.netty.buffer.ByteBuf
 
 /**
  * No description given
@@ -18,7 +19,11 @@ object ProtocolIpc extends MultiplexedProtocol {
   val connectionMarker = MarkerManager.getMarker("IPC|Connections", this.marker)
   val gameServer: AttributeKey[GameServer] = AttributeKey.valueOf("gameServer")
 
-  override def matches(byte1: Int, byte2: Int): Boolean = byte1 == 186 && byte2 == 96
+  override def matches(buffer: ByteBuf): Boolean = {
+    val byte1 = buffer.getUnsignedByte(buffer.readerIndex())
+    val byte2 = buffer.getUnsignedByte(buffer.readerIndex() + 1)
+    byte1 == 186 && byte2 == 96
+  }
   override def configureChannel(channel: Channel){
     this.logger.trace(this.connectionMarker, "Incoming IPC connection from {}", channel.remoteAddress().toString)
     val pipe = channel.pipeline()

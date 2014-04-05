@@ -37,4 +37,5 @@ object MimeTypesLookup {
     if(ext.isEmpty || ext.get.length == 0) return this.default
     this.map.getOrElse(ext.get, this.default)
   }
+  def getMimeTypeFromExt(ext: String) = this.map.getOrElse(ext, this.default)
 }

@@ -21,9 +21,12 @@ class ProtocolMultiplexer extends ByteToMessageDecoder {
 
   def decode(ctx: ChannelHandlerContext, in: ByteBuf, out: util.List[AnyRef]){
     if(in.readableBytes() < 2) return
-    val byte1 = in.getUnsignedByte(in.readerIndex())
-    val byte2 = in.getUnsignedByte(in.readerIndex() + 1)
-    val handler = ProtocolMultiplexer.handlers.find(_.matches(byte1, byte2))
+    val handler = ProtocolMultiplexer.handlers.find(h => {
+      in.markReaderIndex()
+      val matches = h.matches(in)
+      in.resetReaderIndex()
+      matches
+    })
     if(handler.isEmpty){
       in.clear()
       ctx.close()
@@ -37,6 +40,6 @@ class ProtocolMultiplexer extends ByteToMessageDecoder {
 }
 
 trait MultiplexedProtocol{
-  def matches(byte1: Int, byte2: Int): Boolean
+  def matches(buffer: ByteBuf): Boolean
   def configureChannel(channel: Channel)
 }

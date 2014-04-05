@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.{HttpResponseStatus, FullHttpRequest}
 import io.netty.channel.{ChannelInboundHandlerAdapter, ChannelHandler, ChannelHandlerContext}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, WebServerUtils, NotFoundHandler}
 import io.netty.util.ReferenceCounted
+import org.apache.logging.log4j.{MarkerManager, LogManager}
 
 /**
  * No description given
@@ -49,6 +50,9 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
 trait RoutedHandler extends ChannelHandler {
   private var _urlData: URLData = _
   private var _routerHandler: RouterHandler = _
+
+  protected val logger = LogManager.getLogger
+  protected val marker = MarkerManager.getMarker(this.getClass.getSimpleName)
 
   def setRouterHandler(handler: RouterHandler) = this._routerHandler = handler
   def getRouterHandler = this._routerHandler

@@ -32,7 +32,7 @@ object WebServerUtils {
 
   def sendHeaders(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status)
-    ctx.writeAndFlush(response)
+    ctx.write(response)
   }
 
   def sendRedirect(ctx: ChannelHandlerContext, destination: String): ChannelFuture = {
@@ -41,22 +41,24 @@ object WebServerUtils {
     ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
   }
 
-  def sendNotModified(ctx: ChannelHandlerContext, file: File): ChannelFuture = {
+  def sendNotModified(ctx: ChannelHandlerContext, configure: (HttpResponse) => Unit): ChannelFuture = {
     val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_MODIFIED)
-    this.setContentType(response, file)
     ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
   }
+  def sendNotModified(ctx: ChannelHandlerContext, file: File): ChannelFuture = this.sendNotModified(ctx, r => this.setContentType(r, file))
 
   def setContentLength(response: HttpResponse, fileLength: Long) = HttpHeaders.setContentLength(response, fileLength)
 
   def setContentType(response: HttpResponse, file: File) = response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeType(file))
+  def setContentType(response: HttpResponse, ext: String) = response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt(ext))
 
-  def setDateAndCacheHeaders(response: HttpResponse, file: File){
+  def setDateAndCacheHeaders(response: HttpResponse, file: File): Unit = this.setDateAndCacheHeaders(response, file.lastModified())
+  def setDateAndCacheHeaders(response: HttpResponse, lastModified: Long){
     val time = Calendar.getInstance()
     time.add(Calendar.SECOND, this.HTTP_CACHE_SECONDS)
     response.headers().set(HttpHeaders.Names.EXPIRES, HttpHeaderDateFormat.get.format(time.getTime))
     response.headers().set(HttpHeaders.Names.CACHE_CONTROL, "private, max-age=" + this.HTTP_CACHE_SECONDS)
-    response.headers().set(HttpHeaders.Names.LAST_MODIFIED, HttpHeaderDateFormat.get.format(new Date(file.lastModified())))
+    response.headers().set(HttpHeaders.Names.LAST_MODIFIED, HttpHeaderDateFormat.get.format(new Date(lastModified)))
   }
 
   def jsonResponse(json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
@@ -157,4 +159,10 @@ object WebServerUtils {
 
   def okResponse(json: JsonObject = new JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.add("status", "ok").stringify, CharsetUtil.UTF_8))
+
+  def closeIfRequested(req: HttpRequest, future: ChannelFuture): Boolean =
+    if(!HttpHeaders.isKeepAlive(req)){
+      future.addListener(ChannelFutureListener.CLOSE)
+      true
+    }else false
 }

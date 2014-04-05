@@ -22,6 +22,12 @@ object SIOServer {
         client.sendJsonObject(data)
       }
     })
+    server.addEventListener("test", classOf[TestObject], new DataListener[TestObject] {
+      override def onData(client: SocketIOClient, data: TestObject, ackSender: AckRequest){
+        println(data.something + " - " + data.somethingElse)
+        client.sendEvent("reply", data)
+      }
+    })
     server.start()
   }
 }

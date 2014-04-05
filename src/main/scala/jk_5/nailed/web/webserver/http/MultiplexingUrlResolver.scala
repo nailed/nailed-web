@@ -12,21 +12,20 @@ import jk_5.nailed.web.webserver.UrlEscaper
  */
 class MultiplexingUrlResolver {
 
-  private final val handlers = mutable.LinkedHashMap[String, Class[_ <: ChannelHandler]]()
-  def addHandler(pattern: String, handler: Class[_ <: ChannelHandler]) = this.handlers.put(pattern, handler)
+  private final val handlers = mutable.LinkedHashMap[Pattern, Class[_ <: ChannelHandler]]()
+  def addHandler(pattern: String, handler: Class[_ <: ChannelHandler]) = this.handlers.put(Pattern.compile(pattern), handler)
 
   def getValueForURL(url: String, recursive: Boolean = false): Option[URLData] = {
     val args = mutable.HashMap[String, String]()
     var breakIterator = false
-    for((part, handler) <- this.handlers if !breakIterator){
-      var path = UrlEscaper.sanitizeURI(url.split("\\?", 2)(0))
-      val regex = Pattern.compile(part)
+    var path = UrlEscaper.sanitizeURI(url.split("\\?", 2)(0))
+    for((regex, handler) <- this.handlers if !breakIterator){
       val matcher = regex.matcher(path)
       if(matcher.find()){
         var i = 1
         var breakLoop = false
         while(!breakLoop) try{
-          val res = path.replaceAll(part, "$" + i)
+          val res = path.replaceAll(regex.pattern(), "$" + i)
           if(res.equals("$" + i)) breakLoop = true
           args.put("part" + i, res)
           i += 1
@@ -35,7 +34,7 @@ class MultiplexingUrlResolver {
         }
         path = matcher.group()
         breakIterator = true
-        return Some(new URLData(part, url, args, handler))
+        return Some(new URLData(regex.pattern(), url, args, handler))
       }
     }
     if(!recursive) return this.getValueForURL(if(url.endsWith("/")) url.substring(0, url.length - 1) else url, recursive = true)
