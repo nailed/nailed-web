@@ -7,9 +7,7 @@ import jk_5.jsonlibrary.JsonObject
  *
  * @author jk-5
  */
-class Mappack(private val mappackId: String) {
-
-  var name = this.mappackId
+class Mappack(private val mappackId: String, var name: String){
 
   def toJson: JsonObject = new JsonObject().add("id", this.mappackId).add("name", this.name)
   def id = this.mappackId

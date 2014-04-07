@@ -8,10 +8,11 @@ package jk_5.nailed.web.mappack
 object MappackRegistry {
 
   def getById(id: String): Option[Mappack] = {
-    if(id == "nail"){
+    /*if(id == "nail"){
       val mappack = new Mappack("nail")
       mappack.name = "Nail"
       Some(mappack)
-    }else None
+    }else None*/
+    None
   }
 }

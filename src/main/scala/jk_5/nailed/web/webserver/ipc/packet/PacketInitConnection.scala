@@ -14,18 +14,15 @@ import scala.collection.mutable
 class PacketInitConnection extends IpcPacket {
 
   private var host: String = _
-  private var players: mutable.ArrayBuffer[Player] = _
-  private var mappacks: mutable.ArrayBuffer[Mappack] = _
+  private val players = mutable.ArrayBuffer[Player]()
+  private val mappacks = mutable.ArrayBuffer[Mappack]()
 
   override def encode(buffer: ByteBuf){}
   override def decode(buffer: ByteBuf){
     this.host = PacketUtils.readString(buffer)
     val pCount = PacketUtils.readVarInt(buffer)
     for(i <- 0 until pCount){
-      val p = new Player
-      val playerId = PacketUtils.readString(buffer)
-      val playerName = PacketUtils.readString(buffer)
-      this.players += p
+      this.players += new Player(PacketUtils.readString(buffer), PacketUtils.readString(buffer))
     }
     val mCount = PacketUtils.readVarInt(buffer)
     for(i <- 0 until mCount){
@@ -35,12 +32,14 @@ class PacketInitConnection extends IpcPacket {
       val hidden = buffer.readBoolean()
       val iconLength = PacketUtils.readVarInt(buffer)
       val icon = buffer.readBytes(iconLength)
+      this.mappacks += new Mappack(id, name)
     }
   }
 
   override def processPacket(server: GameServer){
     ProtocolIpc.logger.trace(ProtocolIpc.connectionMarker, "IPC Connection opened")
     val srv = new GameServer(server.getChannel, this.players, this.mappacks)
+    srv.address = this.host
     server.getChannel.attr(ProtocolIpc.gameServer).set(srv)
     ServerRegistry.addServer(srv)
   }

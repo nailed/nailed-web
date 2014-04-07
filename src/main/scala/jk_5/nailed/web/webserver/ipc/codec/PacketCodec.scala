@@ -3,7 +3,7 @@ package jk_5.nailed.web.webserver.ipc.codec
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageCodec
-import jk_5.nailed.web.webserver.ipc.packet.{PacketInitConnection, IpcPacket}
+import jk_5.nailed.web.webserver.ipc.packet._
 import scala.collection.mutable
 import java.util
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
@@ -19,7 +19,12 @@ class PacketCodec extends ByteToMessageCodec[IpcPacket] {
   private final val idToClass = mutable.HashMap[Byte, Class[_ <: IpcPacket]]()
   private final val classToId = mutable.HashMap[Class[_ <: IpcPacket], Byte]()
 
+  this.registerPacket(0, classOf[PacketIdentify])
   this.registerPacket(1, classOf[PacketInitConnection])
+  this.registerPacket(2, classOf[PacketPlayerJoin])
+  this.registerPacket(3, classOf[PacketPlayerLeave])
+  this.registerPacket(4, classOf[PacketPlayerDeath])
+  this.registerPacket(5, classOf[PacketPlayerKill])
 
   private def registerPacket(id: Byte, packet: Class[_ <: IpcPacket]): PacketCodec ={
     this.idToClass.put(id, packet)

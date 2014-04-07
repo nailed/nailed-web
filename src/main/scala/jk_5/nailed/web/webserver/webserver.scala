@@ -13,6 +13,7 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import org.apache.logging.log4j.LogManager
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerFlashResources, WebServerHandlerSIOHandshake}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
+import io.netty.handler.logging.LogLevel
 
 /**
  * No description given
@@ -47,6 +48,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
   this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
   this.webserverMultiplexer.addHandler("/api/link/", classOf[WebServerHandlerLinkMojang])
+  this.webserverMultiplexer.addHandler("/api/servers/", classOf[WebServerHandlerServerList])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/flashsocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
