@@ -18,7 +18,7 @@ class WebServerHandlerSIOWebSocket extends ChannelHandlerAdapter with RoutedHand
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
     case msg: FullHttpRequest =>
-      val uid = UUID.fromString(this.getURLData.getParameters.get("part2").get)
+      val uid = UUID.fromString(this.getURLData.parameters.get("part2").get)
       this.logger.debug(marker, "Incoming websocket connection from client {}", uid)
       val future = WebServerHandlerSIOHandshake.futures.get(uid)
       val session = WebServerHandlerSIOHandshake.sessions.get(uid)

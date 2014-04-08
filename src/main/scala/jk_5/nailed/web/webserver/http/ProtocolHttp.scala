@@ -2,9 +2,10 @@ package jk_5.nailed.web.webserver.http
 
 import jk_5.nailed.web.webserver.{Pipeline, MultiplexedProtocol}
 import io.netty.channel.Channel
-import io.netty.handler.codec.http.{HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
+import io.netty.handler.codec.http.{HttpContentCompressor, HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.ByteBuf
+import io.netty.handler.logging.{LogLevel, LoggingHandler}
 
 /**
  * No description given
@@ -29,13 +30,14 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
-    pipe.addLast("httpDecoder", new HttpRequestDecoder)                 //Downstream
-    pipe.addLast("httpEncoder", new HttpResponseEncoder)                //Upstream
-    //pipe.addLast("compressor", new HttpContentCompressor(6))
-    pipe.addLast("httpHeaderAppender", HttpHeaderAppender);             //Upstream
-    pipe.addLast("aggregator", new HttpObjectAggregator(1048576))       //Downstream
-    pipe.addLast("chunkedWriter", new ChunkedWriteHandler())            //Upstream
-    pipe.addLast("webserverRouter", Pipeline.router)                    //Downstream
-    pipe.addLast("routedHandler", NotFoundHandler)                      //Downstream
+    pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
+    pipe.addLast("httpDecoder", new HttpRequestDecoder)
+    pipe.addLast("httpEncoder", new HttpResponseEncoder)
+    pipe.addLast("compressor", new HttpContentCompressor(6))
+    pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
+    pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
+    pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
+    pipe.addLast("webserverRouter", Pipeline.router)
+    pipe.addLast("routedHandler", NotFoundHandler)
   }
 }

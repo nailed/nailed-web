@@ -16,7 +16,7 @@ class WebServerHandlerMappackData extends SimpleChannelInboundHandler[FullHttpRe
 
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.GET){
-      val mappackId = this.getURLData.getParameters.get("part1").get
+      val mappackId = this.getURLData.parameters.get("part1").get
       val mappack = MappackRegistry.getById(mappackId)
       if(mappack.isEmpty){
         WebServerUtils.sendError(ctx, "Mappack not found")

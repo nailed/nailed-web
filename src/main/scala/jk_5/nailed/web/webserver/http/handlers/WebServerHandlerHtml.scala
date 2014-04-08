@@ -22,7 +22,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
       WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
       return
     }
-    val uri = this.getURLData.getURL.split("\\?", 2)(0)
+    val uri = this.getURLData.url.split("\\?", 2)(0)
     val path = htdocsLocation + UrlEscaper.sanitizeURI(uri)
 
     if(path == null){

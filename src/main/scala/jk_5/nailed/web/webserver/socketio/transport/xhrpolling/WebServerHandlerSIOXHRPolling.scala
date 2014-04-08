@@ -17,7 +17,7 @@ import jk_5.nailed.web.webserver.http.WebServerUtils
 class WebServerHandlerSIOXHRPolling extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
   override def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     val queryDecoder = new QueryStringDecoder(msg.getUri)
-    val uid = UUID.fromString(this.getURLData.getParameters.get("part2").get)
+    val uid = UUID.fromString(this.getURLData.parameters.get("part2").get)
     this.logger.debug(marker, "Incoming XHR connection from client {}", uid)
     val future = WebServerHandlerSIOHandshake.futures.get(uid)
     val session = WebServerHandlerSIOHandshake.sessions.get(uid)

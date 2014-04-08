@@ -41,3 +41,15 @@ class MultiplexingUrlResolver {
     None
   }
 }
+
+/**
+ * No description given
+ *
+ * @author jk-5
+ */
+case class URLData(
+  pattern: String,
+  url: String,
+  parameters: mutable.HashMap[String, String],
+  handler: Class[_ <: ChannelHandler] = null
+)

@@ -22,7 +22,7 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
         val urlData = this.resolver.getValueForURL(url)
         if(urlData.isEmpty) ctx.pipeline().replace(this.handlerName, this.handlerName, NotFoundHandler)
         else{
-          val handler = urlData.get.getHandler.newInstance()
+          val handler = urlData.get.handler.newInstance()
           handler match{
             case h: RoutedHandler =>
               h.setURLData(urlData.get)

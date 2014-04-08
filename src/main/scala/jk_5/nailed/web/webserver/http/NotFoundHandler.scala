@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.{HttpResponseStatus, FullHttpRequest}
 object NotFoundHandler extends SimpleChannelInboundHandler[FullHttpRequest] {
 
   def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-    WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
+    val future = WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
+    WebServerUtils.closeIfRequested(msg, future)
   }
 }
