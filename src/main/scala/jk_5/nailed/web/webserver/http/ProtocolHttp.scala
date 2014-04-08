@@ -5,7 +5,7 @@ import io.netty.channel.Channel
 import io.netty.handler.codec.http.{HttpContentCompressor, HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.ByteBuf
-import io.netty.handler.logging.{LogLevel, LoggingHandler}
+import io.netty.handler.logging.LogLevel
 
 /**
  * No description given
@@ -30,7 +30,6 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
-    pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))

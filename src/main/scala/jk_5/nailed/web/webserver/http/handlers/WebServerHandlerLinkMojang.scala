@@ -14,7 +14,7 @@ import jk_5.nailed.web.auth.mojang.Yggdrasil.YggdrasilCallback
  * @author jk-5
  */
 class WebServerHandlerLinkMojang extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
-  override def messageReceived(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.POST){
       val session = WebServerUtils.checkSession(ctx, msg)
       if(session.isDefined){

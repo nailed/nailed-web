@@ -14,7 +14,7 @@ import jk_5.nailed.web.webserver.socketio.{HeartbeatHandler, ClientRegistry}
  *
  * @author jk-5
  */
-class WebServerHandlerSIOWebSocket extends ChannelHandlerAdapter with RoutedHandler {
+class WebServerHandlerSIOWebSocket extends ChannelInboundHandlerAdapter with RoutedHandler {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
     case msg: FullHttpRequest =>

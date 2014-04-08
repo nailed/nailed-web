@@ -35,7 +35,7 @@ object WebServerHandlerFlashResources {
 }
 
 class WebServerHandlerFlashResources extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
-  override def messageReceived(ctx: ChannelHandlerContext, req: FullHttpRequest){
+  override def channelRead0(ctx: ChannelHandlerContext, req: FullHttpRequest){
     val file = this.getURLData.parameters.get("part1").get
     val url = WebServerHandlerFlashResources.resources.get(file)
     if(url.isDefined){
