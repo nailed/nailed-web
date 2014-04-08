@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerFlashResources, WebServerHandlerSIOHandshake}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import io.netty.handler.logging.LogLevel
+import jk_5.nailed.web.webserver.irc.ProtocolIrc
 
 /**
  * No description given
@@ -26,11 +27,16 @@ object WebServer {
   val logger = LogManager.getLogger
 
   def start(){
-    this.logger.info("Starting webserver on port 9001")
+    this.startOnPort(6667)
+    this.startOnPort(9001)
+  }
+
+  def startOnPort(port: Int){
+    this.logger.info(s"Starting webserver on port $port")
     val b = new ServerBootstrap().group(this.boss, this.worker).channel(classOf[NioServerSocketChannel]).childHandler(Pipeline)
-    b.localAddress("0.0.0.0", 9001)
+    b.localAddress("0.0.0.0", port)
     b.bind().addListener(new ChannelFutureListener {
-      def operationComplete(future: ChannelFuture) = logger.info("Webserver running!")
+      def operationComplete(future: ChannelFuture) = logger.info(s"Webserver running on port $port!")
     })
   }
 }
@@ -39,6 +45,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
 
   val webserverMultiplexer = new MultiplexingUrlResolver
 
+  ProtocolMultiplexer.addHandler(ProtocolIrc)
   ProtocolMultiplexer.addHandler(ProtocolHttp)
   ProtocolMultiplexer.addHandler(ProtocolIpc)
   ProtocolMultiplexer.addHandler(ProtocolFlashPolicy)
@@ -61,6 +68,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
     val pipe = ch.pipeline()
 
     //pipe.addLast("sslDetector", new SslDetector)
+    //pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
     pipe.addLast("timeoutHandler", new ReadTimeoutHandler(10))
     pipe.addLast("timeoutDetector", ReadTimeoutDetector)
     pipe.addLast("protocolMultiplexer", new ProtocolMultiplexer)
