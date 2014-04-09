@@ -1,8 +1,9 @@
-package jk_5.nailed.web.webserver.irc
+package jk_5.nailed.web.webserver.irc.handler
 
 import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelInboundHandlerAdapter}
 import io.netty.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import jk_5.nailed.web.webserver.irc.ProtocolIrc
 
 /**
  * No description given
@@ -35,7 +36,7 @@ class PingHandler(val timeout: Int, val unit: TimeUnit) extends ChannelInboundHa
       }
       this.ticks = 0
       this.future = ctx.executor().schedule(this.task, this.timeout, this.unit)
-    }
+    }else ctx.fireChannelRead(msg)
   }
 
   private final class PingTask(val ctx: ChannelHandlerContext) extends Runnable {

@@ -1,4 +1,4 @@
-package jk_5.nailed.web.webserver.irc
+package jk_5.nailed.web.webserver.irc.handler
 
 import io.netty.handler.codec.MessageToMessageEncoder
 import io.netty.channel.ChannelHandlerContext

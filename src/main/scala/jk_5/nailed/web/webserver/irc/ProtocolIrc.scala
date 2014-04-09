@@ -2,11 +2,11 @@ package jk_5.nailed.web.webserver.irc
 
 import jk_5.nailed.web.webserver.MultiplexedProtocol
 import io.netty.buffer.ByteBuf
-import io.netty.channel.{ChannelFutureListener, Channel}
+import io.netty.channel.Channel
 import io.netty.handler.codec.{Delimiters, DelimiterBasedFrameDecoder}
 import io.netty.handler.codec.string.{StringDecoder, StringEncoder}
 import java.util.concurrent.TimeUnit
-import io.netty.handler.logging.LogLevel
+import jk_5.nailed.web.webserver.irc.handler.{OutboundFrameAppender, PingHandler}
 
 /**
  * No description given
