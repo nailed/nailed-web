@@ -28,15 +28,17 @@ class PingHandler(val timeout: Int, val unit: TimeUnit) extends ChannelInboundHa
     }
   }
 
-  override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any){
-    if(msg == "PONG : " + ProtocolIrc.host){
-      if(this.future != null){
-        this.future.cancel(false)
-        this.future = null
-      }
-      this.ticks = 0
-      this.future = ctx.executor().schedule(this.task, this.timeout, this.unit)
-    }else ctx.fireChannelRead(msg)
+  override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
+    case frame: String =>
+      if(frame.startsWith("PONG")){
+        if(this.future != null){
+          this.future.cancel(false)
+          this.future = null
+        }
+        this.ticks = 0
+        this.future = ctx.executor().schedule(this.task, this.timeout, this.unit)
+      }else ctx.fireChannelRead(msg)
+    case _ => ctx.fireChannelRead(msg)
   }
 
   private final class PingTask(val ctx: ChannelHandlerContext) extends Runnable {

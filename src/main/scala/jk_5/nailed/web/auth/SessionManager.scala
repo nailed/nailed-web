@@ -41,7 +41,7 @@ object SessionManager {
   }
 
   def dropSession(session: AuthSession): Boolean = {
-    SessionManager.logger.debug(SessionManager.marker, "Dropping session {} owned by {}", session.getID, session.getUser.get.getFullName)
+    SessionManager.logger.debug(SessionManager.marker, "Dropping session {} owned by {}", session.getID, session.getUser.getFullName)
     this.sessions.remove(session)
   }
 }

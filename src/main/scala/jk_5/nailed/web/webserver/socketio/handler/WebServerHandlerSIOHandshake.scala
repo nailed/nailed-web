@@ -36,7 +36,7 @@ class WebServerHandlerSIOHandshake extends SimpleChannelInboundHandler[FullHttpR
       if(decoder.parameters().containsKey("jsonp")){
         jsonp = Some(decoder.parameters().get("jsonp").get(0))
       }
-      logger.trace(marker, s"User ${session.get.getUser.get.getFullName} authorized for Socket.IO with id ${uid.toString}")
+      logger.trace(marker, s"User ${session.get.getUser.getFullName} authorized for Socket.IO with id ${uid.toString}")
       val resdata = s"${uid.toString}:${HeartbeatHandler.heartbeatTimeout}:${WebServerHandlerSIOHandshake.closeTimeout}:websocket,flashsocket" //,flashsocket,xhr-polling
       val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(this.wrapJsonP(resdata, jsonp), CharsetUtil.UTF_8))
       response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("txt"))

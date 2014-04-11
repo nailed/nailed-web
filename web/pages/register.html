@@ -6,6 +6,13 @@
         </div>
         <form class="form-horizontal">
             <div class="form-group has-feedback">
+                <label for="registerUsername" class="col-sm-3 control-label">Username</label>
+                <div ng-class="register.usernameError" class="col-sm-9">
+                    <input ng-model="register.username" id="registerUsername" class="form-control" type="text" placeholder="Enter your username"/>
+                    <span ng-class="register.usernameClass" class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
                 <label for="registerEmail" class="col-sm-3 control-label">Email address</label>
                 <div ng-class="register.emailError" class="col-sm-9">
                     <input ng-model="register.email" id="registerEmail" class="form-control" type="email" placeholder="Enter your email address"/>

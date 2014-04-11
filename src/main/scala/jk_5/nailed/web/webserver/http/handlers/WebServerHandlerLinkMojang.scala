@@ -30,7 +30,7 @@ class WebServerHandlerLinkMojang extends SimpleChannelInboundHandler[FullHttpReq
         val email = emailOpt.get
         Yggdrasil.lookupUid(email, pass, new YggdrasilCallback {
           override def onSuccess(uid: String){
-            val user = session.get.getUser.get
+            val user = session.get.getUser
             user.getAuthData.uid = uid
             user.getAuthData.verified = true
             user.saveToDatabase()

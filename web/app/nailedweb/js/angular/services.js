@@ -4,17 +4,17 @@ var UserService = services.factory('UserService', [
     "$http", function($http) {
         var ret = {
             loggedIn: false,
-            email: '',
+            username: '',
             session: '',
             fullname: '',
-            login: function(email, password, callback) {
+            login: function(username, password, callback) {
                 return $http
-                .post('/api/login/', "email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password))
+                .post('/api/login/', "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password))
                 .success(function(data, status, headers, config) {
                     if(data.status == "ok"){
                         ret.loggedIn = true;
                         ret.session = data.session.id;
-                        ret.email = data.user.email;
+                        ret.username = data.user.username;
                         ret.fullname = data.user.fullName;
                         callback(true, 'OK');
                         return;
@@ -29,7 +29,7 @@ var UserService = services.factory('UserService', [
                     if(data.status == "ok"){
                         ret.loggedIn = false;
                         ret.session = "";
-                        ret.email = "";
+                        ret.username = "";
                         ret.fullname = "";
                         callback();
                     }
@@ -37,12 +37,12 @@ var UserService = services.factory('UserService', [
             },
             register: function(data, callback) {
                 return $http
-                .post('/api/register/', "email=" + encodeURIComponent(data.email) + "&password=" + encodeURIComponent(data.password) + "&name=" + encodeURIComponent(data.name))
+                .post('/api/register/', "email=" + encodeURIComponent(data.email) + "&username=" + encodeURIComponent(data.username) + "&password=" + encodeURIComponent(data.password) + "&name=" + encodeURIComponent(data.name))
                 .success(function(data, status, headers, config) {
                     if(data.status == "ok"){
                         ret.loggedIn = true;
                         ret.session = data.session.id;
-                        ret.email = data.user.email;
+                        ret.username = data.user.username;
                         ret.fullname = data.user.fullName;
                         callback(true, 'OK');
                         return;

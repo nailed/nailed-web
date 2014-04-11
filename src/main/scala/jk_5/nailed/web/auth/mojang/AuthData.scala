@@ -13,8 +13,8 @@ class AuthData {
   var uid: String = null
 
   def read(json: JsonObject){
-    this.verified = json.get("verified").asBoolean
-    this.uid = json.get("uid").asString
+    if(json.get("verified") != null) this.verified = json.get("verified").asBoolean
+    if(json.get("uid") != null && this.verified) this.uid = json.get("uid").asString
   }
   def toJson = new JsonObject().set("verified", this.verified).set("uid", this.uid)
 }

@@ -17,18 +17,18 @@ class WebServerHandlerLogin extends SimpleChannelInboundHandler[FullHttpRequest]
   override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     if(msg.getMethod == HttpMethod.POST){
       val data = new HttpPostRequestDecoder(msg)
-      val emailOpt = WebServerUtils.getPostEntry(data, "email")
+      val usernameOpt = WebServerUtils.getPostEntry(data, "username")
       val passOpt = WebServerUtils.getPostEntry(data, "password")
       data.destroy()
-      if(emailOpt.isEmpty || passOpt.isEmpty){
-        WebServerUtils.sendError(ctx, "Invalid request: email or password undefined", HttpResponseStatus.BAD_REQUEST)
+      if(usernameOpt.isEmpty || passOpt.isEmpty){
+        WebServerUtils.sendError(ctx, "Invalid request: username or password undefined", HttpResponseStatus.BAD_REQUEST)
         return
       }
       val pass = passOpt.get
-      val email = emailOpt.get
-      val user = UserDatabase.getUser(email)
+      val username = usernameOpt.get
+      val user = UserDatabase.getUserByUsername(username)
       if(user.isEmpty){
-        WebServerUtils.sendError(ctx, "Unknown email addres", HttpResponseStatus.UNAUTHORIZED)
+        WebServerUtils.sendError(ctx, "Unknown username", HttpResponseStatus.UNAUTHORIZED)
         return
       }
       val session = SessionManager.getSession(user.get, pass)

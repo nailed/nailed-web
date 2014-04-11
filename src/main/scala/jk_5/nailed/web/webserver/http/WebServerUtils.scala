@@ -140,7 +140,7 @@ object WebServerUtils {
 
   def setSession(response: HttpResponse, session: AuthSession){
     val rand = getRandomFromUid(session.getID)
-    this.setCookie(response, "uid" + rand, session.getUser.get.getID.toString)
+    this.setCookie(response, "uid" + rand, session.getUser.getID.toString)
     this.setCookie(response, "sessid" + rand, session.getID.toString)
   }
 

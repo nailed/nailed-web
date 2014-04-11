@@ -11,12 +11,23 @@ import jk_5.nailed.web.NailedWeb
  */
 object UserDatabase {
 
-  def getUser(email: String): Option[User] = {
+  def getUserByEmail(email: String): Option[User] = {
     val data = CouchDB.getViewData("users", "byEmail").get()
     val json = JsonObject.readFrom(data.getResponseBody).get("rows").asArray
     val userData = json.getValues.map(_.asObject).find(_.get("key").asString == email).map(_.get("value").asObject)
     if(userData.isDefined){
-      val u = new User(email)
+      val u = new User(userData.get.get("username").asString)
+      u.readDB(userData.get)
+      Some(u)
+    } else None
+  }
+
+  def getUserByUsername(username: String): Option[User] = {
+    val data = CouchDB.getViewData("users", "byUsername").get()
+    val json = JsonObject.readFrom(data.getResponseBody).get("rows").asArray
+    val userData = json.getValues.map(_.asObject).find(_.get("key").asString == username).map(_.get("value").asObject)
+    if(userData.isDefined){
+      val u = new User(username)
       u.readDB(userData.get)
       Some(u)
     } else None
@@ -28,16 +39,17 @@ object UserDatabase {
     val json = JsonObject.readFrom(data.getResponseBody).get("rows").asArray
     val userData = json.getValues.map(_.asObject).find(_.get("key").asString == idString).map(_.get("value").asObject)
     if(userData.isDefined){
-      val u = new User(userData.get.get("email").asString)
+      val u = new User(userData.get.get("username").asString)
       u.readDB(userData.get)
       Some(u)
     } else None
   }
 
-  def createUser(email: String, password: String): User = this.createUser(email, password, email)
-  def createUser(email: String, password: String, fullName: String): User = {
+  def createUser(username: String, email: String, password: String): User = this.createUser(username, email, password, username)
+  def createUser(username: String, email: String, password: String, fullName: String): User = {
     val future = NailedWeb.worker.submit(new CreateSCryptHashTask(password))
-    val user = new User(email)
+    val user = new User(username)
+    user.setEmail(email)
     user.setFullName(fullName)
     user.setPasswordHash(future.get())
     user.saveToDatabase()

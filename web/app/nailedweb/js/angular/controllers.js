@@ -5,7 +5,7 @@ angular.module('nailed.controllers', [])
         $scope.isViewLoading = false;
         $scope.auth.signInText = "Sign in";
         $scope.auth.signInClass = "";
-        $scope.auth.emailClass = "";
+        $scope.auth.usernameClass = "";
         $scope.auth.passwordClass = "";
         $scope.hideLoginHeader = $location.path() === "/login";
         $scope.$on('$routeChangeStart', function(event, currRoute, prevRoute) {
@@ -30,14 +30,14 @@ angular.module('nailed.controllers', [])
         $scope.login = function(auth){
             $scope.auth.signInText = "Signing in...";
             $scope.auth.signInClass = "disabled";
-            $scope.auth.emailClass = "";
+            $scope.auth.usernameClass = "";
             $scope.auth.passwordClass = "";
-            $user.login(auth.email, auth.password, function(success, message){
+            $user.login(auth.username, auth.password, function(success, message){
                 $scope.auth.signInText = "Sign in";
                 $scope.auth.signInClass = "";
                 if(!success){
-                    if(message == "Unknown email address"){
-                        $scope.auth.emailClass = "has-error";
+                    if(message == "Unknown username"){
+                        $scope.auth.username = "has-error";
                     }else if(message == "Invalid password"){
                         $scope.auth.passwordClass = "has-error";
                     }
@@ -48,7 +48,7 @@ angular.module('nailed.controllers', [])
             });
         }
         $scope.logout = function(){
-            $scope.auth.email = "";
+            $scope.auth.username = "";
             $scope.auth.password = "";
             $user.logout(function(){
                 //TODO: we need to refresh access here. Forcing this is ugly, maybe.
@@ -65,6 +65,7 @@ angular.module('nailed.controllers', [])
     })
     .controller("RegisterController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
         $scope.register = [];
+        $scope.register.usernameClass = "glyphicon-remove";
         $scope.register.emailClass = "glyphicon-remove";
         $scope.register.verifyClass = "glyphicon-remove";
         $scope.register.passwordClass = "glyphicon-remove";
@@ -73,8 +74,8 @@ angular.module('nailed.controllers', [])
         $scope.register.buttonClass = "";
         $scope.register.password = "";
         $scope.register.passwordVerify = "";
-        $scope.register.email = "";
         $scope.register.emailError = "";
+        $scope.register.usernameError = "";
         $scope.register.name = "";
         $scope.register.error = [];
         $scope.register.error.visible = false;
@@ -84,22 +85,28 @@ angular.module('nailed.controllers', [])
             $scope.register.buttonClass = "disabled";
             $scope.register.buttonContent = "Signing Up...";
             $scope.register.emailError = "";
+            $scope.register.usernameError = "";
             $user.register($scope.register, function(success, message){
                 $scope.register.error.visible = false;
                 $scope.register.buttonClass = "";
                 $scope.register.buttonContent = "Sign Up!";
                 if(message == "OK"){
                     $location.path("/");
-                }else{
+                }else if(message.indexOf("email") != -1){
                     $scope.register.error.visible = true;
                     $scope.register.error.type = "alert-danger";
                     $scope.register.error.message = message;
                     $scope.register.emailError = "has-error";
+                }else if(message.indexOf("username") != -1){
+                    $scope.register.error.visible = true;
+                    $scope.register.error.type = "alert-danger";
+                    $scope.register.error.message = message;
+                    $scope.register.usernameError = "has-error";
                 }
             });
         }
         var updateButton = function(){
-            if($scope.register.emailClass == "glyphicon-ok" && $scope.register.verifyClass == "glyphicon-ok" && $scope.register.passwordClass == "glyphicon-ok" && $scope.register.nameClass == "glyphicon-ok"){
+            if($scope.register.usernameClass == "glyphicon-ok" && $scope.register.emailClass == "glyphicon-ok" && $scope.register.verifyClass == "glyphicon-ok" && $scope.register.passwordClass == "glyphicon-ok" && $scope.register.nameClass == "glyphicon-ok"){
                 $scope.register.buttonClass = "";
             }else{
                 $scope.register.buttonClass = "disabled";
@@ -136,6 +143,14 @@ angular.module('nailed.controllers', [])
                 $scope.register.nameClass = "glyphicon-ok";
             }else{
                 $scope.register.nameClass = "glyphicon-remove";
+            }
+            updateButton();
+        }, true);
+        $scope.$watch("register.username", function(){
+            if($scope.register.username.length > 1){
+                $scope.register.usernameClass = "glyphicon-ok";
+            }else{
+                $scope.register.usernameClass = "glyphicon-remove";
             }
             updateButton();
         }, true);
@@ -198,12 +213,12 @@ angular.module('nailed.controllers', [])
     }])
     .controller("LoginController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
         $scope.login = [];
-        $scope.login.emailClass = "glyphicon-remove";
+        $scope.login.usernameClass = "glyphicon-remove";
         $scope.login.passwordClass = "glyphicon-remove";
         $scope.login.buttonContent = "Log in";
         $scope.login.buttonClass = "";
         $scope.login.password = "";
-        $scope.login.email = "";
+        $scope.login.username = "";
         $scope.login.error = [];
         $scope.login.error.visible = false;
         $scope.login.error.type = "";
@@ -211,7 +226,7 @@ angular.module('nailed.controllers', [])
         $scope.login.login = function(){
             $scope.login.buttonClass = "disabled";
             $scope.login.buttonContent = "Logging in...";
-            $user.login($scope.login.email, $scope.login.password, function(success, message){
+            $user.login($scope.login.username, $scope.login.password, function(success, message){
                 $scope.login.buttonContent = "Log in";
                 $scope.login.buttonClass = "";;
                 if(!success){
@@ -220,24 +235,24 @@ angular.module('nailed.controllers', [])
                     $scope.login.error.message = message;
                 }else{
                     $scope.login.password = "";
-                    $scope.login.email = "";
+                    $scope.login.username = "";
                     $location.path("/");
                 }
             });
         }
         var updateButton = function(){
-            if($scope.login.emailClass == "glyphicon-ok" && $scope.login.passwordClass == "glyphicon-ok"){
+            if($scope.login.usernameClass == "glyphicon-ok" && $scope.login.passwordClass == "glyphicon-ok"){
                 $scope.login.buttonClass = "";
             }else{
                 $scope.login.buttonClass = "disabled";
             }
         }
-        $scope.$watch("login.email", function(){
+        $scope.$watch("login.username", function(){
             var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if(regex.test($scope.login.email)){
-                $scope.login.emailClass = "glyphicon-ok";
+            if(regex.test($scope.login.username)){
+                $scope.login.usernameClass = "glyphicon-ok";
             }else{
-                $scope.login.emailClass = "glyphicon-remove";
+                $scope.login.usernameClass = "glyphicon-remove";
             }
             updateButton();
         }, true);

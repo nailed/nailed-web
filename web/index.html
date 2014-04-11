@@ -104,9 +104,9 @@
                             </li>
                         </ul>
                         <form ng-hide="user.loggedIn || hideLoginHeader" class="navbar-form navbar-right">
-                            <div ng-class="auth.emailClass" class="form-group">
-                                <label class="sr-only" for="authEmail">Email</label>
-                                <input id="authEmail" type="email" placeholder="Email" class="form-control" ng-model="auth.email">
+                            <div ng-class="auth.usernameClass" class="form-group">
+                                <label class="sr-only" for="authUsername">Email</label>
+                                <input id="authUsername" type="text" placeholder="Username" class="form-control" ng-model="auth.username">
                             </div>
                             <div ng-class="auth.passwordClass" class="form-group">
                                 <label class="sr-only" for="authPassword">Password</label>
