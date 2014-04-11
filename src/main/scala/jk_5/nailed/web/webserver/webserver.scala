@@ -54,7 +54,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
   this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
   this.webserverMultiplexer.addHandler("/api/link/", classOf[WebServerHandlerLinkMojang])
-  this.webserverMultiplexer.addHandler("/api/servers/", classOf[WebServerHandlerServerList])
+  this.webserverMultiplexer.addHandler("/api/servers.json", classOf[WebServerHandlerServerList])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/flashsocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
