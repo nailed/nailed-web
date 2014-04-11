@@ -45,11 +45,13 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
   }
 
   def handshake(ctx: ChannelHandlerContext){
-    ctx.writeAndFlush(s":${ProtocolIrc.host} 001 ${this.connection.nickname} :Welcome ${this.connection.realname}, to nailed-web's internal IRC server")
-    ctx.writeAndFlush(s":${ProtocolIrc.host} 002 ${this.connection.nickname} :The host is ${ProtocolIrc.host}[0.0.0.0/6667], running version 0.1-SNAPSHOT")
-    ctx.writeAndFlush(s":${ProtocolIrc.host} 003 ${this.connection.nickname} :This server was created April 9 2014 at 8:54:52")
-    ctx.writeAndFlush(s":${ProtocolIrc.host} 004 ${this.connection.nickname} ${ProtocolIrc.host} nailed-web")
-    ctx.writeAndFlush(s":${ProtocolIrc.host} 005 ${this.connection.nickname} CHANTYPES=#& TOPICLEN=350 CHANNELLEN=50")
+    ctx.write(s":${ProtocolIrc.host} NOTICE AUTH :*** You are using a secure connection")
+    ctx.write(s":${ProtocolIrc.host} 001 ${this.connection.nickname} :Welcome ${this.connection.realname}, to nailed-web's internal IRC server")
+    ctx.write(s":${ProtocolIrc.host} 002 ${this.connection.nickname} :The host is ${ProtocolIrc.host}[0.0.0.0/6667], running version 0.1-SNAPSHOT")
+    ctx.write(s":${ProtocolIrc.host} 003 ${this.connection.nickname} :This server was created April 9 2014 at 8:54:52")
+    ctx.write(s":${ProtocolIrc.host} 004 ${this.connection.nickname} ${ProtocolIrc.host} nailed-web")
+    ctx.write(s":${ProtocolIrc.host} 005 ${this.connection.nickname} CHANTYPES=#& TOPICLEN=350 CHANNELLEN=50")
+    ctx.flush()
 
     this.connection.connected()
     ctx.pipeline().addAfter(ctx.name(), "conversationHandler", new ChannelConversationHandler(this.connection))

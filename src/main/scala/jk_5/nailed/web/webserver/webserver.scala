@@ -13,7 +13,6 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import org.apache.logging.log4j.LogManager
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerFlashResources, WebServerHandlerSIOHandshake}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
-import io.netty.handler.logging.LogLevel
 import jk_5.nailed.web.webserver.irc.ProtocolIrc
 
 /**
@@ -67,7 +66,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   def initChannel(ch: SocketChannel){
     val pipe = ch.pipeline()
 
-    //pipe.addLast("sslDetector", new SslDetector)
+    pipe.addLast("sslDetector", new SslDetector)
     //pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
     pipe.addLast("timeoutHandler", new ReadTimeoutHandler(10))
     pipe.addLast("timeoutDetector", ReadTimeoutDetector)

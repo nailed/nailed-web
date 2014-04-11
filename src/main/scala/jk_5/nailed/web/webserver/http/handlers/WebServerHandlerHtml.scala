@@ -13,7 +13,7 @@ import jk_5.nailed.web.webserver.{RoutedHandler, UrlEscaper}
  * @author jk-5
  */
 class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
-  private final val useSendFile = false//!SslContextProvider.isValid
+
   private final val htdocs = System.getProperty("webserver.htdocslocation", "web")
   private final val htdocsLocation = if(htdocs.endsWith("/")) htdocs.substring(0,htdocs.length -1) else htdocs
 
@@ -77,12 +77,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
     if(HttpHeaders.isKeepAlive(req)) response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE)
     ctx.write(response)
 
-    val sendFileFuture: ChannelFuture = if(this.useSendFile){
-      //Does not work with GZIP or SSL. Ditch this?
-      ctx.write(new DefaultFileRegion(raf.getChannel, 0, fileLength), ctx.newProgressivePromise())
-    }else{
-      ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise())
-    }
+    ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise())
 
     val lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
     WebServerUtils.closeIfRequested(req, lastContentFuture)

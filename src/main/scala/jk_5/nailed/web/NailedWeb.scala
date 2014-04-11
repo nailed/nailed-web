@@ -1,6 +1,6 @@
 package jk_5.nailed.web
 
-import jk_5.nailed.web.webserver.{MimeTypesLookup, WebServer}
+import jk_5.nailed.web.webserver.{SslContextProvider, MimeTypesLookup, WebServer}
 import java.util.concurrent.Executors
 import jk_5.nailed.web.couchdb.CouchDB
 import java.io.File
@@ -31,6 +31,7 @@ object NailedWeb {
 
     CouchDB.load()
     MimeTypesLookup.load()
+    SslContextProvider.load()
     WebServer.start()
   }
 

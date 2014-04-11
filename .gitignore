@@ -9,3 +9,6 @@ classes
 # Gradle folders
 .gradle
 build
+
+# Certificates
+cert.jsk
