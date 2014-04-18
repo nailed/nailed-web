@@ -2,12 +2,13 @@ package jk_5.nailed.web.webserver.http
 
 import jk_5.nailed.web.webserver.{RouterHandler, MultiplexedProtocol}
 import io.netty.channel.Channel
-import io.netty.handler.codec.http.{HttpContentCompressor, HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
+import io.netty.handler.codec.http.{HttpContentCompressor, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.ByteBuf
 import jk_5.nailed.web.webserver.http.handlers._
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
+import jk_5.nailed.web.webserver.http.apihandlers._
 
 /**
  * No description given
@@ -18,12 +19,12 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   val webserverMultiplexer = new MultiplexingUrlResolver
 
-  this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[WebServerHandlerMappackList])
-  this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[WebServerHandlerMappackData])
-  this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
-  this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
-  this.webserverMultiplexer.addHandler("/api/link/", classOf[WebServerHandlerLinkMojang])
-  this.webserverMultiplexer.addHandler("/api/servers.json", classOf[WebServerHandlerServerList])
+  this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[ApiHandlerMappackList])
+  this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[ApiHandlerMappackData])
+  this.webserverMultiplexer.addHandler("/api/login/", classOf[ApiHandlerLogin])
+  this.webserverMultiplexer.addHandler("/api/register/", classOf[ApiHandlerRegister])
+  this.webserverMultiplexer.addHandler("/api/link/", classOf[ApiHandlerLinkMojang])
+  this.webserverMultiplexer.addHandler("/api/servers.json", classOf[ApiHandlerServerList])
   this.webserverMultiplexer.addHandler("/upload/", classOf[WebServerHandlerUpload])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
@@ -52,7 +53,7 @@ object ProtocolHttp extends MultiplexedProtocol {
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))
-    pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
+    //pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
     pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
     pipe.addLast("webserverRouter", router)

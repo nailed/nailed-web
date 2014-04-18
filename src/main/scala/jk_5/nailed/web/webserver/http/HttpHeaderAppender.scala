@@ -16,7 +16,7 @@ import io.netty.util.{AttributeKey, CharsetUtil}
 object HttpHeaderAppender extends ChannelDuplexHandler {
 
   val newline = "\r\n".getBytes(CharsetUtil.UTF_8)
-  val request = AttributeKey.valueOf[FullHttpRequest]("request")
+  val request = AttributeKey.valueOf[HttpRequest]("request")
 
   override def write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise){
     var close = false
@@ -56,7 +56,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
   }
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = msg match {
-    case req: FullHttpRequest =>
+    case req: HttpRequest =>
       ctx.attr(this.request).set(req)
       ctx.fireChannelRead(req)
     case m => ctx.fireChannelRead(m)

@@ -1,10 +1,9 @@
 package jk_5.nailed.web.webserver
 
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.handler.codec.http.{HttpResponseStatus, FullHttpRequest}
+import io.netty.handler.codec.http.{HttpRequest, HttpResponseStatus}
 import io.netty.channel.{ChannelInboundHandlerAdapter, ChannelHandler, ChannelHandlerContext}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, WebServerUtils, NotFoundHandler}
-import io.netty.util.ReferenceCounted
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 
 /**
@@ -17,7 +16,7 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any){
     msg match {
-      case m: FullHttpRequest =>
+      case m: HttpRequest =>
         val url = m.getUri
         val urlData = this.resolver.getValueForURL(url)
         if(urlData.isEmpty) ctx.pipeline().replace(this.handlerName, this.handlerName, NotFoundHandler)

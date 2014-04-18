@@ -11,7 +11,6 @@ import jk_5.nailed.web.webserver.http.ProtocolHttp
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import jk_5.nailed.web.webserver.irc.ProtocolIrc
 import org.apache.logging.log4j.LogManager
-import io.netty.handler.logging.LoggingHandler
 
 /**
  * No description given
@@ -37,6 +36,14 @@ object WebServer {
     })
   }
 }
+
+/*
+ * A request consists of the following objects:
+ *  - HttpRequest (Headers and stuff)
+ *  - HttpContent (Data chunks (Only for POST, PUT and PATCH requests)
+ *  - LastHttpContent (The end of the request)
+ *
+ */
 
 object Pipeline extends ChannelInitializer[SocketChannel] {
 
