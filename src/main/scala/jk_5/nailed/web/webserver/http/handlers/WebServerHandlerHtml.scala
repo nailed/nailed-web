@@ -18,7 +18,8 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
   private final val htdocsLocation = if(htdocs.endsWith("/")) htdocs.substring(0,htdocs.length -1) else htdocs
 
   def channelRead0(ctx: ChannelHandlerContext, req: FullHttpRequest){
-    if(req.getMethod != HttpMethod.GET){
+    val isHead = req.getMethod == HttpMethod.HEAD
+    if(req.getMethod != HttpMethod.GET && !isHead){
       WebServerUtils.sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
       return
     }
@@ -55,7 +56,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
       val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
       val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
       val fileLastModifiedSeconds = file.lastModified() / 1000
-      if(ifModifiedSinceDateSeconds == fileLastModifiedSeconds){
+      if(ifModifiedSinceDateSeconds >= fileLastModifiedSeconds){
         WebServerUtils.sendNotModified(ctx, file)
         return
       }
@@ -76,7 +77,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
     WebServerUtils.setDateAndCacheHeaders(response, file)
 
     ctx.write(response)
-    ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)))
+    if(!isHead) ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)))
     ctx.write(LastHttpContent.EMPTY_LAST_CONTENT)
     ctx.flush()
   }

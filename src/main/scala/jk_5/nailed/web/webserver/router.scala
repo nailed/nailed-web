@@ -33,17 +33,12 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
         }
       case m =>
     }
-    msg match {
-      case c: ReferenceCounted => c.retain()
-      case c =>
-    }
     ctx.fireChannelRead(msg)
   }
 
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable){
     if(ctx.channel().isActive) WebServerUtils.sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR)
     cause.printStackTrace()
-    //NexusLog.log(Level.SEVERE, cause, "Error in netty pipeline at RouterHandler.exceptionCaught")
   }
 }
 

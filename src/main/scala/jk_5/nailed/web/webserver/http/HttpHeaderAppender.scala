@@ -15,7 +15,6 @@ import io.netty.util.{AttributeKey, CharsetUtil}
 @Sharable
 object HttpHeaderAppender extends ChannelDuplexHandler {
 
-  //val newline = Unpooled.copiedBuffer("\r\n", CharsetUtil.UTF_8)
   val newline = "\r\n".getBytes(CharsetUtil.UTF_8)
   val request = AttributeKey.valueOf[FullHttpRequest]("request")
 
@@ -23,7 +22,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
     var close = false
     msg match {
       case res: HttpResponse =>
-        val req = ctx.attr(this.request).getAndRemove
+        val req = ctx.attr(this.request).get
         res.headers().set(HttpHeaders.Names.SERVER, s"nailed-web/${NailedWeb.version}")
         res.headers().set(HttpHeaders.Names.DATE, HttpHeaderDateFormat.get.format(new Date))
         if(!res.headers().contains(HttpHeaders.Names.CONTENT_TYPE)){
@@ -35,9 +34,8 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
             val length = content.readableBytes()
             if(req.getMethod == HttpMethod.HEAD){
               content.clear()
-            }else if(content.slice(content.readableBytes() - 2, 2).readBytes(2) != newline){
+            }else if(req.getMethod != HttpMethod.HEAD && content.readableBytes() >= 2 && content.slice(content.readableBytes() - 2, 2).readBytes(2) != newline){
               content.writeBytes(this.newline)
-              println("Added newline to response")
             }
             if(!e.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)){
               e.headers().set(HttpHeaders.Names.CONTENT_LENGTH, length)
@@ -48,10 +46,13 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
             close = !HttpHeaders.isKeepAlive(req)
           case _ =>
         }
+      case r: LastHttpContent =>
+        val req = ctx.attr(this.request).get
+        close = !HttpHeaders.isKeepAlive(req)
       case _ =>
     }
-    val future = ctx.write(msg, promise)
-    if(close) future.addListener(ChannelFutureListener.CLOSE)
+    ctx.write(msg, promise)
+    if(close) promise.addListener(ChannelFutureListener.CLOSE)
   }
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = msg match {

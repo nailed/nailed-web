@@ -38,12 +38,12 @@ object WebServerUtils {
   def sendRedirect(ctx: ChannelHandlerContext, destination: String): ChannelFuture = {
     val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND)
     response.headers().set(HttpHeaders.Names.LOCATION, destination)
-    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
+    ctx.writeAndFlush(response)//.addListener(ChannelFutureListener.CLOSE)
   }
 
   def sendNotModified(ctx: ChannelHandlerContext, configure: (HttpResponse) => Unit): ChannelFuture = {
     val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_MODIFIED)
-    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
+    ctx.writeAndFlush(response)//.addListener(ChannelFutureListener.CLOSE)
   }
   def sendNotModified(ctx: ChannelHandlerContext, file: File): ChannelFuture = this.sendNotModified(ctx, r => this.setContentType(r, file))
 
