@@ -1,6 +1,6 @@
 package jk_5.nailed.web.webserver.socketio.handler
 
-import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
+import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.{MimeTypesLookup, RoutedHandler}
 import jk_5.nailed.web.webserver.http.WebServerUtils
@@ -12,6 +12,7 @@ import java.util.UUID
 import io.netty.util.concurrent.ScheduledFuture
 import jk_5.nailed.web.auth.AuthSession
 import jk_5.nailed.web.webserver.socketio.HeartbeatHandler
+import jk_5.nailed.web.webserver.http.apihandlers.{Responder, JsonHandler}
 
 /**
  * No description given
@@ -25,9 +26,9 @@ object WebServerHandlerSIOHandshake {
   val sessions = mutable.HashMap[UUID, AuthSession]()
 }
 
-class WebServerHandlerSIOHandshake extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
+class WebServerHandlerSIOHandshake extends JsonHandler with RoutedHandler {
 
-  override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+  override def handlePOST(ctx: ChannelHandlerContext, msg: HttpRequest, rpd: Responder){
     val session = WebServerUtils.checkSession(ctx, msg)
     if(session.isDefined){
       val uid = UUID.randomUUID()

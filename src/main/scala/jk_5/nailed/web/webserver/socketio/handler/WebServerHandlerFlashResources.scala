@@ -1,6 +1,6 @@
 package jk_5.nailed.web.webserver.socketio.handler
 
-import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, SimpleChannelInboundHandler}
+import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.{MimeTypesLookup, RoutedHandler}
 import java.net.URL
@@ -34,38 +34,46 @@ object WebServerHandlerFlashResources {
   this.addResource("WebSocketMainInsecure", "/static/WebSocketMainInsecure.swf")
 }
 
-class WebServerHandlerFlashResources extends SimpleChannelInboundHandler[FullHttpRequest] with RoutedHandler {
-  override def channelRead0(ctx: ChannelHandlerContext, req: FullHttpRequest){
-    val file = this.getURLData.parameters.get("part1").get
-    val url = WebServerHandlerFlashResources.resources.get(file)
-    if(url.isDefined){
-      val fileUrl = url.get.openConnection
-      val lastModified = fileUrl.getLastModified
-      val ifModifiedSince = req.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE)
-      if(ifModifiedSince != null && !ifModifiedSince.isEmpty){
-        val dateFormatter = HttpHeaderDateFormat.get
-        val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
-        val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
-        val fileLastModifiedSeconds = lastModified / 1000
-        if(ifModifiedSinceDateSeconds == fileLastModifiedSeconds){
-          WebServerUtils.sendNotModified(ctx, _.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("swf")))
-          return
-        }
-      }
-      val is = fileUrl.getInputStream
-      if(is == null) {
-        WebServerUtils.sendError(ctx, NOT_FOUND)
-        return
-      }
-      val res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.OK)
-      WebServerUtils.setContentLength(res, fileUrl.getContentLength)
-      WebServerUtils.setContentType(res, "swf")
-      WebServerUtils.setDateAndCacheHeaders(res, lastModified)
-      ctx.write(res)
-      ctx.write(new ChunkedStream(is, fileUrl.getContentLength))
+class WebServerHandlerFlashResources extends SimpleChannelInboundHandler[HttpObject] with RoutedHandler {
 
-      val lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
-      if(!HttpHeaders.isKeepAlive(req)) lastContentFuture.addListener(ChannelFutureListener.CLOSE)
+  private var request: HttpRequest = null
+
+  override def channelRead0(ctx: ChannelHandlerContext, msg: HttpObject){
+    msg match {
+      case req: HttpRequest => this.request = req
+      case _: LastHttpContent =>
+        val file = this.getURLData.parameters.get("part1").get
+        val url = WebServerHandlerFlashResources.resources.get(file)
+        if(url.isDefined){
+          val fileUrl = url.get.openConnection
+          val lastModified = fileUrl.getLastModified
+          val ifModifiedSince = request.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE)
+          if(ifModifiedSince != null && !ifModifiedSince.isEmpty){
+            val dateFormatter = HttpHeaderDateFormat.get
+            val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
+            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
+            val fileLastModifiedSeconds = lastModified / 1000
+            if(ifModifiedSinceDateSeconds >= fileLastModifiedSeconds){
+              WebServerUtils.sendNotModified(ctx, _.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("swf")))
+              return
+            }
+          }
+          val is = fileUrl.getInputStream
+          if(is == null) {
+            WebServerUtils.sendError(ctx, NOT_FOUND)
+            return
+          }
+          val res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.OK)
+          WebServerUtils.setContentLength(res, fileUrl.getContentLength)
+          WebServerUtils.setContentType(res, "swf")
+          WebServerUtils.setDateAndCacheHeaders(res, lastModified)
+
+          ctx.write(res)
+          if(this.request.getMethod != HttpMethod.HEAD) ctx.write(new ChunkedStream(is, fileUrl.getContentLength))
+          ctx.write(LastHttpContent.EMPTY_LAST_CONTENT)
+          ctx.flush()
+        }
+      case _: HttpContent => //We should not get chunked requests here, but just to be safe
     }
   }
 }

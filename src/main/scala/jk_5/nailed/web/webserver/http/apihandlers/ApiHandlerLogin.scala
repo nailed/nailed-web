@@ -14,7 +14,7 @@ import jk_5.jsonlibrary.JsonObject
  */
 class ApiHandlerLogin extends JsonHandler {
 
-  override def handleGET(ctx: ChannelHandlerContext, msg: HttpRequest, rpd: Responder){
+  override def handlePOST(ctx: ChannelHandlerContext, msg: HttpRequest, rpd: Responder){
     val data = new HttpPostRequestDecoder(msg)
     val usernameOpt = WebServerUtils.getPostEntry(data, "username")
     val passOpt = WebServerUtils.getPostEntry(data, "password")
