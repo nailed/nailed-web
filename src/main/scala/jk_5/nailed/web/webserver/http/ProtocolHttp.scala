@@ -1,11 +1,13 @@
 package jk_5.nailed.web.webserver.http
 
-import jk_5.nailed.web.webserver.{Pipeline, MultiplexedProtocol}
+import jk_5.nailed.web.webserver.{RouterHandler, MultiplexedProtocol}
 import io.netty.channel.Channel
 import io.netty.handler.codec.http.{HttpContentCompressor, HttpObjectAggregator, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.ByteBuf
-import io.netty.handler.logging.LogLevel
+import jk_5.nailed.web.webserver.http.handlers._
+import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
+import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 
 /**
  * No description given
@@ -13,6 +15,22 @@ import io.netty.handler.logging.LogLevel
  * @author jk-5
  */
 object ProtocolHttp extends MultiplexedProtocol {
+
+  val webserverMultiplexer = new MultiplexingUrlResolver
+
+  this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[WebServerHandlerMappackList])
+  this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[WebServerHandlerMappackData])
+  this.webserverMultiplexer.addHandler("/api/login/", classOf[WebServerHandlerLogin])
+  this.webserverMultiplexer.addHandler("/api/register/", classOf[WebServerHandlerRegister])
+  this.webserverMultiplexer.addHandler("/api/link/", classOf[WebServerHandlerLinkMojang])
+  this.webserverMultiplexer.addHandler("/api/servers.json", classOf[WebServerHandlerServerList])
+  this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
+  this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
+  this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/flashsocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
+  this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/", classOf[WebServerHandlerSIOHandshake])
+  this.webserverMultiplexer.addHandler("/(.*)", classOf[WebServerHandlerHtml])
+
+  val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")
 
   def matches(buffer: ByteBuf): Boolean = {
     val byte1 = buffer.getUnsignedByte(buffer.readerIndex())
@@ -33,10 +51,10 @@ object ProtocolHttp extends MultiplexedProtocol {
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))
-    pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
+    pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
-    pipe.addLast("webserverRouter", Pipeline.router)
+    pipe.addLast("webserverRouter", router)
     pipe.addLast("routedHandler", NotFoundHandler)
   }
 }

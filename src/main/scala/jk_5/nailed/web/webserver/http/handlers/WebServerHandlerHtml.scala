@@ -74,12 +74,10 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
     WebServerUtils.setContentLength(response, fileLength)
     WebServerUtils.setContentType(response, file)
     WebServerUtils.setDateAndCacheHeaders(response, file)
-    if(HttpHeaders.isKeepAlive(req)) response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE)
+
     ctx.write(response)
-
-    ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise())
-
-    val lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
-    WebServerUtils.closeIfRequested(req, lastContentFuture)
+    ctx.write(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)))
+    ctx.write(LastHttpContent.EMPTY_LAST_CONTENT)
+    ctx.flush()
   }
 }
