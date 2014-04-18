@@ -11,6 +11,7 @@ import jk_5.nailed.web.webserver.http.ProtocolHttp
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import jk_5.nailed.web.webserver.irc.ProtocolIrc
 import org.apache.logging.log4j.LogManager
+import io.netty.handler.logging.LoggingHandler
 
 /**
  * No description given

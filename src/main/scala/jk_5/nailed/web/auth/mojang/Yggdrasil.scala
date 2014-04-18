@@ -22,7 +22,7 @@ object Yggdrasil {
   def lookupUid(username: String, password: String, callback: YggdrasilCallback){
     val cb = Option(callback)
     val builder = this.httpClient.preparePost("https://authserver.mojang.com/authenticate")
-    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE.toString, "application/json")
+    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json")
     val body = this.getJsonTemplate.set("username", username).set("password", password).stringify
     builder.setBody(body)
     val req = builder.build()
