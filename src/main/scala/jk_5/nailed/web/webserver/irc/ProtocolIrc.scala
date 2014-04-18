@@ -50,6 +50,7 @@ object ProtocolIrc extends MultiplexedProtocol {
   def getOrCreateChannel(channel: String): IrcChannel = {
     var ch = this.getChannel(channel)
     if(ch.isEmpty){
+      this.logger.trace(this.marker, s"Created new channel $channel")
       ch = Some(new IrcChannel(channel))
       this.channels.add(ch.get)
     }

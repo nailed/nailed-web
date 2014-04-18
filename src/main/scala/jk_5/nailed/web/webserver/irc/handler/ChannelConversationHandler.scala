@@ -17,6 +17,28 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
       operation match {
         case "QUIT" => this.connection.disconnected(args)
         case "JOIN" => args.split(",").foreach(c => this.connection join ProtocolIrc.getOrCreateChannel(c))
+        case "PART" =>
+          val parts = args.split(" ", 2)
+          if(parts.length == 1){
+            ProtocolIrc.getChannel(parts(0)).foreach(this.connection.part)
+          }else{
+            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.part(c, parts(1)))
+          }
+        case "PRIVMSG" =>
+          val parts = args.split(" ", 2)
+          ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.sendMessage(c, parts(1)))
+        case "MODE" =>
+          val chan = ProtocolIrc.getChannel(args)
+          if(chan.isDefined){
+            chan.get.onMode(this.connection)
+          }
+        case "TOPIC" =>
+          val parts = args.split(" ", 2)
+          if(parts.length == 1){
+            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.onTopic(c))
+          }else{
+            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.setTopic(c, parts(1)))
+          }
         case _ => this.connection.channel.writeAndFlush(s":${ProtocolIrc.host} 421 ${this.connection.nickname} $operation :Unknown command")
       }
     case m => ctx.fireChannelRead(m)

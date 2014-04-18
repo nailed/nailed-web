@@ -72,6 +72,11 @@ class IrcConnection(val channel: Channel) {
   }
 
   def join(channel: IrcChannel) = channel.onJoin(this)
+  def part(channel: IrcChannel) = channel.onPart(this)
+  def part(channel: IrcChannel, reason: String) = channel.onPart(this, reason)
+  def sendMessage(channel: IrcChannel, message: String) = channel.onMessage(this, message)
+  def onTopic(channel: IrcChannel) = channel.onTopic(this)
+  def setTopic(channel: IrcChannel, newTopic: String) = channel.onSetTopic(this, newTopic)
 
   def commandPrefix = s":${this.nickname}!${this.login}@${this.hostname} "
   def connectFuture: ChannelFuture = this.connFuture
