@@ -6,6 +6,7 @@ import java.io.{FileNotFoundException, RandomAccessFile, File}
 import io.netty.handler.stream.ChunkedFile
 import jk_5.nailed.web.webserver.http.{HttpHeaderDateFormat, WebServerUtils}
 import jk_5.nailed.web.webserver.{RoutedHandler, UrlEscaper}
+import java.util.Date
 
 /**
  * No description given
@@ -50,17 +51,6 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
       WebServerUtils.sendError(ctx, HttpResponseStatus.FORBIDDEN)
       return
     }
-    val ifModifiedSince = req.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE)
-    if(ifModifiedSince != null && !ifModifiedSince.isEmpty){
-      val dateFormatter = HttpHeaderDateFormat.get
-      val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
-      val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
-      val fileLastModifiedSeconds = file.lastModified() / 1000
-      if(ifModifiedSinceDateSeconds >= fileLastModifiedSeconds){
-        WebServerUtils.sendNotModified(ctx, file)
-        return
-      }
-    }
     var raf: RandomAccessFile = null
     try{
       raf = new RandomAccessFile(file, "r")
@@ -74,6 +64,21 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[FullHttpRequest] 
 
     WebServerUtils.setContentLength(response, fileLength)
     WebServerUtils.setContentType(response, file)
+    response.headers().set(HttpHeaders.Names.LAST_MODIFIED, HttpHeaderDateFormat.get.format(new Date(file.lastModified())))
+
+    val ifModifiedSince = req.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE)
+    if(ifModifiedSince != null && !ifModifiedSince.isEmpty){
+      val dateFormatter = HttpHeaderDateFormat.get
+      val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
+      val ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime / 1000
+      val fileLastModifiedSeconds = file.lastModified() / 1000
+      if(ifModifiedSinceDateSeconds >= fileLastModifiedSeconds){
+        response.setStatus(HttpResponseStatus.NOT_MODIFIED)
+        WebServerUtils.sendNotModified(ctx, file)
+        return
+      }
+    }
+
     WebServerUtils.setDateAndCacheHeaders(response, file)
 
     ctx.write(response)
