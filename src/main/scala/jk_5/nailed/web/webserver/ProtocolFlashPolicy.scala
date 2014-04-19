@@ -19,7 +19,11 @@ object ProtocolFlashPolicy extends MultiplexedProtocol {
     "   <allow-access-from domain=\"*\" to-ports=\"*\" />" +
     "</cross-domain-policy>", CharsetUtil.UTF_8)
 
-  override def matches(buffer: ByteBuf) = buffer.slice(0, this.requestBuffer.readableBytes()) equals this.requestBuffer
+  override def matches(buffer: ByteBuf): Boolean = {
+    if(buffer.readableBytes() >= this.requestBuffer.readableBytes()){
+      buffer.slice(0, this.requestBuffer.readableBytes()) equals this.requestBuffer
+    }else false
+  }
   override def configureChannel(channel: Channel){
     channel.writeAndFlush(Unpooled.copiedBuffer(this.responseBuffer)).addListener(ChannelFutureListener.CLOSE)
   }
