@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver.irc.handler
 
 import io.netty.channel.{ChannelHandlerContext, ChannelInboundHandlerAdapter}
-import jk_5.nailed.web.webserver.irc.{ProtocolIrc, IrcConnection}
+import jk_5.nailed.web.webserver.irc.{UserConnection, ProtocolIrc}
 
 /**
  * No description given
@@ -10,12 +10,12 @@ import jk_5.nailed.web.webserver.irc.{ProtocolIrc, IrcConnection}
  */
 class HandshakeHandler extends ChannelInboundHandlerAdapter {
 
-  var connection: IrcConnection = _
+  var connection: UserConnection = _
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
     case frame: String =>
       if(this.connection == null){
-        this.connection = new IrcConnection(ctx.channel())
+        this.connection = new UserConnection(ctx.channel())
       }
       if(frame.startsWith("PASS")){
         this.connection.password = frame.substring(5).trim

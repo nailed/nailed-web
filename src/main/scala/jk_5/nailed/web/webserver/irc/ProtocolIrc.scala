@@ -10,6 +10,7 @@ import jk_5.nailed.web.webserver.irc.handler.{HandshakeHandler, OutboundFrameApp
 import io.netty.util.AttributeKey
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import scala.collection.mutable
+import jk_5.nailed.web.webserver.irc.connections.{ServerConnection, ServerBotConnection}
 
 /**
  * No description given
@@ -23,6 +24,10 @@ object ProtocolIrc extends MultiplexedProtocol {
   val logger = LogManager.getLogger
   val marker = MarkerManager.getMarker("IRC")
   val channels = mutable.HashSet[IrcChannel]()
+  val connections = mutable.HashSet[IrcConnection]()
+
+  this.connections += ServerBotConnection
+  this.connections += ServerConnection
 
   override def matches(buffer: ByteBuf): Boolean = {
     val c1 = buffer.readUnsignedByte()
@@ -56,4 +61,15 @@ object ProtocolIrc extends MultiplexedProtocol {
     }
     ch.get
   }
+
+  def onConnect(conn: IrcConnection){
+    this.connections += conn
+  }
+
+  def onDisconnect(conn: IrcConnection){
+    this.connections -= conn
+  }
+
+  def getConnection(nickname: String) = this.connections.find(_.nickname == nickname)
+  def getConnections(nickname: String) = this.connections.filter(_.nickname == nickname)
 }

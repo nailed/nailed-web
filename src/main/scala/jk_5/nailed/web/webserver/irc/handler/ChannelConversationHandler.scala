@@ -26,7 +26,17 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
           }
         case "PRIVMSG" =>
           val parts = args.split(" ", 2)
-          ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.sendMessage(c, parts(1)))
+          val msg = if(parts(1).startsWith(":")) parts(1).substring(1) else parts(1)
+          if(parts(0).startsWith("#")){ //Sent to a channel
+            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.sendMessage(c, msg))
+          }else{ //Sent to a user
+            val conns = ProtocolIrc.getConnections(parts(0))
+            if(conns.isEmpty){
+              this.connection.sendLine(s":${ProtocolIrc.host} 401 ${this.connection.nickname} ${parts(0)} :No such nick")
+            }else{
+              conns.foreach(c => this.connection.sendMessage(c, msg))
+            }
+          }
         case "MODE" =>
           val chan = ProtocolIrc.getChannel(args)
           if(chan.isDefined){
@@ -35,11 +45,11 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
         case "TOPIC" =>
           val parts = args.split(" ", 2)
           if(parts.length == 1){
-            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.onTopic(c))
+            ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.onTopicRequest(c))
           }else{
             ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.setTopic(c, parts(1)))
           }
-        case _ => this.connection.channel.writeAndFlush(s":${ProtocolIrc.host} 421 ${this.connection.nickname} $operation :Unknown command")
+        case _ => this.connection.sendLine(s":${ProtocolIrc.host} 421 ${this.connection.nickname} $operation :Unknown command")
       }
     case m => ctx.fireChannelRead(m)
   }
