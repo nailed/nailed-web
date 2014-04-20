@@ -18,7 +18,14 @@ class IrcChannel(val name: String) {
 
   def onJoin(connection: IrcConnection){
     var names = connection.nickname + " "
-    this.connections.filter(_.nickname != connection.nickname).foreach(c => names += c.nickname + " ")
+    this.connections.filter(_.nickname != connection.nickname).foreach(c => {
+      //TODO: better operator system
+      val isOp = c match {
+        case a: AuthenticatedConnection => a.getUser.permissions.ircOperator
+        case _ => false
+      }
+      names += (if(isOp) "@" else "") + c.nickname + " "
+    })
     names = names.trim
     connection.sendLine(s"${connection.commandPrefix}JOIN :$name")
     connection.sendLine(s":${ProtocolIrc.host} 332 ${connection.nickname} $name :$topic")
@@ -29,6 +36,16 @@ class IrcChannel(val name: String) {
       this.connections.filter(_.nickname != connection.nickname).foreach(c => c.onUserJoinedChannel(connection, this))
     }
     this.connections.add(connection)
+
+    connection match {
+      case a: AuthenticatedConnection =>
+        Option(a.getUser).foreach(u => {
+          if(u.permissions.ircOperator){
+            this.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE $name +o ${a.getUser.getUsername}"))
+          }
+        })
+      case _ =>
+    }
   }
 
   def onPart(connection: IrcConnection){

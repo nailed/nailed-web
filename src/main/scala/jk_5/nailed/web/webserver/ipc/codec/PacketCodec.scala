@@ -25,6 +25,11 @@ class PacketCodec extends ByteToMessageCodec[IpcPacket] {
   this.registerPacket(3, classOf[PacketPlayerLeave])
   this.registerPacket(4, classOf[PacketPlayerDeath])
   this.registerPacket(5, classOf[PacketPlayerKill])
+  this.registerPacket(6, classOf[PacketPromptLogin])
+  this.registerPacket(7, classOf[PacketLoginPlayer])
+  this.registerPacket(8, classOf[PacketLoginResponse])
+  this.registerPacket(9, classOf[PacketCheckAccount])
+  this.registerPacket(10, classOf[PacketCreateAccount])
 
   private def registerPacket(id: Byte, packet: Class[_ <: IpcPacket]): PacketCodec ={
     this.idToClass.put(id, packet)
@@ -43,7 +48,7 @@ class PacketCodec extends ByteToMessageCodec[IpcPacket] {
   }
 
   protected def decode(ctx: ChannelHandlerContext, in: ByteBuf, out: util.List[AnyRef]){
-    val id: Byte = in.readByte
+    val id = in.readByte
     if(!this.idToClass.contains(id)){
       throw new UnsupportedOperationException("Received an unknown packet (id: " + id + ")")
     }

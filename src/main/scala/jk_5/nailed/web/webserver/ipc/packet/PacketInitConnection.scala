@@ -22,7 +22,7 @@ class PacketInitConnection extends IpcPacket {
     this.host = PacketUtils.readString(buffer)
     val pCount = PacketUtils.readVarInt(buffer)
     for(i <- 0 until pCount){
-      this.players += new Player(PacketUtils.readString(buffer), PacketUtils.readString(buffer))
+      this.players += new Player(PacketUtils.readString(buffer), PacketUtils.readString(buffer), "unknown") //FIXME
     }
     val mCount = PacketUtils.readVarInt(buffer)
     for(i <- 0 until mCount){

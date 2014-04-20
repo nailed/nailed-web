@@ -30,7 +30,7 @@ object IrcFormatting {
 
   def removeColors(line: String): String = {
     val length = line.length
-    val builder = new StringBuilder()
+    val builder = new StringBuilder
     var i = 0
     while(i < length){
       var ch = line.charAt(i)

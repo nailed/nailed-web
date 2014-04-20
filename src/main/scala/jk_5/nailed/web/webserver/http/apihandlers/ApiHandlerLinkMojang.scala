@@ -30,8 +30,8 @@ class ApiHandlerLinkMojang extends JsonHandler {
       Yggdrasil.lookupUid(email, pass, new YggdrasilCallback {
         override def onSuccess(uid: String){
           val user = session.get.getUser
-          user.getAuthData.uid = uid
-          user.getAuthData.verified = true
+          user.authData.uid = uid
+          user.authData.verified = true
           user.saveToDatabase()
           rpd.ok
         }

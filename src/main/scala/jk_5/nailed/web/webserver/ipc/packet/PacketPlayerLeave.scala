@@ -1,6 +1,6 @@
 package jk_5.nailed.web.webserver.ipc.packet
 
-import jk_5.nailed.web.game.{Player, GameServer}
+import jk_5.nailed.web.game.GameServer
 import jk_5.nailed.web.webserver.ipc.PacketUtils
 import io.netty.buffer.ByteBuf
 
@@ -11,13 +11,13 @@ import io.netty.buffer.ByteBuf
   */
 class PacketPlayerLeave extends IpcPacket {
 
-  var player: Player = _
+  var id: String = _
 
   override def encode(buffer: ByteBuf){}
   override def decode(buffer: ByteBuf){
-    this.player = new Player(PacketUtils.readString(buffer), PacketUtils.readString(buffer))
+    this.id = PacketUtils.readString(buffer)
   }
   override def processPacket(server: GameServer){
-    server.onPlayerLeave(this.player)
+    server.getPlayer(this.id).foreach(p => server.onPlayerLeave(p))
   }
 }

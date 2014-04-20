@@ -9,7 +9,7 @@ import jk_5.nailed.web.auth.{SessionManager, UserDatabase, AuthSession, User}
  *
  * @author jk-5
  */
-class UserConnection(val channel: Channel) extends IrcConnection(channel.remoteAddress().asInstanceOf[InetSocketAddress].getHostName) {
+class UserConnection(val channel: Channel) extends IrcConnection(channel.remoteAddress().asInstanceOf[InetSocketAddress].getHostName) with AuthenticatedConnection {
 
   var user: Option[User] = None
   var session: Option[AuthSession] = None
@@ -61,4 +61,7 @@ class UserConnection(val channel: Channel) extends IrcConnection(channel.remoteA
   override def onPrivateMessage(connection: IrcConnection, message: String) = this.sendLine(s"${connection.commandPrefix}PRIVMSG $nickname ${if(message.contains(' ')) ":" + message else message}")
   override def onChannelMessage(sender: IrcConnection, channel: IrcChannel, message: String) = this.sendLine(s"${sender.commandPrefix}PRIVMSG ${channel.name} ${if(message.contains(' ')) ":" + message else message}")
   override def onUserJoinedChannel(connection: IrcConnection, channel: IrcChannel) = this.sendLine(s"${connection.commandPrefix}JOIN :${channel.name}")
+
+  override def getSession = this.session.getOrElse(null)
+  override def getUser = this.user.getOrElse(null)
 }

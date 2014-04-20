@@ -49,6 +49,9 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
           }else{
             ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.setTopic(c, parts(1)))
           }
+        case "NICK" =>
+          this.connection.nickname = args
+          //TODO: broadcast
         case _ => this.connection.sendLine(s":${ProtocolIrc.host} 421 ${this.connection.nickname} $operation :Unknown command")
       }
     case m => ctx.fireChannelRead(m)

@@ -42,4 +42,5 @@ class GameServer(private val channel: Channel, private val players: mutable.Arra
 
   @inline def getPlayer(id: String) = this.players.find(_.id == id)
   @inline def getChannel = this.channel
+  @inline def sendPacket(msg: Any) = this.channel.writeAndFlush(msg)
 }
