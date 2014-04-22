@@ -12,13 +12,14 @@ import jk_5.nailed.web.webserver.irc.connections.ServerBotConnection
  * @author jk-5
  */
 @DatabaseType("user")
-case class User(private var username: String) extends TCouchDBSerializable {
+case class User(var username: String) extends TCouchDBSerializable {
 
-  private var passwordHash: String = _
-  private var fullName: String = _
-  private var email: String = _
+  var passwordHash: String = _
+  var fullName: String = _
+  var email: String = _
   val authData = new AuthData
   val permissions = new PermissionContainer
+  var activated = false
 
   def writeToJsonForDB(data: JsonObject){
     data.add("username", this.username)
@@ -27,6 +28,7 @@ case class User(private var username: String) extends TCouchDBSerializable {
     data.add("fullName", this.fullName)
     data.add("authData", this.authData.toJson)
     data.add("permissions", this.permissions.toJson)
+    data.add("activated", this.activated)
   }
 
   def readFromJsonForDB(data: JsonObject){
@@ -36,6 +38,7 @@ case class User(private var username: String) extends TCouchDBSerializable {
     if(data.get("authData") != null) this.authData.read(data.get("authData").asObject)
     if(data.get("username") != null) this.username = data.get("username").asString
     if(data.get("permissions") != null) this.permissions.read(data.get("permissions").asObject)
+    if(data.get("activated") != null) this.activated = data.get("activated").asBoolean
   }
 
   def getUserInfo: JsonObject = {
@@ -56,11 +59,11 @@ case class User(private var username: String) extends TCouchDBSerializable {
       })
   }
 
-  @inline def getUsername = this.username
-  @inline def getEmail = this.email
-  @inline def getPasswordHash = this.passwordHash
-  @inline def getFullName = this.fullName
-  @inline def setPasswordHash(hash: String) = this.passwordHash = hash
-  @inline def setFullName(name: String) = this.fullName = name
-  @inline def setEmail(email: String) = this.email = email
+  @deprecated @inline def getUsername = this.username
+  @deprecated @inline def getEmail = this.email
+  @deprecated @inline def getPasswordHash = this.passwordHash
+  @deprecated @inline def getFullName = this.fullName
+  @deprecated @inline def setPasswordHash(hash: String) = this.passwordHash = hash
+  @deprecated @inline def setFullName(name: String) = this.fullName = name
+  @deprecated @inline def setEmail(email: String) = this.email = email
 }

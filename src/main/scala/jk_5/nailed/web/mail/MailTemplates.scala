@@ -2,6 +2,7 @@ package jk_5.nailed.web.mail
 
 import java.io.File
 import scala.io.Source
+import scala.collection.mutable
 import jk_5.nailed.web.webserver.http.handlers.WebServerHandlerHtml
 
 /**
@@ -11,6 +12,10 @@ import jk_5.nailed.web.webserver.http.handlers.WebServerHandlerHtml
  */
 object MailTemplates {
 
+  val parseInto = "$parseInto{"
+  val include = "$include{"
+  val content = "$content"
+
   def readFile(file: File): String = {
     val f = Source.fromFile(file)("utf-8")
     val lines = f.getLines().mkString("\n")
@@ -18,22 +23,29 @@ object MailTemplates {
     lines
   }
 
-  def readTemplate(name: String): String = {
+  def parseTemplate(name: String, vars: mutable.Map[String, String] = mutable.HashMap()): String = {
     var file = this.readFile(new File(WebServerHandlerHtml.htdocsLocation + "/mailtemplate/" + name))
     var iterate = true
     var prevIndex = -1
-    val search = "$include{"
     while(iterate){
-      val index = file.indexOf(search, prevIndex)
+      val index = file.indexOf(include, prevIndex)
       val end = file.indexOf("}", index)
       if(index == -1 || end == -1) iterate = false
       else{
         val dataBefore = file.substring(0, index)
         val dataAfter = file.substring(end + 1)
-        file = dataBefore + this.readTemplate(file.substring(index + search.length, end)) + dataAfter
+        file = dataBefore + this.parseTemplate(file.substring(index + include.length, end)) + dataAfter
         prevIndex = end
       }
     }
+    if(file.startsWith(parseInto)){
+      val i = file.indexOf("}")
+      val wrapper = this.parseTemplate(file.substring(parseInto.length, i))
+      file = file.substring(i + 1).trim //Strip the $parseInto{} block
+      //file.replaceFirst("\r|\n|\r\n", "") //Also strip the first newline that was behind $parseInto{}
+      file = wrapper.replace(content, file)
+    }
+    vars.foreach(v => file = file.replace("${" + v._1 + "}", v._2))
     file
   }
 }

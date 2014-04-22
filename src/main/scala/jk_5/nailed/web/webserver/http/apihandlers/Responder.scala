@@ -29,6 +29,10 @@ class Responder(private val channel: Channel){
   //Some error codes
   def wrongMethod() = this.error(HttpResponseStatus.METHOD_NOT_ALLOWED)
   def notFound() = this.error(HttpResponseStatus.NOT_FOUND)
+  def internalServerError() = this.error(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+  def badRequest() = this.error(HttpResponseStatus.BAD_REQUEST)
+  def badRequest(msg: String) = this.error(HttpResponseStatus.BAD_REQUEST, msg)
+  def okError(msg: String) = this.error(HttpResponseStatus.OK, msg)
 
   private def fromJson(json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK): DefaultFullHttpResponse = {
     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.stringify, CharsetUtil.UTF_8))

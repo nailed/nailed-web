@@ -25,6 +25,7 @@ object ProtocolHttp extends MultiplexedProtocol {
   this.webserverMultiplexer.addHandler("/api/register/", classOf[ApiHandlerRegister])
   this.webserverMultiplexer.addHandler("/api/link/", classOf[ApiHandlerLinkMojang])
   this.webserverMultiplexer.addHandler("/api/servers.json", classOf[ApiHandlerServerList])
+  this.webserverMultiplexer.addHandler("/api/activateAccount/(.*)/", classOf[ApiHandlerActivateAccount])
   this.webserverMultiplexer.addHandler("/upload/", classOf[WebServerHandlerUpload])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])

@@ -19,7 +19,7 @@ package jk_5.nailed.web.couchdb
 import com.ning.http.client.{ListenableFuture, RequestBuilder, AsyncHttpClient, Response}
 import io.netty.handler.codec.http.HttpHeaders
 import jk_5.jsonlibrary.JsonObject
-import jk_5.nailed.web.NailedWeb
+import jk_5.commons.config.ConfigTag
 
 /**
  * No description given
@@ -36,11 +36,12 @@ object CouchDB {
 
   def newID = UID.randomUID
 
-  def load(){
-    this.serverHostname = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("hostname").setComment("The IP/Address for the couchdb server").asString("localhost")
-    this.serverPort = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("port").setComment("The port for the couchdb server").asInt(5984)
-    this.databaseName = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("name").setComment("The name of the couchdb database that Nailed will use").asString("nailed")
-    this.ssl = NailedWeb.getConfig.get("database").setUseBraces(useBraces = true).setComment("Database options").get("ssl").setComment("Should we use SSL?").asBoolean(default = false)
+  def readConfig(tag: ConfigTag){
+    tag.setUseBraces(useBraces = true).setComment("Database options")
+    this.serverHostname = tag.get("hostname").setComment("The IP/Address for the couchdb server").asString("localhost")
+    this.serverPort = tag.get("port").setComment("The port for the couchdb server").asInt(5984)
+    this.databaseName = tag.get("name").setComment("The name of the couchdb database that Nailed will use").asString("nailed")
+    this.ssl = tag.get("ssl").setComment("Should we use SSL?").asBoolean(default = false)
   }
 
   def getObjectFromID[T <: TCouchDBSerializable](id: UID, obj: T): T = {

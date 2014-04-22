@@ -5,6 +5,7 @@ import java.util.{Date, Properties}
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeMessage}
 import jk_5.nailed.web.auth.User
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -16,6 +17,8 @@ object Mailer {
   private var properties: Properties = _
   private var username: String = _
   private var password: String = _
+
+  val logger = LogManager.getLogger
 
   private val authenticator = new Authenticator {
     override def getPasswordAuthentication = new PasswordAuthentication(username, password)
@@ -35,9 +38,10 @@ object Mailer {
   }
 
   def sendMail(u: User, subject: String, data: String){
-    var content = data.replace("${u.fullName}", u.getFullName)
-    content = data.replace("${u.username}", u.getUsername)
-    content = data.replace("${u.email}", u.getEmail)
+    var content = data.replace("${u.fullName}", u.fullName)
+    content = content.replace("${u.username}", u.username)
+    content = content.replace("${u.email}", u.email)
+    content = content.replace("${u.id}", u.getID.toString)
     val session = Session.getDefaultInstance(this.properties, this.authenticator)
     val message = new MimeMessage(session)
     message.setFrom(new InternetAddress("nailed@jk-5.tk", "Nailed"))
@@ -46,5 +50,6 @@ object Mailer {
     message.setSentDate(new Date)
     message.setContent(content, "text/html; charset=utf-8")
     Transport.send(message)
+    logger.trace("Sent a mail to " + u.fullName)
   }
 }
