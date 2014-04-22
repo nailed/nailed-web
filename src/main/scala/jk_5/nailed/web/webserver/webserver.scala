@@ -12,6 +12,8 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import jk_5.nailed.web.webserver.irc.ProtocolIrc
 import org.apache.logging.log4j.LogManager
 import java.io.IOException
+import io.netty.handler.codec.DecoderException
+import javax.net.ssl.SSLException
 
 /**
  * No description given
@@ -77,6 +79,10 @@ object ReadTimeoutDetector extends ChannelHandlerAdapter {
 object ExceptionHandler extends ChannelHandlerAdapter {
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match{
     case e: IOException => WebServer.logger.trace(s"Silently ignored IOException in pipeline (${e.getMessage}})")
+    case e: DecoderException => e.getCause match {
+      case e1: SSLException =>
+      case _ => ctx.fireExceptionCaught(e)
+    }
     case e => ctx.fireExceptionCaught(e)
   }
 }
