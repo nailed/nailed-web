@@ -35,6 +35,8 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")
 
+  HttpRequestLogger //Init the requestlogger so it creates the channel right away instead of waiting for the first request
+
   def matches(buffer: ByteBuf): Boolean = {
     val byte1 = buffer.getUnsignedByte(buffer.readerIndex())
     val byte2 = buffer.getUnsignedByte(buffer.readerIndex() + 1)

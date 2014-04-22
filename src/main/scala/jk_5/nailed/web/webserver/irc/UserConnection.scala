@@ -50,7 +50,7 @@ class UserConnection(val channel: Channel) extends IrcConnection with Authentica
     if(this.login.startsWith("~")){
       this.login = login.substring(1)
     }
-    this.realname = this.user.get.getFullName
+    this.realname = this.user.get.fullName
     true
   }
 

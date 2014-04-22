@@ -6,6 +6,7 @@ import jk_5.jsonlibrary.JsonObject
 import java.util.concurrent.Executors
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import jk_5.nailed.web.LogUtils
+import io.netty.util.CharsetUtil
 
 /**
  * No description given
@@ -22,9 +23,10 @@ object Yggdrasil {
   def lookupUid(username: String, password: String, callback: YggdrasilCallback){
     val cb = Option(callback)
     val builder = this.httpClient.preparePost("https://authserver.mojang.com/authenticate")
-    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json")
     val body = this.getJsonTemplate.set("username", username).set("password", password).stringify
-    builder.setBody(body)
+    builder.setBody(body.getBytes(CharsetUtil.UTF_8))
+    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json; charset=utf-8")
+    builder.setHeader(HttpHeaders.Names.CONTENT_LENGTH, body.length.toString)
     val req = builder.build()
     val mask = LogUtils.mask(password)
     this.logger.debug(this.marker, "Lookup for {}:{}", username, mask)

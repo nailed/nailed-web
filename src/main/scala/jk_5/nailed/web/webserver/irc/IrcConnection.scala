@@ -50,25 +50,8 @@ class IrcConnection {
 
   def sendLine(line: String){}
 
-  def modes(channel: IrcChannel): String = channel.modes.get(this).getOrElse("")
-  def setMode(channel: IrcChannel, mode: String){
-    val modes = mode.substring(1)
-    var current = this.modes(channel)
-    var additions = ""
-    if(mode.startsWith("+")){
-      additions = "+"
-      modes.split("").foreach(m => if(!current.contains(m)){current += m; additions += m})
-    }else if(mode.startsWith("-")){
-      additions = "-"
-      modes.split("").foreach(m => if(current.contains(m)){current.replace(m, ""); additions += m})
-    }
-    channel.modes.put(this, current)
-    if(additions.length > 1){
-      channel.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE ${channel.name} $additions $nickname"))
-    }
-  }
   def modePrefix(channel: IrcChannel): String = {
-    val modes = this.modes(channel)
+    val modes = channel.getMode(this)
     if(modes.contains("q")) "~"
     else if(modes.contains("a")) "&"
     else if(modes.contains("o")) "@"

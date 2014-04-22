@@ -16,7 +16,7 @@ object HttpRequestLogger extends ChannelInboundHandlerAdapter {
   val channel = ProtocolIrc.getOrCreateChannel("#httplog")
   val connection = new IrcConnection("httplogger")
   connection.join(channel)
-  connection.setMode(channel, "+q")
+  channel.setMode(connection, "+q")
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any){
     msg match {

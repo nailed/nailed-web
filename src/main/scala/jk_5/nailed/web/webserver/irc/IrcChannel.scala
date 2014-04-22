@@ -17,11 +17,29 @@ class IrcChannel(val name: String) {
   var mode = "snt"
   val modes = mutable.HashMap[IrcConnection, String]()
 
+  def setMode(connection: IrcConnection, mode: String){
+    val modes = mode.substring(1)
+    var current = this.getMode(connection)
+    var additions = ""
+    if(mode.startsWith("+")){
+      additions = "+"
+      modes.split("").foreach(m => if(!current.contains(m)){current += m; additions += m})
+    }else if(mode.startsWith("-")){
+      additions = "-"
+      modes.split("").foreach(m => if(current.contains(m)){current.replace(m, ""); additions += m})
+    }
+    this.modes.put(connection, current)
+    if(additions.length > 1){
+      this.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE $name $additions ${connection.nickname}"))
+    }
+  }
+  def getMode(connection: IrcConnection) = this.modes.get(connection).getOrElse("")
+
   def onJoin(connection: IrcConnection){
     connection match {
       case a: AuthenticatedConnection =>
         if(a.getUser.permissions.ircOperator){
-          a.setMode(this, "+o")
+          this.setMode(a, "+o")
         }
       case _ =>
     }
@@ -43,7 +61,7 @@ class IrcChannel(val name: String) {
       case a: AuthenticatedConnection =>
         Option(a.getUser).foreach(u => {
           if(u.permissions.ircOperator){
-            this.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE $name +o ${a.getUser.getUsername}"))
+            this.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE $name +o ${a.getUser.username}"))
           }
         })
       case _ =>
