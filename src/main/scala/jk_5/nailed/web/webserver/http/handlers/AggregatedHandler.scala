@@ -93,7 +93,6 @@ trait AggregatedHandler extends SimpleChannelInboundHandler[HttpObject] {
         }
       case _ => throw new Error
     }
-    ReferenceCountUtil.release(msg)
   }
 
   def handleAggregated(ctx: ChannelHandlerContext, msg: FullHttpRequest)
