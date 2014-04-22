@@ -5,12 +5,18 @@ package jk_5.nailed.web.webserver.irc
  *
  * @author jk-5
  */
-abstract class IrcConnection(val hostname: String = ProtocolIrc.host) {
+class IrcConnection {
 
+  var hostname: String = ProtocolIrc.host
   var password: String = null
   var nickname: String = null
   var login: String = null
   var realname: String = null
+
+  def this(name: String){
+    this()
+    this.setAllNames(name)
+  }
 
   def connected(){
     ProtocolIrc.onConnect(this)
@@ -63,7 +69,9 @@ abstract class IrcConnection(val hostname: String = ProtocolIrc.host) {
   }
   def modePrefix(channel: IrcChannel): String = {
     val modes = this.modes(channel)
-    if(modes.contains("o")) "@"
+    if(modes.contains("q")) "~"
+    else if(modes.contains("a")) "&"
+    else if(modes.contains("o")) "@"
     else if(modes.contains("h")) "%"
     else if(modes.contains("v")) "+"
     else ""

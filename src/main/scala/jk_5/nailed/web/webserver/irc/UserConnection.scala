@@ -9,7 +9,9 @@ import jk_5.nailed.web.auth.{SessionManager, UserDatabase, AuthSession, User}
  *
  * @author jk-5
  */
-class UserConnection(val channel: Channel) extends IrcConnection(channel.remoteAddress().asInstanceOf[InetSocketAddress].getHostName) with AuthenticatedConnection {
+class UserConnection(val channel: Channel) extends IrcConnection with AuthenticatedConnection {
+
+  this.hostname = channel.remoteAddress().asInstanceOf[InetSocketAddress].getHostName
 
   var user: Option[User] = None
   var session: Option[AuthSession] = None

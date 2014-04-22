@@ -52,7 +52,7 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
     ctx.write(s":${ProtocolIrc.host} 002 ${this.connection.nickname} :The host is ${ProtocolIrc.host}[0.0.0.0/6667], running version 0.1-SNAPSHOT")
     ctx.write(s":${ProtocolIrc.host} 003 ${this.connection.nickname} :This server was created April 9 2014 at 8:54:52")
     ctx.write(s":${ProtocolIrc.host} 004 ${this.connection.nickname} ${ProtocolIrc.host} nailed-web")
-    ctx.write(s":${ProtocolIrc.host} 005 ${this.connection.nickname} CHANTYPES=#& TOPICLEN=350 CHANNELLEN=50")
+    ctx.write(s":${ProtocolIrc.host} 005 ${this.connection.nickname} CHANTYPES=# TOPICLEN=350 CHANNELLEN=50 PREFIX=(qaohv)~&@%+")
     ctx.flush()
 
     this.connection.connected()

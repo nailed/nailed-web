@@ -7,9 +7,7 @@ import jk_5.nailed.web.webserver.irc.{ProtocolIrc, IrcConnection}
  *
  * @author jk-5
  */
-object ServerConnection extends IrcConnection {
-
-  this.setAllNames(ProtocolIrc.host)
+object ServerConnection extends IrcConnection(ProtocolIrc.host) {
 
   override def onPrivateMessage(connection: IrcConnection, message: String){
     val command = message.substring(0, message.indexOf(' ')).toLowerCase
