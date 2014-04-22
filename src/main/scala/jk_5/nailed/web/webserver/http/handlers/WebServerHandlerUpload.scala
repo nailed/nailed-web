@@ -6,6 +6,8 @@ import jk_5.nailed.web.webserver.RoutedHandler
 import io.netty.handler.codec.http.multipart._
 import jk_5.nailed.web.webserver.http.WebServerUtils
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.{EndOfDataDecoderException, ErrorDataDecoderException}
+import java.io.File
+import scala.collection.JavaConversions._
 
 /**
  * No description given
@@ -51,6 +53,15 @@ class WebServerHandlerUpload extends SimpleChannelInboundHandler[HttpObject] wit
         if(m.isInstanceOf[LastHttpContent]){
           //TODO: send response
           WebServerUtils.sendOK(ctx)
+
+          decoder.get.getBodyHttpDatas.foreach {
+            case f: FileUpload =>
+              f.renameTo(new File(s"uploaded/${f.getFilename}"))
+              this.logger.info(this.marker, s"${ctx.channel().remoteAddress().toString} uploaded ${f.getFilename}")
+          }
+
+          WebServerUtils.sendOK(ctx)
+          decoder.get.destroy()
 
           this.request = null
           this.decoder.get.destroy()

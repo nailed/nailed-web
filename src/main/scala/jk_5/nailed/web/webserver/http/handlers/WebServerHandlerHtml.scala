@@ -13,10 +13,12 @@ import java.util.Date
  *
  * @author jk-5
  */
-class WebServerHandlerHtml extends SimpleChannelInboundHandler[HttpObject] with RoutedHandler {
+object WebServerHandlerHtml {
+  final val htdocs = System.getProperty("webserver.htdocslocation", "web")
+  final val htdocsLocation = if(htdocs.endsWith("/")) htdocs.substring(0,htdocs.length -1) else htdocs
+}
 
-  private final val htdocs = System.getProperty("webserver.htdocslocation", "web")
-  private final val htdocsLocation = if(htdocs.endsWith("/")) htdocs.substring(0,htdocs.length -1) else htdocs
+class WebServerHandlerHtml extends SimpleChannelInboundHandler[HttpObject] with RoutedHandler {
 
   private var request: HttpRequest = null
 
@@ -30,7 +32,7 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[HttpObject] with 
           return
         }
         val uri = this.getURLData.url.split("\\?", 2)(0)
-        val path = htdocsLocation + UrlEscaper.sanitizeURI(uri)
+        val path = WebServerHandlerHtml.htdocsLocation + UrlEscaper.sanitizeURI(uri)
 
         if(path == null){
           WebServerUtils.sendError(ctx, HttpResponseStatus.FORBIDDEN)

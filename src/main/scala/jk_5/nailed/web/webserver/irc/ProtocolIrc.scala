@@ -34,7 +34,7 @@ object ProtocolIrc extends MultiplexedProtocol {
     val c2 = buffer.readUnsignedByte()
     val c3 = buffer.readUnsignedByte()
     val c4 = buffer.readUnsignedByte()
-    (c1 == 'N' && c2 == 'I' && c3 == 'C' && c4 == 'K') || (c1 == 'P' && c2 == 'A' && c3 == 'S' && c4 == 'S')
+    (c1 == 'N' && c2 == 'I' && c3 == 'C' && c4 == 'K') || (c1 == 'P' && c2 == 'A' && c3 == 'S' && c4 == 'S') || (c1 == 'C' && c2 == 'A' && c3 == 'P')
   }
 
   val encoder = new StringEncoder
@@ -52,7 +52,7 @@ object ProtocolIrc extends MultiplexedProtocol {
   }
 
   def getChannel(channel: String) = this.channels.find(_.name == channel)
-  def getOrCreateChannel(channel: String): IrcChannel = {
+  def getOrCreateChannel(channel: String): IrcChannel = this.channels.synchronized{
     var ch = this.getChannel(channel)
     if(ch.isEmpty){
       this.logger.trace(this.marker, s"Created new channel $channel")

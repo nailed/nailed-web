@@ -5,6 +5,7 @@ import io.netty.channel.{Channel, ChannelHandlerContext}
 import io.netty.buffer.ByteBuf
 import java.util
 import io.netty.handler.ssl.SslHandler
+import io.netty.util.AttributeKey
 
 /**
  * No description given
@@ -12,7 +13,8 @@ import io.netty.handler.ssl.SslHandler
  * @author jk-5
  */
 object SslDetector {
-  def isSsl(channel: Channel): Boolean = channel.pipeline().names().contains("ssl")
+  val ssl = AttributeKey.valueOf[Boolean]("isSsl")
+  def isSsl(channel: Channel): Boolean = Option(channel.attr(ssl).get()).getOrElse(false)
 }
 
 class SslDetector extends ByteToMessageDecoder {
@@ -23,6 +25,7 @@ class SslDetector extends ByteToMessageDecoder {
       val engine = SslContextProvider.getContext.createSSLEngine()
       engine.setUseClientMode(false)
       ctx.pipeline().addAfter(ctx.name(), "ssl", new SslHandler(engine))
+      ctx.channel().attr(SslDetector.ssl).set(true)
     }
     ctx.pipeline().remove(this)
   }

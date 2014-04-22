@@ -1,8 +1,7 @@
 package jk_5.nailed.web.webserver.irc
 
-import io.netty.channel.ChannelFuture
 import java.net.InetSocketAddress
-import jk_5.nailed.web.auth.{UserDatabase, AuthSession}
+import jk_5.nailed.web.auth.AuthSession
 
 /**
  * No description given
@@ -42,9 +41,36 @@ abstract class IrcConnection(val hostname: String = ProtocolIrc.host) {
   def onChannelMessage(sender: IrcConnection, channel: IrcChannel, message: String){}
   def onUserJoinedChannel(connection: IrcConnection, channel: IrcChannel){}
 
+  def onWhoRequest(channel: IrcChannel) = channel.onWho(this)
+
   def commandPrefix = s":${this.nickname}!${this.login}@${this.hostname} "
 
   def sendLine(line: String){}
+
+  def modes(channel: IrcChannel): String = channel.modes.get(this).getOrElse("")
+  def setMode(channel: IrcChannel, mode: String){
+    val modes = mode.substring(1)
+    var current = this.modes(channel)
+    var additions = ""
+    if(mode.startsWith("+")){
+      additions = "+"
+      modes.split("").foreach(m => if(!current.contains(m)){current += m; additions += m})
+    }else if(mode.startsWith("-")){
+      additions = "-"
+      modes.split("").foreach(m => if(current.contains(m)){current.replace(m, ""); additions += m})
+    }
+    channel.modes.put(this, current)
+    if(additions.length > 1){
+      channel.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE ${channel.name} $additions $nickname}"))
+    }
+  }
+  def modePrefix(channel: IrcChannel): String = {
+    val modes = this.modes(channel)
+    if(modes.contains("o")) "@"
+    else if(modes.contains("h")) "%"
+    else if(modes.contains("v")) "+"
+    else ""
+  }
 
   final def setAllNames(name: String){
     this.nickname = name

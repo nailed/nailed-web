@@ -2,6 +2,7 @@ package jk_5.nailed.web.webserver.irc.handler
 
 import io.netty.channel.{ChannelHandlerContext, ChannelInboundHandlerAdapter}
 import jk_5.nailed.web.webserver.irc.{UserConnection, ProtocolIrc}
+import jk_5.nailed.web.webserver.SslDetector
 
 /**
  * No description given
@@ -45,7 +46,8 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
   }
 
   def handshake(ctx: ChannelHandlerContext){
-    ctx.write(s":${ProtocolIrc.host} NOTICE AUTH :*** You are using a secure connection")
+    if(SslDetector.isSsl(ctx.channel())) ctx.write(s":${ProtocolIrc.host} NOTICE AUTH :*** You are using a secure connection")
+    else ctx.write(s":${ProtocolIrc.host} NOTICE AUTH :*** You are using an insecure connection. Please connect with SSL enabled!")
     ctx.write(s":${ProtocolIrc.host} 001 ${this.connection.nickname} :Welcome ${this.connection.realname}, to nailed-web's internal IRC server")
     ctx.write(s":${ProtocolIrc.host} 002 ${this.connection.nickname} :The host is ${ProtocolIrc.host}[0.0.0.0/6667], running version 0.1-SNAPSHOT")
     ctx.write(s":${ProtocolIrc.host} 003 ${this.connection.nickname} :This server was created April 9 2014 at 8:54:52")

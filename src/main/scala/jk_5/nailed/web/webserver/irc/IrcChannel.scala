@@ -15,17 +15,18 @@ class IrcChannel(val name: String) {
   var topicBy = ProtocolIrc.host
   var topicTime = new Date
   var mode = "snt"
+  val modes = mutable.HashMap[IrcConnection, String]()
 
   def onJoin(connection: IrcConnection){
-    var names = connection.nickname + " "
-    this.connections.filter(_.nickname != connection.nickname).foreach(c => {
-      //TODO: better operator system
-      val isOp = c match {
-        case a: AuthenticatedConnection => a.getUser.permissions.ircOperator
-        case _ => false
-      }
-      names += (if(isOp) "@" else "") + c.nickname + " "
-    })
+    connection match {
+      case a: AuthenticatedConnection =>
+        if(a.getUser.permissions.ircOperator){
+          a.setMode(this, "+o")
+        }
+    }
+
+    var names = connection.modePrefix(this) + connection.nickname + " "
+    this.connections.filter(_.nickname != connection.nickname).foreach(c => names += c.modePrefix(this) + c.nickname + " ")
     names = names.trim
     connection.sendLine(s"${connection.commandPrefix}JOIN :$name")
     connection.sendLine(s":${ProtocolIrc.host} 332 ${connection.nickname} $name :$topic")
@@ -95,5 +96,12 @@ class IrcChannel(val name: String) {
       this.topicTime = new Date()
       this.connections.foreach(c => c.sendLine(s"${connection.commandPrefix}TOPIC $name :$newTopic"))
     }
+  }
+
+  def onWho(connection: IrcConnection){
+    for(c <- this.connections){
+      connection.sendLine(s":${ProtocolIrc.host} 352 ${connection.nickname} $name ${c.login} ${c.hostname} ${ProtocolIrc.host} ${c.nickname} H${c.modePrefix(this)} :0 ${c.realname}}")
+    }
+    connection.sendLine(s":${ProtocolIrc.host} 352 ${connection.nickname} $name :End of /WHO list.")
   }
 }

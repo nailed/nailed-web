@@ -11,6 +11,7 @@ import jk_5.nailed.web.webserver.http.ProtocolHttp
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
 import jk_5.nailed.web.webserver.irc.ProtocolIrc
 import org.apache.logging.log4j.LogManager
+import java.io.IOException
 
 /**
  * No description given
@@ -55,6 +56,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   def initChannel(ch: SocketChannel){
     val pipe = ch.pipeline()
 
+    pipe.addLast("exceptionHandler", ExceptionHandler)
     pipe.addLast("sslDetector", new SslDetector)
     //pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
     pipe.addLast("timeoutHandler", new ReadTimeoutHandler(10))
@@ -67,6 +69,14 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
 object ReadTimeoutDetector extends ChannelHandlerAdapter {
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match{
     case e: ReadTimeoutException => ctx.close()
+    case e => ctx.fireExceptionCaught(e)
+  }
+}
+
+@Sharable
+object ExceptionHandler extends ChannelHandlerAdapter {
+  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match{
+    case e: IOException => WebServer.logger.trace(s"Silently ignored IOException in pipeline (${e.getMessage}})")
     case e => ctx.fireExceptionCaught(e)
   }
 }

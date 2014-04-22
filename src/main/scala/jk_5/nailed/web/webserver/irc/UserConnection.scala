@@ -39,6 +39,7 @@ class UserConnection(val channel: Channel) extends IrcConnection(channel.remoteA
       }
       this.session = SessionManager.getSession(this.user.get, this.password)
       if(this.session.isEmpty){
+        user.get.onFailedAuthAttempt(this.channel.remoteAddress().asInstanceOf[InetSocketAddress].getAddress.getHostAddress, this.password, "irc")
         this.channel.writeAndFlush(s":${ProtocolIrc.host} ${ReplyCodes.ERR_PASSWDMISMATCH} :Invalid password").addListener(ChannelFutureListener.CLOSE)
         return false
       }

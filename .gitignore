@@ -12,3 +12,5 @@ build
 
 # Certificates
 cert.jsk
+
+web/launcher.jar

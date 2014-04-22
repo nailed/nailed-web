@@ -8,6 +8,7 @@ import jk_5.nailed.web.auth.{AuthSession, User}
  * @author jk-5
  */
 trait AuthenticatedConnection extends IrcConnection {
+
   def getUser: User
   def getSession: AuthSession
 }
