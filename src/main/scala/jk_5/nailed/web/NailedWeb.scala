@@ -6,6 +6,8 @@ import jk_5.nailed.web.couchdb.CouchDB
 import java.io.File
 import org.apache.logging.log4j.LogManager
 import jk_5.commons.config.ConfigFile
+import jk_5.nailed.web.mail.{MailTemplates, Mailer}
+import jk_5.nailed.web.auth.UserDatabase
 
 /**
  * No description given
@@ -29,10 +31,13 @@ object NailedWeb {
     if(!this.CONFIG_DIR.exists()) this.CONFIG_DIR.mkdirs()
     this.config = ConfigFile.fromFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
 
+    Mailer.readConfig(this.config.get("mail"))
     CouchDB.load()
     MimeTypesLookup.load()
     SslContextProvider.load()
     WebServer.start()
+
+    Mailer.sendMail(UserDatabase.getUserByUsername("jk-5").get, "test", "<html><body><h1>" + MailTemplates.readTemplate("main.html") + "</h1></body></html>")
   }
 
   @inline def getConfig = this.config
