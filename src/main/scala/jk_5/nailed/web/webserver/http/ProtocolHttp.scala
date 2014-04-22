@@ -55,6 +55,7 @@ object ProtocolHttp extends MultiplexedProtocol {
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))
     //pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
+    pipe.addLast("requestLogger", HttpRequestLogger)
     pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
     pipe.addLast("webserverRouter", router)

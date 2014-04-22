@@ -1,8 +1,5 @@
 package jk_5.nailed.web.webserver.irc
 
-import java.net.InetSocketAddress
-import jk_5.nailed.web.auth.AuthSession
-
 /**
  * No description given
  *
@@ -61,7 +58,7 @@ abstract class IrcConnection(val hostname: String = ProtocolIrc.host) {
     }
     channel.modes.put(this, current)
     if(additions.length > 1){
-      channel.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE ${channel.name} $additions $nickname}"))
+      channel.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE ${channel.name} $additions $nickname"))
     }
   }
   def modePrefix(channel: IrcChannel): String = {

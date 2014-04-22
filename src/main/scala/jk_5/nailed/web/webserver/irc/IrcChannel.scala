@@ -23,6 +23,7 @@ class IrcChannel(val name: String) {
         if(a.getUser.permissions.ircOperator){
           a.setMode(this, "+o")
         }
+      case _ =>
     }
 
     var names = connection.modePrefix(this) + connection.nickname + " "
