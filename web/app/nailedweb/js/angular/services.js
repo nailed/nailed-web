@@ -4,9 +4,11 @@ var UserService = services.factory('UserService', [
     "$http", function($http) {
         var ret = {
             loggedIn: false,
+            defaultPermissions: {createMappack: false},
             username: '',
             session: '',
             fullname: '',
+            permissions: this.defaultPermissions,
             login: function(username, password, callback) {
                 return $http
                 .post('/api/login/', "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password))
@@ -16,6 +18,7 @@ var UserService = services.factory('UserService', [
                         ret.session = data.session.id;
                         ret.username = data.user.username;
                         ret.fullname = data.user.fullName;
+                        ret.permissions = data.user.permissions;
                         callback(true, 'OK');
                         return;
                     }
@@ -31,6 +34,7 @@ var UserService = services.factory('UserService', [
                         ret.session = "";
                         ret.username = "";
                         ret.fullname = "";
+                        ret.permissions = ret.defaultPermissions;
                         callback();
                     }
                 });
@@ -44,6 +48,7 @@ var UserService = services.factory('UserService', [
                         ret.session = data.session.id;
                         ret.username = data.user.username;
                         ret.fullname = data.user.fullName;
+                        ret.permissions = data.user.permissions;
                         callback(true, 'OK');
                         return;
                     }

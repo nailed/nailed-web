@@ -46,6 +46,7 @@ case class User(var username: String) extends TCouchDBSerializable {
     obj.set("username", this.username)
     obj.set("email", this.email)
     obj.set("fullName", this.fullName)
+    obj.set("permissions", this.permissions.toJson)
   }
 
   def onFailedAuthAttempt(ip: String, pass: String, origin: String){

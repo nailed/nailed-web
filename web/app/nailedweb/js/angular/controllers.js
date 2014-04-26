@@ -10,9 +10,18 @@ angular.module('nailed.controllers', [])
         $scope.hideLoginHeader = $location.path() === "/login";
         $scope.$on('$routeChangeStart', function(event, currRoute, prevRoute) {
             $scope.hideLoginHeader = $location.path() === "/login";
-            if((currRoute.access && !currRoute.access.isFree) && !$user.loggedIn){
-                $location.path('/login');
-                return;
+            if(currRoute.access && !currRoute.access.isFree){
+                if(!$user.loggedIn){
+                    $location.path('/login');
+                    return;
+                }else if(currRoute.access.permission){
+                    var perm = currRoute.access.permission
+                    if(!$user.permissions[perm]){
+                        alert("You don't have the permissions to see this page")
+                        $location.path('/');
+                        //TODO: better error message!
+                    }
+                }
             }
             $scope.isViewLoading = true;
         });
@@ -24,9 +33,6 @@ angular.module('nailed.controllers', [])
         }
         $scope.nailedVersion = Nailed.version;
         $scope.user = $user;
-        $http.get("/api/mappacks.json").then(function(res){
-            $scope.mappacks = res.data.mappacks;
-        });
         $scope.login = function(auth){
             $scope.auth.signInText = "Signing in...";
             $scope.auth.signInClass = "disabled";
@@ -57,6 +63,11 @@ angular.module('nailed.controllers', [])
             $scope.socket.disconnect();
         }
     }])
+    .controller("MappackListController", function($scope, $routeParams, $http) {
+        $http.get("/api/mappacks.json").then(function(res){
+            $scope.mappacks = res.data.mappacks;
+        });
+    })
     .controller("MappackDetailController", function($scope, $routeParams, $http) {
         $scope.mappackName = $routeParams.mappackName
         $http.get("/api/mappacks/" + $routeParams.mappackName + ".json").then(function(res){
@@ -264,4 +275,19 @@ angular.module('nailed.controllers', [])
             }
             updateButton();
         }, true);
+    }])
+    .controller("MappackCreateController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
+        $scope.cmp = []
+        $scope.cmp.create = function(){
+            var formData = new FormData();
+            formData.append("mapFile", $scope.files[0])
+            $http({
+                method: 'POST',
+                url: '/api/createMappack/',
+                data: formData,
+                headers: {'Content-Type': undefined}, transformRequest: angular.identity}
+            ).success(function(data, status, headers, config) {
+
+            });
+        }
     }]);

@@ -30,6 +30,7 @@ class PacketCodec extends ByteToMessageCodec[IpcPacket] {
   this.registerPacket(8, classOf[PacketLoginResponse])
   this.registerPacket(9, classOf[PacketCheckAccount])
   this.registerPacket(10, classOf[PacketCreateAccount])
+  this.registerPacket(11, classOf[PacketUserdata])
 
   private def registerPacket(id: Byte, packet: Class[_ <: IpcPacket]): PacketCodec ={
     this.idToClass.put(id, packet)

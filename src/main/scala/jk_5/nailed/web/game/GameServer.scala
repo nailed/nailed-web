@@ -11,7 +11,7 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
  *
  * @author jk-5
  */
-class GameServer(private val channel: Channel, private val players: mutable.ArrayBuffer[Player], private val mappacks: mutable.ArrayBuffer[Mappack]) {
+case class GameServer(private val channel: Channel, private val players: mutable.ArrayBuffer[Player], mappacks: mutable.ArrayBuffer[Mappack]) {
 
   var address: String = _
 

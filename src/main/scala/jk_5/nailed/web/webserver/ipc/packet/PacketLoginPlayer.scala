@@ -48,6 +48,7 @@ class PacketLoginPlayer extends IpcPacket {
     }
     response.state = 0
     server.sendPacket(response)
+    server.sendPacket(new PacketUserdata(u.get))
     p.get.user = u.get
     p.get.session = s.get
   }

@@ -1,4 +1,4 @@
-package jk_5.nailed.web.webserver.http.handlers
+package jk_5.nailed.web.webserver.http.apihandlers
 
 import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http._
@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
  *
  * @author jk-5
  */
-class WebServerHandlerUpload extends SimpleChannelInboundHandler[HttpObject] with RoutedHandler {
+class ApiHandlerCreateMappack extends SimpleChannelInboundHandler[HttpObject] with RoutedHandler {
 
   private val factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE)
   private var request: HttpRequest = null
@@ -58,10 +58,10 @@ class WebServerHandlerUpload extends SimpleChannelInboundHandler[HttpObject] wit
             case f: FileUpload =>
               f.renameTo(new File(s"uploaded/${f.getFilename}"))
               this.logger.info(this.marker, s"${ctx.channel().remoteAddress().toString} uploaded ${f.getFilename}")
+            case e => println(e.getHttpDataType.name())
           }
 
           WebServerUtils.sendOK(ctx)
-          decoder.get.destroy()
 
           this.request = null
           this.decoder.get.destroy()
@@ -85,7 +85,6 @@ class WebServerHandlerUpload extends SimpleChannelInboundHandler[HttpObject] wit
         if(data != null){
           try{
             //TODO: handle incoming chunks
-            println("Incoming: " + data)
           }finally{
             data.release()
           }

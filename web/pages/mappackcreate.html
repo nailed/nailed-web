@@ -1,0 +1,202 @@
+<div class="container">
+    <h1>Create Mappack</h1>
+    <div class="col-sm-8 well">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="cmpID" class="col-sm-3 control-label">ID</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="cmpID" placeholder="Enter an unique ID that will identify this mappack">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cmpName" class="col-sm-3 control-label">Name</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="cmpName" placeholder="Enter a human-readable name">
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">World Type</label>
+                <div class="col-sm-9">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpWorldTypeRadios" value="void" checked/> Void
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpWorldTypeRadios" value="normal"/> Normal
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpWorldTypeRadios" value="flat"/> Flat
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpWorldTypeRadios" value="nether"/> Nether
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpWorldTypeRadios" value="largeBiomes"/> Large Biomes
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">Natural spawns</label>
+                <div class="col-sm-9">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpCBSpawnAnimals" value="spawn" checked/> Spawn Animals
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpCBSpawnMonsters" value="spawn" checked/> Spawn Monsters
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">World</label>
+                <div class="col-sm-9">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpUploadRadios" value="build" checked/> Build the map on the Nailed server
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpUploadRadios" value="upload"/> Upload a world
+                        </label>
+                    </div><br/>
+                    <input type="file" file-model/>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">Gamemode</label>
+                <div class="col-sm-9">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpGamemodeRadios" value="0" checked/> Survival
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpGamemodeRadios" value="1"/> Creative
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpGamemodeRadios" value="2"/> Adventure
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">Flags</label>
+                <div class="col-sm-9">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpCBEnablePvp" value="enabled" checked/> Enable PvP
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpCBPreventBlockBreak" value="enabled" checked/> Prevent block breaking
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">Difficulty</label>
+                <div class="col-sm-9">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpDifficultyRadios" value="0" checked/> Peaceful
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpDifficultyRadios" value="1"/> Easy
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpDifficultyRadios" value="2"/> Normal
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="cmpDifficultyRadios" value="3"/> Hard
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cmpName" class="col-sm-3 control-label">Gametype</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="cmpGametype" placeholder="Gametype for this mappack. Only used for external plugins" value="default">
+                    <p>This is only used to specify which external plugins should be able in this world. If you have no idea what this means or don't need external plugins, leave this value to 'default'</p>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-3 control-label">Gamerules</label>
+                <div class="col-sm-9">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRdoFireTick" value="enabled" checked/> doFireTick
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRmobGriefing" value="enabled" checked/> mobGriefing
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRkeepInventory" value="enabled"/> keepInventory
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRdoMobSpawning" value="enabled" checked/> doMobSpawning
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRdoMobLoot" value="enabled" checked/> doMobLoot
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRdoTileDrops" value="enabled" checked/> doTileDrops
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRcommandBlockOutput" value="enabled"/> commandBlockOutput
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRnaturalRegeneration" value="enabled" checked/> naturalRegeneration
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cmpGRdoDaylightCycle" value="enabled" checked/> doDaylightCycle
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button ng-click="cmp.create()" type="submit" class="btn btn-default">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

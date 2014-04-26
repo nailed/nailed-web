@@ -1,6 +1,6 @@
 package jk_5.nailed.web.mappack
 
-import jk_5.jsonlibrary.JsonObject
+import jk_5.jsonlibrary.{JsonArray, JsonObject}
 
 /**
  * No description given
@@ -9,6 +9,13 @@ import jk_5.jsonlibrary.JsonObject
  */
 class Mappack(private val mappackId: String, var name: String){
 
-  def toJson: JsonObject = new JsonObject().add("id", this.mappackId).add("name", this.name)
+  var timesPlayed = 0
+
+  def toJson: JsonObject = new JsonObject()
+    .add("id", this.mappackId)
+    .add("name", this.name)
+    .add("timesPlayedUser", -1) //TODO
+    .add("timesPlayedGlobal", this.timesPlayed)
+    .add("tags", new JsonArray().add("PvP").add("PvE"))
   def id = this.mappackId
 }

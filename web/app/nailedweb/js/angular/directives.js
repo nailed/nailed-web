@@ -11,4 +11,13 @@ angular.module("nailed.directives", [])
                 });
             });
         }
+    })
+    .directive("fileModel", function(){
+        return function(scope, element, attrs){
+            element.bind("change", function(changeEvent){
+                scope.$apply(function(){
+                    scope.files = changeEvent.target.files;
+                });
+            });
+        }
     });
