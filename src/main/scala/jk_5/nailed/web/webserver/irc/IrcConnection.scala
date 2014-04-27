@@ -28,6 +28,7 @@ class IrcConnection {
     if(reason == ":" || reason == ""){
       reason = "No reason given"
     }
+    ProtocolIrc.channels.filter(_.connections.contains(this)).foreach(_.onQuit(this, reason))
     ProtocolIrc.onDisconnect(this)
     ProtocolIrc.logger.info(ProtocolIrc.marker, s"User ${this.realname} disconnected from IRC ($reason)")
   }

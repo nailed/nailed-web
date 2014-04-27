@@ -15,7 +15,7 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
       val operation = frame.substring(0, frame.indexOf(' '))
       val args = frame.substring(frame.indexOf(' ') + 1)
       operation match {
-        case "QUIT" => this.connection.disconnected(args)
+        case "QUIT" => this.connection.disconnected(if(args.startsWith(":")) args.substring(1) else args)
         case "JOIN" => args.split(",").foreach(c => this.connection join ProtocolIrc.getOrCreateChannel(c))
         case "PART" =>
           val parts = args.split(" ", 2)

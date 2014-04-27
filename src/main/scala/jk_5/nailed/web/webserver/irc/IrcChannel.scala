@@ -88,6 +88,15 @@ class IrcChannel(val name: String) {
     }
   }
 
+  def onQuit(connection: IrcConnection, reason: String){
+    if(this.connections.contains(connection)){
+      this.connections.remove(connection)
+      if(this.connections.find(_.nickname == connection.nickname).isEmpty){ //No more connections?
+        this.connections.filter(_.nickname != connection.nickname).foreach(c => c.sendLine(s"${connection.commandPrefix}QUIT $name :$reason"))
+      }
+    }
+  }
+
   def onMessage(connection: IrcConnection, message: String){
     if(this.connections.contains(connection) || connection.noJoinNeeded){ //TODO: check +n for this
       this.connections.filter(_ != connection).foreach(_.onChannelMessage(connection, this, message))

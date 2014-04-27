@@ -45,7 +45,6 @@ object WebServer {
  *  - HttpRequest (Headers and stuff)
  *  - HttpContent (Data chunks (Only for POST, PUT and PATCH requests)
  *  - LastHttpContent (The end of the request)
- *
  */
 
 object Pipeline extends ChannelInitializer[SocketChannel] {
@@ -77,7 +76,7 @@ object ReadTimeoutDetector extends ChannelHandlerAdapter {
 
 @Sharable
 object ExceptionHandler extends ChannelHandlerAdapter {
-  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match{
+  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match {
     case e: IOException => WebServer.logger.trace(s"Silently ignored IOException in pipeline (${e.getMessage}})")
     case e: DecoderException => e.getCause match {
       case e1: SSLException =>
