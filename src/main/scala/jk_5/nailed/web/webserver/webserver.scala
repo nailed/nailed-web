@@ -58,12 +58,12 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
   def initChannel(ch: SocketChannel){
     val pipe = ch.pipeline()
 
-    pipe.addLast("exceptionHandler", ExceptionHandler)
     pipe.addLast("sslDetector", new SslDetector)
     //pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
     pipe.addLast("timeoutHandler", new ReadTimeoutHandler(10))
     pipe.addLast("timeoutDetector", ReadTimeoutDetector)
     pipe.addLast("protocolMultiplexer", new ProtocolMultiplexer)
+    pipe.addLast("exceptionHandler", ExceptionHandler)
   }
 }
 
