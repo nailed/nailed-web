@@ -59,12 +59,4 @@ case class User(var username: String) extends TCouchDBSerializable {
         ServerBotConnection.sendMessage(c, s"IP: $ip Password: $pass Origin: $origin")
       })
   }
-
-  @deprecated @inline def getUsername = this.username
-  @deprecated @inline def getEmail = this.email
-  @deprecated @inline def getPasswordHash = this.passwordHash
-  @deprecated @inline def getFullName = this.fullName
-  @deprecated @inline def setPasswordHash(hash: String) = this.passwordHash = hash
-  @deprecated @inline def setFullName(name: String) = this.fullName = name
-  @deprecated @inline def setEmail(email: String) = this.email = email
 }

@@ -17,13 +17,13 @@ object SessionManager {
   private[auth] final val logger = LogManager.getLogger
   private[auth] final val marker = MarkerManager.getMarker("Sessions")
 
-  @inline def checkPassword(user: User, password: String) = NailedWeb.worker.submit(new CheckSCryptHashTask(password, user.getPasswordHash)).get()
+  @inline def checkPassword(user: User, password: String) = NailedWeb.worker.submit(new CheckSCryptHashTask(password, user.passwordHash)).get()
 
   def getSession(user: User, password: String): Option[AuthSession] = {
     if(this.checkPassword(user, password)){
       val session = new AuthSession(user.getID)
       this.sessions.add(session)
-      SessionManager.logger.debug(SessionManager.marker, "User {} authenticated (SessionID {})", user.getFullName, session.getID)
+      SessionManager.logger.debug(SessionManager.marker, "User {} authenticated (SessionID {})", user.fullName, session.getID)
       return Some(session)
     }
     None
@@ -41,7 +41,7 @@ object SessionManager {
   }
 
   def dropSession(session: AuthSession): Boolean = {
-    SessionManager.logger.debug(SessionManager.marker, "Dropping session {} owned by {}", session.getID, session.getUser.getFullName)
+    SessionManager.logger.debug(SessionManager.marker, "Dropping session {} owned by {}", session.getID, session.getUser.fullName)
     this.sessions.remove(session)
   }
 }

@@ -45,7 +45,7 @@ object Mailer {
     val session = Session.getDefaultInstance(this.properties, this.authenticator)
     val message = new MimeMessage(session)
     message.setFrom(new InternetAddress("nailed@jk-5.tk", "Nailed"))
-    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(u.getEmail).asInstanceOf[Array[Address]])
+    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(u.email).asInstanceOf[Array[Address]])
     message.setSubject(subject)
     message.setSentDate(new Date)
     message.setContent(content, "text/html; charset=utf-8")

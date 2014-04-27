@@ -49,9 +49,9 @@ object UserDatabase {
   def createUser(username: String, email: String, password: String, fullName: String): User = {
     val future = NailedWeb.worker.submit(new CreateSCryptHashTask(password))
     val user = new User(username)
-    user.setEmail(email)
-    user.setFullName(fullName)
-    user.setPasswordHash(future.get())
+    user.email = email
+    user.fullName = fullName
+    user.passwordHash = future.get()
     user.saveToDatabase()
     user
   }
