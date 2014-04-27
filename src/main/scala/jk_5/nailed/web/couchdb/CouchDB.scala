@@ -16,10 +16,10 @@
 
 package jk_5.nailed.web.couchdb
 
-import com.ning.http.client.{ListenableFuture, RequestBuilder, AsyncHttpClient, Response}
 import io.netty.handler.codec.http.HttpHeaders
 import jk_5.jsonlibrary.JsonObject
 import jk_5.commons.config.ConfigTag
+import org.asynchttpclient.{RequestBuilder, Response, ListenableFuture, AsyncHttpClient}
 
 /**
  * No description given

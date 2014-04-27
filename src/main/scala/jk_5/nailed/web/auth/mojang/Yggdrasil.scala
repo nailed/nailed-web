@@ -1,12 +1,12 @@
 package jk_5.nailed.web.auth.mojang
 
-import com.ning.http.client.AsyncHttpClient
 import io.netty.handler.codec.http.HttpHeaders
 import jk_5.jsonlibrary.JsonObject
 import java.util.concurrent.Executors
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import jk_5.nailed.web.LogUtils
 import io.netty.util.CharsetUtil
+import org.asynchttpclient.AsyncHttpClient
 
 /**
  * No description given

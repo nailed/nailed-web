@@ -10,6 +10,9 @@ repositories{
     maven{
         url 'http://maven.reening.nl'
     }
+    maven{
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
 }
 
 dependencies{
@@ -18,13 +21,15 @@ dependencies{
     compile 'jk_5.jsonlibrary:jsonlibrary:0.1-SNAPSHOT'
     compile 'jk_5.commons:CommonsConfig:1.1.0'
     compile 'com.lambdaworks:scrypt:1.4.0'
-    compile 'com.ning:async-http-client:1.7.20'
     compile 'org.apache.logging.log4j:log4j-api:2.0-rc1'
     compile 'org.apache.logging.log4j:log4j-core:2.0-rc1'
     compile 'javax.mail:mail:1.5.0-b01'
     //compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.0-rc1'
     compile 'org.slf4j:slf4j-nop:1.7.6'
     //compile 'com.corundumstudio.socketio:netty-socketio:1.6.4'
+    compile('org.asynchttpclient:async-http-client-netty-provider:2.0.0-SNAPSHOT'){
+        exclude module: 'netty-all' //It uses an older version of netty, APIs are the same so no problem to exclude this
+    }
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'
