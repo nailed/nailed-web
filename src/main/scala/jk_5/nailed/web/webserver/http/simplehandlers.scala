@@ -5,6 +5,7 @@ import io.netty.channel._
 import org.apache.logging.log4j.LogManager
 import io.netty.handler.codec.http.{HttpRequest, FullHttpRequest, HttpResponseStatus}
 import jk_5.nailed.web.webserver.irc.{IrcConnection, ProtocolIrc}
+import jk_5.nailed.web.webserver.http.handlers.AggregatedHandler
 
 /**
  * No description given
@@ -20,10 +21,9 @@ object HttpExceptionHandler extends ChannelHandlerAdapter {
   }
 }
 
-//TODO: fix this
 @Sharable
-object NotFoundHandler extends SimpleChannelInboundHandler[FullHttpRequest] {
-  override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+object NotFoundHandler extends AggregatedHandler {
+  override def handleAggregated(ctx: ChannelHandlerContext, msg: FullHttpRequest){
     val future = WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
     WebServerUtils.closeIfRequested(msg, future)
   }
