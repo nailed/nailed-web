@@ -1,16 +1,14 @@
 package jk_5.nailed.web.webserver.http
 
 import jk_5.nailed.web.webserver.{RouterHandler, MultiplexedProtocol}
-import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelHandlerAdapter, Channel}
-import io.netty.handler.codec.http.{HttpResponseStatus, HttpContentCompressor, HttpResponseEncoder, HttpRequestDecoder}
+import io.netty.channel.Channel
+import io.netty.handler.codec.http.{HttpContentCompressor, HttpResponseEncoder, HttpRequestDecoder}
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.ByteBuf
 import jk_5.nailed.web.webserver.http.handlers._
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import jk_5.nailed.web.webserver.http.apihandlers._
-import io.netty.channel.ChannelHandler.Sharable
-import io.netty.handler.logging.LoggingHandler
 
 /**
  * No description given
@@ -55,7 +53,6 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
-    pipe.addLast("httpExceptionHandler", HttpExceptionHandler)
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))
@@ -64,12 +61,6 @@ object ProtocolHttp extends MultiplexedProtocol {
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
     pipe.addLast("webserverRouter", router)
     pipe.addLast("routedHandler", NotFoundHandler)
-  }
-}
-
-@Sharable
-object HttpExceptionHandler extends ChannelHandlerAdapter {
-  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable){
-    WebServerUtils.sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR).addListener(ChannelFutureListener.CLOSE)
+    pipe.addLast("httpExceptionHandler", HttpExceptionHandler)
   }
 }
