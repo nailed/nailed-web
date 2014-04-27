@@ -39,10 +39,13 @@ trait AggregatedHandler extends SimpleChannelInboundHandler[HttpObject] {
         if(!m.getDecoderResult.isSuccess){
           removeTransferEncodingChunked(m)
           val fullmessage = toFullMessage(m)
-          this.handleAggregated(ctx, fullmessage)
-          this.currentMessage = null
-          ReferenceCountUtil.release(msg)
-          ReferenceCountUtil.release(fullmessage)
+          try{
+            this.handleAggregated(ctx, fullmessage)
+          }finally{
+            this.currentMessage = null
+            ReferenceCountUtil.release(msg)
+            ReferenceCountUtil.release(fullmessage)
+          }
           return
         }
         msg match {
@@ -88,8 +91,11 @@ trait AggregatedHandler extends SimpleChannelInboundHandler[HttpObject] {
             case _ =>
           }
           currentMessage.headers.set(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(content.readableBytes))
-          this.handleAggregated(ctx, currentMessage)
-          ReferenceCountUtil.release(currentMessage)
+          try{
+            this.handleAggregated(ctx, currentMessage)
+          }finally{
+            ReferenceCountUtil.release(currentMessage)
+          }
         }
       case _ => throw new Error
     }
