@@ -37,7 +37,7 @@ class WebServerHandlerSIOHandshake extends JsonHandler with RoutedHandler {
       if(decoder.parameters().containsKey("jsonp")){
         jsonp = Some(decoder.parameters().get("jsonp").get(0))
       }
-      logger.trace(marker, s"User ${session.get.getUser.getFullName} authorized for Socket.IO with id ${uid.toString}")
+      logger.trace(marker, s"User ${session.get.getUser.fullName} authorized for Socket.IO with id ${uid.toString}")
       val resdata = s"${uid.toString}:${HeartbeatHandler.heartbeatTimeout}:${WebServerHandlerSIOHandshake.closeTimeout}:websocket,flashsocket" //,flashsocket,xhr-polling
       val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(this.wrapJsonP(resdata, jsonp), CharsetUtil.UTF_8))
       response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("txt"))
@@ -48,7 +48,7 @@ class WebServerHandlerSIOHandshake extends JsonHandler with RoutedHandler {
         override def run(){
           WebServerHandlerSIOHandshake.futures.remove(uid)
           WebServerHandlerSIOHandshake.sessions.remove(uid)
-          logger.trace(marker, s"Session ${uid.toString} for ${ctx.channel().remoteAddress().toString} timed out")
+          logger.trace(marker, s"Session ${uid.toString} for ${WebServerUtils.ipFor(ctx.channel(), msg)} timed out")
         }
       }, WebServerHandlerSIOHandshake.closeTimeout, TimeUnit.SECONDS)
 

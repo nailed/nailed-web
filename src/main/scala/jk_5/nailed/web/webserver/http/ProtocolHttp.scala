@@ -10,6 +10,7 @@ import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake,
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import jk_5.nailed.web.webserver.http.apihandlers._
 import io.netty.channel.ChannelHandler.Sharable
+import io.netty.handler.logging.LoggingHandler
 
 /**
  * No description given
@@ -58,7 +59,6 @@ object ProtocolHttp extends MultiplexedProtocol {
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor(6))
-    //pipe.addLast("aggregator", new HttpObjectAggregator(1048576))
     pipe.addLast("requestLogger", HttpRequestLogger)
     pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler())

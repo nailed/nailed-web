@@ -5,13 +5,13 @@
             <div class="form-group">
                 <label for="cmpID" class="col-sm-3 control-label">ID</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="cmpID" placeholder="Enter an unique ID that will identify this mappack">
+                    <input type="text" class="form-control" id="cmpID" ng-model="cmp.id" placeholder="Enter an unique ID that will identify this mappack">
                 </div>
             </div>
             <div class="form-group">
                 <label for="cmpName" class="col-sm-3 control-label">Name</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="cmpName" placeholder="Enter a human-readable name">
+                    <input type="text" class="form-control" id="cmpName" ng-model="cmp.name" placeholder="Enter a human-readable name">
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -19,27 +19,27 @@
                 <div class="col-sm-9">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpWorldTypeRadios" value="void" checked/> Void
+                            <input type="radio" name="cmpWorldTypeRadios" ng-model="cmp.worldType" value="void" checked/> Void
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpWorldTypeRadios" value="normal"/> Normal
+                            <input type="radio" name="cmpWorldTypeRadios" ng-model="cmp.worldType" value="normal"/> Normal
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpWorldTypeRadios" value="flat"/> Flat
+                            <input type="radio" name="cmpWorldTypeRadios" ng-model="cmp.worldType" value="flat"/> Flat
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpWorldTypeRadios" value="nether"/> Nether
+                            <input type="radio" name="cmpWorldTypeRadios" ng-model="cmp.worldType" value="nether"/> Nether
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpWorldTypeRadios" value="largeBiomes"/> Large Biomes
+                            <input type="radio" name="cmpWorldTypeRadios" ng-model="cmp.worldType" value="largeBiomes"/> Large Biomes
                         </label>
                     </div>
                 </div>
@@ -49,12 +49,12 @@
                 <div class="col-sm-9">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpCBSpawnAnimals" value="spawn" checked/> Spawn Animals
+                            <input type="checkbox" name="cmpCBSpawnAnimals" ng-model="cmp.spawnAnimals" value="enabled" checked/> Spawn Animals
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpCBSpawnMonsters" value="spawn" checked/> Spawn Monsters
+                            <input type="checkbox" name="cmpCBSpawnMonsters" ng-model="cmp.spawnMonsters" value="enabled" checked/> Spawn Monsters
                         </label>
                     </div>
                 </div>
@@ -64,12 +64,12 @@
                 <div class="col-sm-9">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpUploadRadios" value="build" checked/> Build the map on the Nailed server
+                            <input type="radio" name="cmpUploadRadios" ng-model="cmp.worldSource" value="build" checked/> Build the map on the Nailed server
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpUploadRadios" value="upload"/> Upload a world
+                            <input type="radio" name="cmpUploadRadios" ng-model="cmp.worldSource" value="upload"/> Upload a world
                         </label>
                     </div><br/>
                     <input type="file" file-model/>
@@ -80,17 +80,17 @@
                 <div class="col-sm-9">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpGamemodeRadios" value="0" checked/> Survival
+                            <input type="radio" name="cmpGamemodeRadios" ng-model="cmp.gamemode" value="0" checked/> Survival
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpGamemodeRadios" value="1"/> Creative
+                            <input type="radio" name="cmpGamemodeRadios" ng-model="cmp.gamemode" value="1"/> Creative
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpGamemodeRadios" value="2"/> Adventure
+                            <input type="radio" name="cmpGamemodeRadios" ng-model="cmp.gamemode" value="2"/> Adventure
                         </label>
                     </div>
                 </div>
@@ -100,12 +100,12 @@
                 <div class="col-sm-9">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpCBEnablePvp" value="enabled" checked/> Enable PvP
+                            <input type="checkbox" name="cmpCBEnablePvp" ng-model="cmp.enablePvp" value="enabled" checked/> Enable PvP
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpCBPreventBlockBreak" value="enabled" checked/> Prevent block breaking
+                            <input type="checkbox" name="cmpCBPreventBlockBreak" ng-model="cmp.preventBlockBreak" value="enabled" checked/> Prevent block breaking
                         </label>
                     </div>
                 </div>
@@ -115,22 +115,22 @@
                 <div class="col-sm-9">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpDifficultyRadios" value="0" checked/> Peaceful
+                            <input type="radio" name="cmpDifficultyRadios" ng-model="cmp.difficulty" value="0" checked/> Peaceful
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpDifficultyRadios" value="1"/> Easy
+                            <input type="radio" name="cmpDifficultyRadios" ng-model="cmp.difficulty" value="1"/> Easy
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpDifficultyRadios" value="2"/> Normal
+                            <input type="radio" name="cmpDifficultyRadios" ng-model="cmp.difficulty" value="2"/> Normal
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="cmpDifficultyRadios" value="3"/> Hard
+                            <input type="radio" name="cmpDifficultyRadios" ng-model="cmp.difficulty" value="3"/> Hard
                         </label>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
             <div class="form-group">
                 <label for="cmpName" class="col-sm-3 control-label">Gametype</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="cmpGametype" placeholder="Gametype for this mappack. Only used for external plugins" value="default">
+                    <input type="text" class="form-control" id="cmpGametype" ng-model="cmp.gametype" placeholder="Gametype for this mappack. Only used for external plugins" value="default">
                     <p>This is only used to specify which external plugins should be able in this world. If you have no idea what this means or don't need external plugins, leave this value to 'default'</p>
                 </div>
             </div>
@@ -147,47 +147,47 @@
                 <div class="col-sm-9">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRdoFireTick" value="enabled" checked/> doFireTick
+                            <input type="checkbox" name="cmpGRdoFireTick" ng-model="cmp.gamerule.doFireTick" value="enabled" checked/> doFireTick
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRmobGriefing" value="enabled" checked/> mobGriefing
+                            <input type="checkbox" name="cmpGRmobGriefing" ng-model="cmp.gamerule.mobGriefing" value="enabled" checked/> mobGriefing
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRkeepInventory" value="enabled"/> keepInventory
+                            <input type="checkbox" name="cmpGRkeepInventory" ng-model="cmp.gamerule.keepInventory" value="enabled"/> keepInventory
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRdoMobSpawning" value="enabled" checked/> doMobSpawning
+                            <input type="checkbox" name="cmpGRdoMobSpawning" ng-model="cmp.gamerule.doMobSpawning" value="enabled" checked/> doMobSpawning
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRdoMobLoot" value="enabled" checked/> doMobLoot
+                            <input type="checkbox" name="cmpGRdoMobLoot" ng-model="cmp.gamerule.doMobLoot" value="enabled" checked/> doMobLoot
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRdoTileDrops" value="enabled" checked/> doTileDrops
+                            <input type="checkbox" name="cmpGRdoTileDrops" ng-model="cmp.gamerule.doTileDrops" value="enabled" checked/> doTileDrops
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRcommandBlockOutput" value="enabled"/> commandBlockOutput
+                            <input type="checkbox" name="cmpGRcommandBlockOutput" ng-model="cmp.gamerule.commandBlockOutput" value="enabled"/> commandBlockOutput
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRnaturalRegeneration" value="enabled" checked/> naturalRegeneration
+                            <input type="checkbox" name="cmpGRnaturalRegeneration" ng-model="cmp.gamerule.naturalRegeneration" value="enabled" checked/> naturalRegeneration
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="cmpGRdoDaylightCycle" value="enabled" checked/> doDaylightCycle
+                            <input type="checkbox" name="cmpGRdoDaylightCycle" ng-model="cmp.gamerule.doDaylightCycle" value="enabled" checked/> doDaylightCycle
                         </label>
                     </div>
                 </div>

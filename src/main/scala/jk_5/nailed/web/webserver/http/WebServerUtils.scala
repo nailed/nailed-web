@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver.http
 
 import java.util.{Date, Calendar}
-import io.netty.channel.{ChannelFutureListener, ChannelFuture, ChannelHandlerContext}
+import io.netty.channel.{Channel, ChannelFutureListener, ChannelFuture, ChannelHandlerContext}
 import io.netty.handler.codec.http._
 import io.netty.buffer.Unpooled
 import io.netty.util.CharsetUtil
@@ -14,6 +14,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 import io.netty.handler.codec.http.multipart.{HttpPostRequestDecoder, Attribute}
 import org.apache.logging.log4j.LogManager
+import java.net.InetSocketAddress
 
 /**
  * No description given
@@ -165,4 +166,10 @@ object WebServerUtils {
       future.addListener(ChannelFutureListener.CLOSE)
       true
     }else false
+
+  //Utility method to get a client's ip address, because i host this server behind a nginx virtual host with proxy-pass
+  def ipFor(channel: Channel, request: HttpRequest): String =
+    if(request.headers().contains("X-Real-IP")){
+      request.headers().get("X-Real-IP")
+    }else channel.remoteAddress().asInstanceOf[InetSocketAddress].getAddress.getHostAddress
 }

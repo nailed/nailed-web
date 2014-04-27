@@ -14,14 +14,7 @@ object MappackRegistry {
   private val logger = LogManager.getLogger
   val mappacks = mutable.ArrayBuffer[Mappack]()
 
-  def getById(id: String): Option[Mappack] = {
-    /*if(id == "nail"){
-      val mappack = new Mappack("nail")
-      mappack.name = "Nail"
-      Some(mappack)
-    }else None*/
-    None
-  }
+  def getById(id: String): Option[Mappack] = this.mappacks.find(_.id == id)
 
   def addServerMappacks(server: GameServer) = this.mappacks synchronized {
     this.mappacks.appendAll(server.mappacks)

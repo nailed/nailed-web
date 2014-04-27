@@ -71,7 +71,7 @@ angular.module('nailed.controllers', [])
     .controller("MappackDetailController", function($scope, $routeParams, $http) {
         $scope.mappackName = $routeParams.mappackName
         $http.get("/api/mappacks/" + $routeParams.mappackName + ".json").then(function(res){
-            $scope.mappack = res.data;
+            $scope.mappack = res.data.mappack;
         });
     })
     .controller("RegisterController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
@@ -278,9 +278,40 @@ angular.module('nailed.controllers', [])
     }])
     .controller("MappackCreateController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
         $scope.cmp = []
+        $scope.cmp.worldType = "void";
+        $scope.cmp.spawnAnimals = true;
+        $scope.cmp.spawnMonsters = true;
+        $scope.cmp.worldSource = "build";
+        $scope.cmp.gamemode = "0";
+        $scope.cmp.difficulty = "0";
+        $scope.cmp.enablePvp = true;
+        $scope.cmp.preventBlockBreak = false;
+        $scope.cmp.gametype = "default";
+        $scope.cmp.gamerule = {};
+        $scope.cmp.gamerule.doFireTick = true;
+        $scope.cmp.gamerule.mobGriefing = true;
+        $scope.cmp.gamerule.keepInventory = false;
+        $scope.cmp.gamerule.doMobSpawning = true;
+        $scope.cmp.gamerule.doMobLoot = true;
+        $scope.cmp.gamerule.doTileDrops = true;
+        $scope.cmp.gamerule.commandBlockOutput = false;
+        $scope.cmp.gamerule.naturalRegeneration = true;
+        $scope.cmp.gamerule.doDaylightCycle = true;
         $scope.cmp.create = function(){
             var formData = new FormData();
-            formData.append("mapFile", $scope.files[0])
+            formData.append("id", $scope.cmp.id);
+            formData.append("name", $scope.cmp.name);
+            formData.append("worldType", $scope.cmp.worldType);
+            formData.append("spawnAnimals", $scope.cmp.spawnAnimals);
+            formData.append("spawnMonsters", $scope.cmp.spawnMonsters);
+            formData.append("worldSource", $scope.cmp.worldSource);
+            formData.append("gamemode", $scope.cmp.gamemode);
+            formData.append("enablePvp", $scope.cmp.enablePvp);
+            formData.append("preventBlockBreak", $scope.cmp.preventBlockBreak);
+            formData.append("difficulty", $scope.cmp.difficulty);
+            formData.append("gametype", $scope.cmp.gametype);
+            formData.append("gamerules", JSON.stringify($scope.cmp.gamerule));
+            if($scope.files != undefined && $scope.files.length > 0) formData.append("mapFile", $scope.files[0]);
             $http({
                 method: 'POST',
                 url: '/api/createMappack/',

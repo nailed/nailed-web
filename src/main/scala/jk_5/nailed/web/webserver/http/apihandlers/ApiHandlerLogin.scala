@@ -6,7 +6,6 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder
 import jk_5.nailed.web.webserver.http.WebServerUtils
 import jk_5.nailed.web.auth.{SessionManager, UserDatabase}
 import jk_5.jsonlibrary.JsonObject
-import java.net.InetSocketAddress
 
 /**
  * No description given
@@ -34,7 +33,7 @@ class ApiHandlerLogin extends JsonHandler {
     val session = SessionManager.getSession(user.get, pass)
     if(session.isEmpty){
       WebServerUtils.sendError(ctx, "Invalid password", HttpResponseStatus.UNAUTHORIZED)
-      user.get.onFailedAuthAttempt(ctx.channel().remoteAddress().asInstanceOf[InetSocketAddress].getAddress.getHostAddress, pass, "web")
+      user.get.onFailedAuthAttempt(WebServerUtils.ipFor(ctx.channel(), msg), pass, "web")
       return
     }
     val r = WebServerUtils.okResponse(new JsonObject().add("session", session.get.toJson).add("user", user.get.getUserInfo))
