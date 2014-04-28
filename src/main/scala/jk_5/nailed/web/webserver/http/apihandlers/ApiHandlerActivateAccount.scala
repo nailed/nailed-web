@@ -34,7 +34,7 @@ class ApiHandlerActivateAccount extends JsonHandler with RoutedHandler {
       return
     }
     if(user.get.activated){
-      rpd.okError("User was already activated")
+      rpd.error("User was already activated")
       return
     }
     if(pretty){

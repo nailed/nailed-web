@@ -45,18 +45,32 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-sm-3 control-label">Natural spawns</label>
+                <label class="col-sm-3 control-label">Spawns</label>
                 <div class="col-sm-9">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpCBSpawnAnimals" ng-model="cmp.spawnAnimals" value="enabled" checked/> Spawn Animals
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpCBSpawnMonsters" ng-model="cmp.spawnMonsters" value="enabled" checked/> Spawn Monsters
-                        </label>
-                    </div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.zombie" value="enabled" checked/> Zombie</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.creeper" value="enabled" checked/> Creeper</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.skeleton" value="enabled" checked/> Skeleton</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.slime" value="enabled" checked/> Slime</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.witch" value="enabled" checked/> Witch</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.spider" value="enabled" checked/> Spider</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.cavespider" value="enabled" checked/> Cave Spider</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.wolf" value="enabled" checked/> Wolf</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.pigzombie" value="enabled" checked/> Zombie Pigman</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.blaze" value="enabled" checked/> Blaze</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.ghast" value="enabled" checked/> Ghast</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.magmaCube" value="enabled" checked/> Magma Cube</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.silverfish" value="enabled" checked/> Silverfish</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.witherSkeleton" value="enabled" checked/> Wither Skeleton</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.bat" value="enabled" checked/> Bat</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.cow" value="enabled" checked/> Cow</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.sheep" value="enabled" checked/> Sheep</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.pig" value="enabled" checked/> Pig</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.chicken" value="enabled" checked/> Chicken</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.horse" value="enabled" checked/> Horse</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.ocelot" value="enabled" checked/> Ocelot</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.mooshroom" value="enabled" checked/> Mooshroom</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.squid" value="enabled" checked/> Squid</label></div>
+                    <div class="checkbox"><label><input type="checkbox" ng-model="cmp.spawns.villager" value="enabled" checked/> Villager</label></div>
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -145,51 +159,15 @@
             <div class="form-group has-feedback">
                 <label class="col-sm-3 control-label">Gamerules</label>
                 <div class="col-sm-9">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRdoFireTick" ng-model="cmp.gamerule.doFireTick" value="enabled" checked/> doFireTick
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRmobGriefing" ng-model="cmp.gamerule.mobGriefing" value="enabled" checked/> mobGriefing
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRkeepInventory" ng-model="cmp.gamerule.keepInventory" value="enabled"/> keepInventory
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRdoMobSpawning" ng-model="cmp.gamerule.doMobSpawning" value="enabled" checked/> doMobSpawning
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRdoMobLoot" ng-model="cmp.gamerule.doMobLoot" value="enabled" checked/> doMobLoot
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRdoTileDrops" ng-model="cmp.gamerule.doTileDrops" value="enabled" checked/> doTileDrops
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRcommandBlockOutput" ng-model="cmp.gamerule.commandBlockOutput" value="enabled"/> commandBlockOutput
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRnaturalRegeneration" ng-model="cmp.gamerule.naturalRegeneration" value="enabled" checked/> naturalRegeneration
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cmpGRdoDaylightCycle" ng-model="cmp.gamerule.doDaylightCycle" value="enabled" checked/> doDaylightCycle
-                        </label>
-                    </div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRdoFireTick" ng-model="cmp.gamerule.doFireTick" value="enabled" checked/> doFireTick</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRmobGriefing" ng-model="cmp.gamerule.mobGriefing" value="enabled" checked/> mobGriefing</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRkeepInventory" ng-model="cmp.gamerule.keepInventory" value="enabled"/> keepInventory</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRdoMobSpawning" ng-model="cmp.gamerule.doMobSpawning" value="enabled" checked/> doMobSpawning</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRdoMobLoot" ng-model="cmp.gamerule.doMobLoot" value="enabled" checked/> doMobLoot</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRdoTileDrops" ng-model="cmp.gamerule.doTileDrops" value="enabled" checked/> doTileDrops</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRcommandBlockOutput" ng-model="cmp.gamerule.commandBlockOutput" value="enabled"/> commandBlockOutput</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRnaturalRegeneration" ng-model="cmp.gamerule.naturalRegeneration" value="enabled" checked/> naturalRegeneration</label></div>
+                    <div class="checkbox"><label><input type="checkbox" name="cmpGRdoDaylightCycle" ng-model="cmp.gamerule.doDaylightCycle" value="enabled" checked/> doDaylightCycle</label></div>
                 </div>
             </div>
             <div class="form-group">

@@ -279,8 +279,6 @@ angular.module('nailed.controllers', [])
     .controller("MappackCreateController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
         $scope.cmp = []
         $scope.cmp.worldType = "void";
-        $scope.cmp.spawnAnimals = true;
-        $scope.cmp.spawnMonsters = true;
         $scope.cmp.worldSource = "build";
         $scope.cmp.gamemode = "0";
         $scope.cmp.difficulty = "0";
@@ -297,13 +295,12 @@ angular.module('nailed.controllers', [])
         $scope.cmp.gamerule.commandBlockOutput = false;
         $scope.cmp.gamerule.naturalRegeneration = true;
         $scope.cmp.gamerule.doDaylightCycle = true;
+        $scope.cmp.spawns = {"villager":true,"squid":true,"mooshroom":true,"ocelot":true,"horse":true,"chicken":true,"pig":true,"sheep":true,"cow":true,"bat":true,"witherSkeleton":true,"silverfish":true,"magmaCube":true,"ghast":true,"blaze":true,"pigzombie":true,"wolf":true,"cavespider":true,"spider":true,"witch":true,"slime":true,"skeleton":true,"creeper":true,"zombie":true};
         $scope.cmp.create = function(){
             var formData = new FormData();
             formData.append("id", $scope.cmp.id);
             formData.append("name", $scope.cmp.name);
             formData.append("worldType", $scope.cmp.worldType);
-            formData.append("spawnAnimals", $scope.cmp.spawnAnimals);
-            formData.append("spawnMonsters", $scope.cmp.spawnMonsters);
             formData.append("worldSource", $scope.cmp.worldSource);
             formData.append("gamemode", $scope.cmp.gamemode);
             formData.append("enablePvp", $scope.cmp.enablePvp);
@@ -311,14 +308,16 @@ angular.module('nailed.controllers', [])
             formData.append("difficulty", $scope.cmp.difficulty);
             formData.append("gametype", $scope.cmp.gametype);
             formData.append("gamerules", JSON.stringify($scope.cmp.gamerule));
+            formData.append("spawns", JSON.stringify($scope.cmp.spawns));
             if($scope.files != undefined && $scope.files.length > 0) formData.append("mapFile", $scope.files[0]);
+            //TODO: modify button state so the user knows it's uploading
             $http({
                 method: 'POST',
                 url: '/api/createMappack/',
                 data: formData,
                 headers: {'Content-Type': undefined}, transformRequest: angular.identity}
             ).success(function(data, status, headers, config) {
-
+                //TODO: notify user that uploading is done
             });
         }
     }]);

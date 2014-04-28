@@ -21,7 +21,7 @@ case class GameServer(private val channel: Channel, private val players: mutable
     this.players.foreach(p => playerlist.add(p.toJson))
     obj.add("players", playerlist)
     val mappacklist = new JsonArray
-    this.mappacks.foreach(m => mappacklist.add(m.toJson))
+    this.mappacks.foreach(m => mappacklist.add(m.mappackListData))
     obj.add("mappacks", mappacklist)
     obj
   }

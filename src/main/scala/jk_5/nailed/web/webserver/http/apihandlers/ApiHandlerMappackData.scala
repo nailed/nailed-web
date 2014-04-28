@@ -15,6 +15,6 @@ class ApiHandlerMappackData extends JsonHandler with RoutedHandler {
     val mappackId = this.getURLData.parameters.get("part1").get
     val mappack = MappackRegistry.getById(mappackId)
     if(mappack.isEmpty) rpd.error(HttpResponseStatus.NOT_FOUND, "Mappack not found")
-    else rpd.ok(_.add("mappack", mappack.get.toJson))
+    else rpd.ok(_.add("mappack", mappack.get.mappackDetailData))
   }
 }

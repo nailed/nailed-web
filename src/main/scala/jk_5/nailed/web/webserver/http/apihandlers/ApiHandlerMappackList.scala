@@ -14,7 +14,7 @@ class ApiHandlerMappackList extends JsonHandler {
 
   override def handleGET(ctx: ChannelHandlerContext, msg: HttpRequest, rpd: Responder){
     val list = new JsonArray //TODO: add stuff to the list
-    MappackRegistry.mappacks.foreach(m => list.add(m.toJson))
+    MappackRegistry.mappacks.foreach(m => list.add(m.mappackListData))
     rpd.ok(_.add("mappacks", list))
   }
 }

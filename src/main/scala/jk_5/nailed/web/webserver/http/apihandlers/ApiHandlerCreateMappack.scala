@@ -6,7 +6,7 @@ import jk_5.nailed.web.webserver.RoutedHandler
 import io.netty.handler.codec.http.multipart._
 import jk_5.nailed.web.webserver.http.WebServerUtils
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.{EndOfDataDecoderException, ErrorDataDecoderException}
-import jk_5.nailed.web.mappack.MappackBuilder
+import jk_5.nailed.web.mappack.{MappackRegistry, Mappack, MappackBuildCallback, MappackBuilder}
 import jk_5.jsonlibrary.JsonObject
 
 /**
@@ -54,10 +54,14 @@ class ApiHandlerCreateMappack extends SimpleChannelInboundHandler[HttpObject] wi
         }
         this.readChunkedData()
         if(m.isInstanceOf[LastHttpContent]){
-          WebServerUtils.sendOK(ctx)
-
-          val mappack = this.builder.get.build()
-          println(mappack.toJson.stringify)
+          val rpd = new Responder(ctx.channel())
+          builder.get.build(new MappackBuildCallback {
+            override def onError(description: String) = rpd.error(description)
+            override def onDone(mappack: Mappack) = {
+              rpd.ok
+              MappackRegistry.addMappack(mappack)
+            }
+          })
 
           this.request = null
           this.decoder.get.destroy()
@@ -80,8 +84,7 @@ class ApiHandlerCreateMappack extends SimpleChannelInboundHandler[HttpObject] wi
                 case "id" => builder.setId(a.getString)
                 case "name" => builder.setName(a.getString)
                 case "worldType" => builder.setWorldType(a.getString)
-                case "spawnAnimals" => builder.setSpawnAnimals(a.getString.equals("true"))
-                case "spawnMonsters" => builder.setSpawnMonsters(a.getString.equals("true"))
+                case "spawns" => builder.setSpawns(JsonObject.readFrom(a.getValue))
                 case "worldSource" => builder.setWorldSource(a.getString)
                 case "gamemode" => builder.setGameMode(a.getString.toInt)
                 case "enablePvp" => builder.setEnablePvp(a.getString.equals("true"))

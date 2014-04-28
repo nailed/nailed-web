@@ -7,6 +7,7 @@ import java.io.File
 import org.apache.logging.log4j.LogManager
 import jk_5.commons.config.ConfigFile
 import jk_5.nailed.web.mail.Mailer
+import jk_5.nailed.web.mappack.MappackRegistry
 
 /**
  * No description given
@@ -35,6 +36,7 @@ object NailedWeb {
     MimeTypesLookup.load()
     SslContextProvider.load()
     WebServer.start()
+    MappackRegistry //Force-load this class so it loads the mappacks
   }
 
   @inline def getConfig = this.config
