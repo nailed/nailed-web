@@ -7,6 +7,7 @@ package jk_5.nailed.web.webserver.irc
  */
 class IrcConnection {
 
+  private var isConnected = false
   var hostname: String = ProtocolIrc.host
   var password: String = null
   var nickname: String = null
@@ -19,18 +20,19 @@ class IrcConnection {
   }
 
   def connected(){
+    if(this.isConnected) return
     ProtocolIrc.onConnect(this)
     ProtocolIrc.logger.info(ProtocolIrc.marker, s"User ${this.realname} connected to IRC")
+    isConnected = true
   }
 
   def disconnected(r: String){
-    var reason = r
-    if(reason == ":" || reason == ""){
-      reason = "No reason given"
-    }
+    if(!isConnected) return //We're not connected anyway. Ignore the call
+    val reason = if(r.isEmpty) "No reason given" else r
     ProtocolIrc.channels.filter(_.connections.contains(this)).foreach(_.onQuit(this, reason))
     ProtocolIrc.onDisconnect(this)
     ProtocolIrc.logger.info(ProtocolIrc.marker, s"User ${this.realname} disconnected from IRC ($reason)")
+    isConnected = false
   }
 
   def join(channel: IrcChannel) = channel.onJoin(this)

@@ -11,7 +11,7 @@ import io.netty.channel.{ChannelHandlerContext, ChannelInboundHandlerAdapter}
 class ChannelConversationHandler(val connection: IrcConnection) extends ChannelInboundHandlerAdapter {
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = msg match {
     case frame: String =>
-      println(frame)
+      ProtocolIrc.logger.debug(ProtocolIrc.marker, frame)
       val operation = frame.substring(0, frame.indexOf(' '))
       val args = frame.substring(frame.indexOf(' ') + 1)
       operation match {
@@ -49,9 +49,8 @@ class ChannelConversationHandler(val connection: IrcConnection) extends ChannelI
           }else{
             ProtocolIrc.getChannel(parts(0)).foreach(c => this.connection.setTopic(c, parts(1)))
           }
-        case "NICK" =>
+        case "NICK" => //TODO: broadcast
           this.connection.nickname = args
-        //TODO: broadcast
         case "WHO" =>
           ProtocolIrc.getChannel(args).foreach(c => this.connection.onWhoRequest(c))
         case _ => this.connection.sendLine(s":${ProtocolIrc.host} 421 ${this.connection.nickname} $operation :Unknown command")
