@@ -18,29 +18,30 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
       if(this.connection == null){
         this.connection = new UserConnection(ctx.channel())
       }
-      if(frame.startsWith("PASS")){
-        this.connection.password = frame.substring(5).trim
-        if(this.connection.authenticate(force = true)){
-          ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
-          this.handshake(ctx)
-        }
-      }else if(frame.startsWith("NICK")){
-        this.connection.nickname = frame.substring(5).trim
-      }else if(frame.startsWith("USER")){
-        this.connection.login = "~" + frame.substring(5, frame.indexOf(' ', 6)).trim
-        this.connection.realname = frame.substring(frame.indexOf('*') + 1).trim
-        if(this.connection.realname.startsWith(":")){
-          this.connection.realname = this.connection.realname.substring(1).trim
-        }
-        if(this.connection.authenticate(force = false)){
-          ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
-          this.handshake(ctx)
-        }else{
-          ctx.writeAndFlush(s":${ProtocolIrc.host} NOTICE AUTH :*** You need to send your password. Try: /quote PASS <password>")
-        }
-      }else{
-        ctx.fireChannelRead(msg)
-        return
+      val operation = frame.substring(0, frame.indexOf(' '))
+      val args = frame.substring(frame.indexOf(' ') + 1)
+      operation match {
+        case "PASS" =>
+          this.connection.password = args
+          if(this.connection.authenticate(force = true)){
+            ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
+            this.handshake(ctx)
+          }
+        case "NICK" => this.connection.nickname = frame.substring(5).trim
+        case "USER" =>
+          this.connection.login = "~" + args.substring(0, args.indexOf(' '))
+          this.connection.realname = args.substring(args.indexOf('*') + 1).trim
+          if(this.connection.realname.startsWith(":")){
+            this.connection.realname = this.connection.realname.substring(1).trim
+          }
+          if(this.connection.authenticate(force = false)){
+            ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
+            this.handshake(ctx)
+          }else{
+            ctx.writeAndFlush(s":${ProtocolIrc.host} NOTICE AUTH :*** You need to send your password. Try: /quote PASS <password>")
+          }
+        case "CAP" => //I don't see why i need to handle these
+        case _ => ctx.writeAndFlush(s":${ProtocolIrc.host} 451 * :Please register first")
       }
     case m => ctx.fireChannelRead(m)
   }
