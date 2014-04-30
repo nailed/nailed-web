@@ -10,7 +10,7 @@ object HttpHeaderDateFormat {
 
   def get = dateFormatThreadLocal.get
 
-  private final val dateFormatThreadLocal: ThreadLocal[HttpHeaderDateFormat] = new ThreadLocal[HttpHeaderDateFormat] {
+  private final val dateFormatThreadLocal = new ThreadLocal[HttpHeaderDateFormat] {
     protected override def initialValue = new HttpHeaderDateFormat
   }
 }

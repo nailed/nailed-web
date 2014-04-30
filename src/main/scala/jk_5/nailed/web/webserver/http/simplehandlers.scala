@@ -16,7 +16,7 @@ import jk_5.nailed.web.webserver.http.handlers.AggregatedHandler
 object HttpExceptionHandler extends ChannelHandlerAdapter {
   val logger = LogManager.getLogger
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable){
-    WebServerUtils.sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR).addListener(ChannelFutureListener.CLOSE)
+    WebServerUtils.sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR).addListener(WebServerUtils.closeWhenRequested)
     this.logger.error("Caught error in pipeline", cause)
   }
 }
@@ -24,8 +24,7 @@ object HttpExceptionHandler extends ChannelHandlerAdapter {
 @Sharable
 object NotFoundHandler extends AggregatedHandler {
   override def handleAggregated(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-    val future = WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
-    WebServerUtils.closeIfRequested(msg, future)
+    WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND).addListener(WebServerUtils.closeWhenRequested)
   }
 }
 

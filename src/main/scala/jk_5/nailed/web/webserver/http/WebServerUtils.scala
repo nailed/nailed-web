@@ -13,7 +13,6 @@ import jk_5.nailed.web.couchdb.UID
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 import io.netty.handler.codec.http.multipart.{HttpPostRequestDecoder, Attribute}
-import org.apache.logging.log4j.LogManager
 import java.net.InetSocketAddress
 
 /**
@@ -24,7 +23,6 @@ import java.net.InetSocketAddress
 object WebServerUtils {
 
   final val HTTP_CACHE_SECONDS = 60
-  private final val logger = LogManager.getLogger
 
   def sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus): ChannelFuture = this.sendError(ctx, status.toString, status)
 
@@ -161,6 +159,7 @@ object WebServerUtils {
   def okResponse(json: JsonObject = new JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.add("status", "ok").stringify, CharsetUtil.UTF_8))
 
+  @deprecated("Use futureListener closeWhenRequested")
   def closeIfRequested(req: HttpRequest, future: ChannelFuture): Boolean =
     if(!HttpHeaders.isKeepAlive(req)){
       future.addListener(ChannelFutureListener.CLOSE)
@@ -172,4 +171,12 @@ object WebServerUtils {
     if(request.headers().contains("X-Real-IP")){
       request.headers().get("X-Real-IP")
     }else channel.remoteAddress().asInstanceOf[InetSocketAddress].getAddress.getHostAddress
+
+  val closeWhenRequested = new ChannelFutureListener {
+    override def operationComplete(future: ChannelFuture) = {
+      if(!HttpHeaders.isKeepAlive(future.channel().attr(HttpHeaderAppender.request).get())){
+        future.channel().close()
+      }
+    }
+  }
 }
