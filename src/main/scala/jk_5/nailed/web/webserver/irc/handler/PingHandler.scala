@@ -45,12 +45,12 @@ class PingHandler(val timeout: Int, val unit: TimeUnit) extends ChannelInboundHa
     override def run(){
       if(!this.ctx.channel().isOpen) return
       if(ticks >= 1){
-        //TODO: Give them more time, and handle timeouts nicer
         this.ctx.writeAndFlush(s":${ProtocolIrc.host} NOTICE AUTH : Ping timeout. Closing connection").addListener(ChannelFutureListener.CLOSE)
         ctx.channel().attr(ProtocolIrc.connection).get().disconnected("Ping timeout: 60 seconds")
+        return
       }
       future = this.ctx.executor().schedule(this, timeout, unit)
-      this.ctx.writeAndFlush(s"PING : ${ProtocolIrc.host}")
+      this.ctx.writeAndFlush(s"PING :${ProtocolIrc.host}")
       ticks += 1
     }
   }

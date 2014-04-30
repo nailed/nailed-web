@@ -52,7 +52,7 @@ object ProtocolIrc extends MultiplexedProtocol {
   }
 
   def getChannel(channel: String) = this.channels.find(_.name == channel)
-  def getOrCreateChannel(channel: String): IrcChannel = this.channels.synchronized{
+  def getOrCreateChannel(channel: String): IrcChannel = this.channels.synchronized {
     var ch = this.getChannel(channel)
     if(ch.isEmpty){
       this.logger.trace(this.marker, s"Created new channel $channel")
