@@ -5,8 +5,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.Channel
 import io.netty.handler.codec.{Delimiters, DelimiterBasedFrameDecoder}
 import io.netty.handler.codec.string.{StringDecoder, StringEncoder}
-import java.util.concurrent.TimeUnit
-import jk_5.nailed.web.webserver.irc.handler.{HandshakeHandler, OutboundFrameAppender, PingHandler}
+import jk_5.nailed.web.webserver.irc.handler.{HandshakeHandler, OutboundFrameAppender}
 import io.netty.util.AttributeKey
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import scala.collection.mutable
@@ -47,7 +46,6 @@ object ProtocolIrc extends MultiplexedProtocol {
     pipe.addLast("stringEncoder", encoder)
     pipe.addLast("stringDecoder", decoder)
     pipe.addLast("outboundFramer", OutboundFrameAppender)
-    pipe.addLast("pingHandler", new PingHandler(1, TimeUnit.MINUTES))
     pipe.addLast("handshakeHandler", new HandshakeHandler)
   }
 
