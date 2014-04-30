@@ -76,12 +76,24 @@ object ReadTimeoutDetector extends ChannelHandlerAdapter {
 
 @Sharable
 object ExceptionHandler extends ChannelHandlerAdapter {
+  val logger = LogManager.getLogger
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match {
-    case e: IOException => WebServer.logger.trace(s"Silently ignored IOException in pipeline (${e.getMessage}})")
+    case e: IOException => e.getCause match {
+      case e1: SSLException => //Fully ignore these
+      case _ => silentIgnore(e)
+    }
     case e: DecoderException => e.getCause match {
       case e1: SSLException =>
-      case _ => ctx.fireExceptionCaught(e)
+      case _ => exception(e)
     }
-    case e => ctx.fireExceptionCaught(e)
+    case e => exception(e)
+  }
+
+  def silentIgnore(t: Throwable){
+    logger.trace(s"Silently ignored ${t.getClass.getSimpleName} in pipeline (${t.getMessage}})")
+  }
+
+  def exception(t: Throwable){
+    logger.error("Caught error in pipeline", t)
   }
 }
