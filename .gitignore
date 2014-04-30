@@ -11,6 +11,11 @@ classes
 build
 
 # Certificates
-cert.jsk
+cert.jks
 
 web/launcher.jar
+
+# SBT Folders
+target
+
+runtime
