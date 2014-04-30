@@ -68,7 +68,7 @@ object Pipeline extends ChannelInitializer[SocketChannel] {
 
 @Sharable
 object ReadTimeoutDetector extends ChannelHandlerAdapter {
-  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match{
+  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match {
     case e: ReadTimeoutException => ctx.close()
     case e => ctx.fireExceptionCaught(e)
   }

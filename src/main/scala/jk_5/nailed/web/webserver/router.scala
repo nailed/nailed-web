@@ -1,9 +1,9 @@
 package jk_5.nailed.web.webserver
 
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.handler.codec.http.{HttpRequest, HttpResponseStatus}
+import io.netty.handler.codec.http.HttpRequest
 import io.netty.channel.{ChannelInboundHandlerAdapter, ChannelHandler, ChannelHandlerContext}
-import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, WebServerUtils, NotFoundHandler}
+import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, NotFoundHandler}
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 
 /**
@@ -33,11 +33,6 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
       case m =>
     }
     ctx.fireChannelRead(msg)
-  }
-
-  override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable){
-    if(ctx.channel().isActive) WebServerUtils.sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR)
-    cause.printStackTrace()
   }
 }
 

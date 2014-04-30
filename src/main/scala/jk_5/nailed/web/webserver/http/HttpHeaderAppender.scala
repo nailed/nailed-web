@@ -22,7 +22,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
     var close = false
     msg match {
       case res: HttpResponse =>
-        val req = ctx.attr(this.request).get
+        val req = ctx.channel.attr(this.request).get
         res.headers().set(HttpHeaders.Names.SERVER, s"nailed-web/${NailedWeb.version}")
         res.headers().set(HttpHeaders.Names.DATE, HttpHeaderDateFormat.get.format(new Date))
         if(!res.headers().contains(HttpHeaders.Names.CONTENT_TYPE)){
@@ -47,7 +47,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
           case _ =>
         }
       case r: LastHttpContent =>
-        val req = ctx.attr(this.request).get
+        val req = ctx.channel.attr(this.request).get
         close = !HttpHeaders.isKeepAlive(req)
       case _ =>
     }
@@ -57,7 +57,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = msg match {
     case req: HttpRequest =>
-      ctx.attr(this.request).set(req)
+      ctx.channel.attr(this.request).set(req)
       ctx.fireChannelRead(req)
     case m => ctx.fireChannelRead(m)
   }
