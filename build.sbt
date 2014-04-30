@@ -10,7 +10,7 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 libraryDependencies += "org.scala-lang" % "scala-library" % "2.11.0"
 
-libraryDependencies += "io.netty" % "netty-all" % "4.0.18.Final"
+libraryDependencies += "io.netty" % "netty-all" % "4.0.19.Final"
 
 libraryDependencies += "jk_5.jsonlibrary" % "jsonlibrary" % "0.1-SNAPSHOT"
 
