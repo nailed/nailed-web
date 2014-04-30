@@ -5,6 +5,7 @@ import jk_5.jsonlibrary.JsonObject
 import io.netty.buffer.Unpooled
 import io.netty.util.CharsetUtil
 import io.netty.channel.Channel
+import jk_5.nailed.web.webserver.http.WebServerUtils
 
 /**
  * No description given
@@ -12,7 +13,7 @@ import io.netty.channel.Channel
  * @author jk-5
  */
 class Responder(private val channel: Channel){
-  def json(json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) = channel.writeAndFlush(this.fromJson(json, status))
+  def json(json: JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) = channel.writeAndFlush(this.fromJson(json, status)).addListener(WebServerUtils.closeWhenRequested)
   def ok(configure: (JsonObject) => Unit){
     val obj = new JsonObject().add("status", "ok")
     configure(obj)

@@ -41,8 +41,7 @@ class WebServerHandlerSIOHandshake extends JsonHandler with RoutedHandler {
       val resdata = s"${uid.toString}:${HeartbeatHandler.heartbeatTimeout}:${WebServerHandlerSIOHandshake.closeTimeout}:websocket,flashsocket" //,flashsocket,xhr-polling
       val response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(this.wrapJsonP(resdata, jsonp), CharsetUtil.UTF_8))
       response.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("txt"))
-      val f = ctx.writeAndFlush(response)
-      WebServerUtils.closeIfRequested(msg, f)
+      ctx.writeAndFlush(response).addListener(WebServerUtils.closeWhenRequested)
 
       val future = ctx.channel().eventLoop().schedule(new Runnable {
         override def run(){

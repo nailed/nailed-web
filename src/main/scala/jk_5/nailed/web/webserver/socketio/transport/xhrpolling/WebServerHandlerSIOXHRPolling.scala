@@ -35,8 +35,7 @@ class WebServerHandlerSIOXHRPolling extends SimpleChannelInboundHandler[FullHttp
         //TODO
       }
     }else{
-      val future = WebServerUtils.sendError(ctx, HttpResponseStatus.BAD_REQUEST)
-      WebServerUtils.closeIfRequested(msg, future)
+      WebServerUtils.sendError(ctx, HttpResponseStatus.BAD_REQUEST).addListener(WebServerUtils.closeWhenRequested)
     }
   }
 }

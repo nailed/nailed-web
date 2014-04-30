@@ -40,8 +40,7 @@ class ApiHandlerActivateAccount extends JsonHandler with RoutedHandler {
     if(pretty){
       val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(ApiHandlerActivateAccount.res))
       r.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("html"))
-      val future = ctx.writeAndFlush(r)
-      WebServerUtils.closeIfRequested(msg, future)
+      ctx.writeAndFlush(r).addListener(WebServerUtils.closeWhenRequested)
     }else{
       rpd.ok
     }

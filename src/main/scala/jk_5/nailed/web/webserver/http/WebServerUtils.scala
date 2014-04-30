@@ -159,18 +159,15 @@ object WebServerUtils {
   def okResponse(json: JsonObject = new JsonObject, status: HttpResponseStatus = HttpResponseStatus.OK) =
     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(json.add("status", "ok").stringify, CharsetUtil.UTF_8))
 
-  @deprecated("Use futureListener closeWhenRequested")
-  def closeIfRequested(req: HttpRequest, future: ChannelFuture): Boolean =
-    if(!HttpHeaders.isKeepAlive(req)){
-      future.addListener(ChannelFutureListener.CLOSE)
-      true
-    }else false
-
   //Utility method to get a client's ip address, because i host this server behind a nginx virtual host with proxy-pass
-  def ipFor(channel: Channel, request: HttpRequest): String =
-    if(request.headers().contains("X-Real-IP")){
-      request.headers().get("X-Real-IP")
-    }else channel.remoteAddress().asInstanceOf[InetSocketAddress].getAddress.getHostAddress
+  def ipFor(channel: Channel, request: HttpRequest): String = {
+    if(request.headers().contains("X-Real-IP")) return request.headers().get("X-Real-IP")
+    val addr = channel.remoteAddress()
+    addr match {
+      case a: InetSocketAddress => a.getAddress.getHostAddress
+      case a => a.toString
+    }
+  }
 
   val closeWhenRequested = new ChannelFutureListener {
     override def operationComplete(future: ChannelFuture) = {

@@ -27,6 +27,8 @@ class SslDetector extends ByteToMessageDecoder {
       ctx.pipeline().addAfter(ctx.name(), "ssl", new SslHandler(engine))
       ctx.channel().attr(SslDetector.ssl).set(true)
     }
+    //Because we don't actually read anything from the buffer, this will cause the handler to pass on the buffer to
+    //The next handler in the pipeline, so we don't have to do that ourselves
     ctx.pipeline().remove(this)
   }
 }

@@ -34,7 +34,7 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
             val length = content.readableBytes()
             if(req.getMethod == HttpMethod.HEAD){
               content.clear()
-            }else if(req.getMethod != HttpMethod.HEAD && content.readableBytes() >= 2 && content.slice(content.readableBytes() - 2, 2).readBytes(2) != newline){
+            }else if(req.getMethod != HttpMethod.HEAD && content.readableBytes() >= 2 && !content.slice(content.readableBytes() - 2, 2).readBytes(2).equals(newline)){
               content.writeBytes(this.newline)
             }
             if(!e.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)){
