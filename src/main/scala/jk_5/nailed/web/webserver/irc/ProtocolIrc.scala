@@ -70,4 +70,32 @@ object ProtocolIrc extends MultiplexedProtocol {
 
   def getConnection(nickname: String) = this.connections.find(_.nickname == nickname)
   def getConnections(nickname: String) = this.connections.filter(_.nickname == nickname)
+
+  def parseOperationAndArgs(frame: String): (String, Array[String]) = {
+    val ind = frame.indexOf(' ')
+    if(ind == -1){
+      return (frame, new Array[String](0))
+    }
+    val operation = frame.substring(0, ind)
+    val argsString = frame.substring(ind + 1)
+    var end = false
+    val argsBuilder = mutable.ArrayBuilder.make[String]()
+    var spaceIndex = -1
+    do {
+      val old = spaceIndex
+      spaceIndex = argsString.indexOf(' ', spaceIndex + 1)
+      val a = if(spaceIndex == -1){
+        end = true
+        argsString.substring(old + 1)
+      } else argsString.substring(old + 1, spaceIndex)
+      if(a.startsWith(":")) {
+        argsBuilder += argsString.substring(old + 2)
+        end = true
+      } else {
+        argsBuilder += a
+      }
+    } while(!end)
+
+    (operation, argsBuilder.result())
+  }
 }

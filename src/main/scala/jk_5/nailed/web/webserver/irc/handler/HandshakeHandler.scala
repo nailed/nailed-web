@@ -21,25 +21,34 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
       if(this.connection == null){
         this.connection = new UserConnection(ctx.channel())
       }
-      val ind = frame.indexOf(' ')
-      val operation = if(ind == -1) frame else frame.substring(0, ind)
-      val args = if(ind == -1) "" else frame.substring(ind + 1)
-      operation match {
+      val parsed = ProtocolIrc.parseOperationAndArgs(frame)
+      val args = parsed._2
+      parsed._1 match {
         case "PASS" =>
-          this.connection.password = args
-          if(this.connection.authenticate(force = true)){
-            ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
-            this.handshake(ctx)
+          if(args.isEmpty) {
+            ctx.writeAndFlush(s":${ProtocolIrc.host} 461 * PASS :Not enough parameters")
+          } else {
+            this.connection.password = args(0)
+            if (this.connection.authenticate(force = true)) {
+              ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
+              this.handshake(ctx)
+            }
           }
         case "NICK" =>
-          //TODO: follow RFC-2812 and send proper error codes
-          this.connection.nickname = args
-        case "USER" =>
-          this.connection.login = "~" + args.substring(0, args.indexOf(' '))
-          this.connection.realname = args.substring(args.indexOf('*') + 1).trim
-          if(this.connection.realname.startsWith(":")){
-            this.connection.realname = this.connection.realname.substring(1).trim
+          if(args.isEmpty) {
+            ctx.writeAndFlush(s":${ProtocolIrc.host} 461 * NICK :Not enough parameters")
+          } else if(args(0).isEmpty) {
+            ctx.writeAndFlush(s":${ProtocolIrc.host} 431 * :No nickname given")
+          } else {
+            this.connection.nickname = args(0)
           }
+        case "USER" =>
+          if(args.length < 4){
+            ctx.writeAndFlush(s":${ProtocolIrc.host} 461 * USER :Not enough parameters")
+            return
+          }
+          this.connection.login = args(0)
+          this.connection.realname = args(3)
           if(this.connection.authenticate(force = false)){
             ctx.channel().attr(ProtocolIrc.connection).set(this.connection)
             this.handshake(ctx)
