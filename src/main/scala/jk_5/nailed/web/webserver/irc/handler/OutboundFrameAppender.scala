@@ -13,6 +13,8 @@ import io.netty.channel.ChannelHandler.Sharable
 @Sharable
 object OutboundFrameAppender extends MessageToMessageEncoder[String] {
   override def encode(ctx: ChannelHandlerContext, msg: String, out: util.List[AnyRef]){
-    out.add(msg + "\n")
+    val frame = msg + "\r\n"
+    if(frame.length > 512) throw new Exception(s"Outbound frame length is ${frame.length} (> 512)")
+    out.add(frame)
   }
 }

@@ -42,7 +42,7 @@ object ProtocolIrc extends MultiplexedProtocol {
   override def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
     //pipe.addLast("logger", new LoggingHandler(LogLevel.INFO))
-    pipe.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter(): _*))
+    pipe.addLast("framer", new DelimiterBasedFrameDecoder(510, Delimiters.lineDelimiter(): _*))
     pipe.addLast("stringEncoder", encoder)
     pipe.addLast("stringDecoder", decoder)
     pipe.addLast("outboundFramer", OutboundFrameAppender)

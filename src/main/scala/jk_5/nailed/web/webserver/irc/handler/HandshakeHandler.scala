@@ -33,7 +33,7 @@ class HandshakeHandler extends ChannelInboundHandlerAdapter {
           }
         case "NICK" =>
           //TODO: follow RFC-2812 and send proper error codes
-          this.connection.nickname = frame.substring(5).trim
+          this.connection.nickname = args
         case "USER" =>
           this.connection.login = "~" + args.substring(0, args.indexOf(' '))
           this.connection.realname = args.substring(args.indexOf('*') + 1).trim
