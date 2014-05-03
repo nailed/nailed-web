@@ -67,6 +67,13 @@ angular.module('nailed.controllers', [])
         $http.get("/api/mappacks.json").then(function(res){
             $scope.mappacks = res.data.mappacks;
         });
+        $scope.loadMappack = function(mappack){
+            $http
+                .post('/api/loadMappack/', "id=" + encodeURIComponent(mappack.mpid))
+                .success(function(data, status, headers, config) {
+
+                });
+        }
     })
     .controller("MappackDetailController", function($scope, $routeParams, $http) {
         $scope.mappackName = $routeParams.mappackName

@@ -2,6 +2,8 @@ package jk_5.nailed.web.mappack
 
 import jk_5.jsonlibrary.{JsonArray, JsonObject}
 import jk_5.nailed.web.couchdb.{DatabaseType, TCouchDBSerializable}
+import jk_5.nailed.web.game.GameServer
+import jk_5.nailed.web.webserver.ipc.packet.PacketLoadMappackMeta
 
 /**
  * No description given
@@ -22,6 +24,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
   var difficulty = 0
   val spawnRules = new SpawnRules
   val gameRules = new GameRules
+  var gametype = "default"
 
   def mpid = this.mappackId
 
@@ -49,6 +52,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     data.add("difficulty", this.difficulty)
     data.add("spawns", this.spawnRules.toJson)
     data.add("gamerules", this.gameRules.toJson)
+    data.add("gametype", this.gametype)
   }
 
   def readFromJsonForDB(data: JsonObject){
@@ -61,5 +65,15 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     this.difficulty = data.get("difficulty").asInt
     this.spawnRules.read(data.get("spawns").asObject)
     this.gameRules.read(data.get("gamerules").asObject)
+    if(data.get("gametype") != null) this.gametype = data.get("gametype").asString
+  }
+
+  def load(server: GameServer){
+    val packet = new PacketLoadMappackMeta
+    val json = new JsonObject
+    this.writeToJsonForDB(json)
+    packet.data = json
+    packet.id = this.mpid
+    server.sendPacket(packet)
   }
 }

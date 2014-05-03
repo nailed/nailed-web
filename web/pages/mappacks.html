@@ -20,7 +20,7 @@
             <td><a style="text-decoration:none;" ng-href="#/mappacks/{{m.mpid}}">{{m.name}}</a></td>
             <td>{{m.timesPlayedUser}}</td>
             <td>{{m.timesPlayedGlobal}}</td>
-            <td><button class="btn btn-success btn-xs">Load</button></td>
+            <td><button class="btn btn-success btn-xs" ng-click="loadMappack(m)">Load</button></td>
             <td>
                 <span ng-repeat="tag in m.tags"><span class="label label-info">{{tag}}</span>&nbsp;</span>
             </td>
