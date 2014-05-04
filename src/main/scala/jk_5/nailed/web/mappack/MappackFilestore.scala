@@ -75,6 +75,8 @@ class MappackFilestore(val owner: Mappack) {
     files.foreach(f => ret.add(f.toJson))
     ret
   }
+
+  def getFile(hash: String) = this.files.find(_.hash == hash)
 }
 
 case class MappackFile(path: String, hash: String, size: Long) {

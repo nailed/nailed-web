@@ -7,7 +7,6 @@ import io.netty.util.AttributeKey
 import org.apache.logging.log4j.{MarkerManager, LogManager}
 import jk_5.nailed.web.game.GameServer
 import io.netty.buffer.ByteBuf
-import io.netty.handler.logging.LogLevel
 
 /**
  * No description given

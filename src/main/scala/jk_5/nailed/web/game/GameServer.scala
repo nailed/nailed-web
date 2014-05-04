@@ -1,7 +1,6 @@
 package jk_5.nailed.web.game
 
 import scala.collection.mutable
-import jk_5.nailed.web.mappack.Mappack
 import io.netty.channel.Channel
 import jk_5.jsonlibrary.{JsonArray, JsonObject}
 import jk_5.nailed.web.webserver.ipc.ProtocolIpc
@@ -11,7 +10,7 @@ import jk_5.nailed.web.webserver.ipc.ProtocolIpc
  *
  * @author jk-5
  */
-case class GameServer(private val channel: Channel, private val players: mutable.ArrayBuffer[Player], mappacks: mutable.ArrayBuffer[Mappack]) {
+case class GameServer(private val channel: Channel, private val players: mutable.ArrayBuffer[Player]) {
 
   var address: String = _
 
@@ -20,9 +19,6 @@ case class GameServer(private val channel: Channel, private val players: mutable
     val playerlist = new JsonArray
     this.players.foreach(p => playerlist.add(p.toJson))
     obj.add("players", playerlist)
-    val mappacklist = new JsonArray
-    this.mappacks.foreach(m => mappacklist.add(m.mappackListData))
-    obj.add("mappacks", mappacklist)
     obj
   }
 

@@ -1,6 +1,5 @@
 package jk_5.nailed.web.mappack
 
-import jk_5.nailed.web.game.GameServer
 import org.apache.logging.log4j.LogManager
 import scala.collection.mutable
 import jk_5.nailed.web.couchdb.CouchDB
@@ -30,13 +29,5 @@ object MappackRegistry {
 
   def addMappack(mappack: Mappack){
     this.mappacks += mappack
-  }
-
-  def addServerMappacks(server: GameServer) = this.mappacks synchronized {
-    this.mappacks.appendAll(server.mappacks)
-  }
-
-  def removeServerMappacks(server: GameServer) = this.mappacks synchronized {
-    server.mappacks.foreach(m => this.mappacks.remove(this.mappacks.indexOf(m)))
   }
 }
