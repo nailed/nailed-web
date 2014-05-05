@@ -26,6 +26,9 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
   val spawnRules = new SpawnRules
   val gameRules = new GameRules
   var gametype = "default"
+  var teamData = new JsonArray
+  var randomSpawnpoints = new JsonArray
+  var stats = new JsonArray
 
   def mpid = this.mappackId
 
@@ -55,6 +58,9 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     data.add("spawns", this.spawnRules.toJson)
     data.add("gamerules", this.gameRules.toJson)
     data.add("gametype", this.gametype)
+    data.add("teams", this.teamData)
+    data.add("randomspawnpoints", this.randomSpawnpoints)
+    data.add("stats", this.stats)
   }
 
   def readFromJsonForDB(data: JsonObject){
@@ -69,6 +75,9 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     this.spawnRules.read(data.get("spawns").asObject)
     this.gameRules.read(data.get("gamerules").asObject)
     this.gametype = data.get("gametype").asString
+    if(data.get("teams") != null) this.teamData = data.get("teams").asArray
+    if(data.get("randomspawnpoints") != null) this.randomSpawnpoints = data.get("randomspawnpoints").asArray
+    if(data.get("stats") != null) this.stats = data.get("stats").asArray
   }
 
   def load(server: GameServer){
