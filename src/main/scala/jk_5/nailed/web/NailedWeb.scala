@@ -37,6 +37,8 @@ object NailedWeb {
     SslContextProvider.load()
     WebServer.start()
     MappackRegistry //Force-load this class so it loads the mappacks
+
+    this.logger.info("Server started")
   }
 
   @inline def getConfig = this.config
