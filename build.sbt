@@ -12,7 +12,7 @@ libraryDependencies += "org.scala-lang" % "scala-library" % "2.11.0"
 
 libraryDependencies += "io.netty" % "netty-all" % "4.0.19.Final"
 
-libraryDependencies += "jk_5.jsonlibrary" % "jsonlibrary" % "0.1-SNAPSHOT"
+libraryDependencies += "jk_5.jsonlibrary" % "jsonlibrary" % "1.2"
 
 libraryDependencies += "jk_5.commons" % "CommonsConfig" % "1.1.0"
 
@@ -26,9 +26,7 @@ libraryDependencies += "javax.mail" % "mail" % "1.5.0-b01"
 
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.6"
 
-libraryDependencies += "org.asynchttpclient" % "async-http-client-netty-provider" % "2.0.0-SNAPSHOT" excludeAll(
-  ExclusionRule(organization = "io.netty") //It uses an older version of netty, APIs are the same so no problem to exclude this
-)
+libraryDependencies += "org.asynchttpclient" % "async-http-client-netty-provider" % "2.0.0-SNAPSHOT" excludeAll ExclusionRule(organization = "io.netty")
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
