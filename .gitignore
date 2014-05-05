@@ -15,7 +15,4 @@ cert.jks
 
 web/launcher.jar
 
-# SBT Folders
-target
-
 runtime
