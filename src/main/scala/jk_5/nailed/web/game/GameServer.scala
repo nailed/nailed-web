@@ -25,15 +25,11 @@ case class GameServer(private val channel: Channel, private val players: mutable
   def onPlayerJoin(player: Player){
     ProtocolIpc.logger.info(ProtocolIpc.marker, s"Player ${player.name} joined!")
     this.players += player
-
-    println(s"New player list size: ${this.players.size}")
   }
 
   def onPlayerLeave(player: Player){
     ProtocolIpc.logger.info(ProtocolIpc.marker, s"Player ${player.name} left!")
     this.players -= player
-
-    println(s"New player list size: ${this.players.size}")
   }
 
   @inline def getPlayer(id: String) = this.players.find(_.id == id)

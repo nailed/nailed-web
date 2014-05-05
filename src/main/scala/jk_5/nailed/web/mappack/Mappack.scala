@@ -19,6 +19,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
 
   var timesPlayed = 0
   val filestore = new MappackFilestore(this)
+  val luaFilestore = new MappackFilestore(this)
   var spawnpoint = new Location(0, 64, 0)
   var defaultGamemode = 0
   var difficulty = 0
@@ -46,6 +47,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     data.add("mpid", this.mappackId)
     data.add("name", this.name)
     data.add("worldFiles", this.filestore.toJson)
+    data.add("luaFiles", this.luaFilestore.toJson)
     data.add("plays", this.timesPlayed)
     data.add("spawnpoint", this.spawnpoint.toJson)
     data.add("defaultGamemode", this.defaultGamemode)
@@ -59,13 +61,14 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     this.mappackId = data.get("mpid").asString
     this.name = data.get("name").asString
     this.filestore.readData(data.get("worldFiles").asArray)
+    this.luaFilestore.readData(data.get("luaFiles").asArray)
     this.timesPlayed = data.get("plays").asInt
     this.spawnpoint = Location.fromJson(data.get("spawnpoint").asObject)
     this.defaultGamemode = data.get("defaultGamemode").asInt
     this.difficulty = data.get("difficulty").asInt
     this.spawnRules.read(data.get("spawns").asObject)
     this.gameRules.read(data.get("gamerules").asObject)
-    if(data.get("gametype") != null) this.gametype = data.get("gametype").asString
+    this.gametype = data.get("gametype").asString
   }
 
   def load(server: GameServer){

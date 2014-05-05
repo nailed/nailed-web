@@ -44,8 +44,8 @@ trait TCouchDBSerializable {
   final def readDB(data: JsonObject){
     if(this._databaseId == null) this._databaseId = new UID(data.get("_id").asString)
     this._databaseRevision = data.get("_rev").asString
-    this.readFromJsonForDB(data)
     this._existsInDatabase = true
+    this.readFromJsonForDB(data)
   }
 
   protected def writeToJsonForDB(data: JsonObject)
