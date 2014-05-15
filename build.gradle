@@ -18,7 +18,7 @@ repositories{
 dependencies{
     compile 'org.scala-lang:scala-library:2.10.2'
     compile 'io.netty:netty-all:4.0.19.Final'
-    compile 'jk_5.jsonlibrary:JsonLibrary:1.2'
+    compile 'jk_5.jsonlibrary:JsonLibrary:1.4'
     compile 'jk_5.commons:CommonsConfig:1.1.0'
     compile 'com.lambdaworks:scrypt:1.4.0'
     compile 'org.apache.logging.log4j:log4j-api:2.0-rc1'

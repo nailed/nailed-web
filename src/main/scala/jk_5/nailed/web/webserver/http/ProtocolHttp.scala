@@ -9,6 +9,7 @@ import jk_5.nailed.web.webserver.http.handlers._
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import jk_5.nailed.web.webserver.http.apihandlers._
+import jk_5.nailed.web.crash.CrashHandler
 
 /**
  * No description given
@@ -28,6 +29,7 @@ object ProtocolHttp extends MultiplexedProtocol {
   this.webserverMultiplexer.addHandler("/api/activateAccount/(.*)/", classOf[ApiHandlerActivateAccount])
   this.webserverMultiplexer.addHandler("/api/createMappack/", classOf[ApiHandlerCreateMappack])
   this.webserverMultiplexer.addHandler("/api/loadMappack/", classOf[ApiHandlerLoadMappack])
+  this.webserverMultiplexer.addHandler("/api/reportCrash/", classOf[ApiHandlerCrashReport])
   this.webserverMultiplexer.addHandler("/api/data/([0-9a-f]+)/", classOf[ApiHandlerMappackFile])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
@@ -38,6 +40,7 @@ object ProtocolHttp extends MultiplexedProtocol {
   val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")
 
   HttpRequestLogger //Init the requestlogger so it creates the channel right away instead of waiting for the first request
+  CrashHandler //Init the crashhandler so it creates the channel right away instead of waiting for the first request
 
   def matches(buffer: ByteBuf): Boolean = {
     val byte1 = buffer.getUnsignedByte(buffer.readerIndex())
