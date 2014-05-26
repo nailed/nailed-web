@@ -8,7 +8,7 @@ import jk_5.nailed.web.couchdb.{DatabaseType, TCouchDBSerializable}
  *
  * @author jk-5
  */
-@DatabaseType
+@DatabaseType("crashreport")
 case class CrashReport(stacktrace: String, data: JsonObject) extends TCouchDBSerializable {
   override protected def writeToJsonForDB(data: JsonObject): Unit = ???
 

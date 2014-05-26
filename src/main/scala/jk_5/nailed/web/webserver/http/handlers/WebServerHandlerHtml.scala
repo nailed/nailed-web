@@ -7,6 +7,7 @@ import io.netty.handler.stream.ChunkedFile
 import jk_5.nailed.web.webserver.http.{HttpHeaderDateFormat, WebServerUtils}
 import jk_5.nailed.web.webserver.{RoutedHandler, UrlEscaper}
 import java.util.Date
+import jk_5.nailed.web.webserver.http.response.ErrorResponse
 
 /**
  * No description given
@@ -44,13 +45,15 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[HttpObject] with 
           if(index.exists() && index.isFile) file = index
         }
         if(file.isHidden || !file.exists){
-          WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
+          ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
+          //WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
           return
         }
         if(file.isDirectory){
           if(uri.endsWith("/")) {
             //this.sendFileList(ctx, file) //TODO: file list?
-            WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
+            ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
+            //WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
           }else WebServerUtils.sendRedirect(ctx, uri + "/")
           return
         }
@@ -63,7 +66,8 @@ class WebServerHandlerHtml extends SimpleChannelInboundHandler[HttpObject] with 
           raf = new RandomAccessFile(file, "r")
         }catch{
           case e: FileNotFoundException =>
-            WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
+            ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
+            //WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND)
             return
         }
         val fileLength = raf.length()

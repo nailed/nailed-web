@@ -20,6 +20,8 @@ import io.netty.handler.codec.http.HttpHeaders
 import jk_5.jsonlibrary.JsonObject
 import jk_5.commons.config.ConfigTag
 import org.asynchttpclient.{RequestBuilder, Response, ListenableFuture, AsyncHttpClient}
+import org.asynchttpclient.util.Base64
+import io.netty.util.CharsetUtil
 
 /**
  * No description given
@@ -30,6 +32,10 @@ object CouchDB {
   private var serverHostname: String = _
   private var serverPort: Int = _
   private var databaseName: String = _
+  private var username: String = _
+  private var password: String = _
+  private var authHash: String = _
+  private var authenticate: Boolean = false
   private var ssl: Boolean = false
 
   private final val httpClient = new AsyncHttpClient()
@@ -41,7 +47,12 @@ object CouchDB {
     this.serverHostname = tag.get("hostname").setComment("The IP/Address for the couchdb server").asString("localhost")
     this.serverPort = tag.get("port").setComment("The port for the couchdb server").asInt(5984)
     this.databaseName = tag.get("name").setComment("The name of the couchdb database that Nailed will use").asString("nailed")
+    this.authenticate = tag.get("auth").setUseBraces(useBraces = true).get("enabled").asBoolean(default = false)
+    this.username = tag.get("auth").setUseBraces(useBraces = true).get("username").asString("")
+    this.password = tag.get("auth").setUseBraces(useBraces = true).get("password").asString("")
     this.ssl = tag.get("ssl").setComment("Should we use SSL?").asBoolean(default = false)
+
+    this.authHash = Base64.encode(s"$username:$password".getBytes(CharsetUtil.UTF_8))
   }
 
   def getObjectFromID[T <: TCouchDBSerializable](id: UID, obj: T): T = {
@@ -54,6 +65,7 @@ object CouchDB {
     assert(id != null)
     assert(data != null)
     val builder = new RequestBuilder("PUT")
+    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/" + id.toString)
     builder.setHeader(HttpHeaders.Names.CONTENT_TYPE.toString, "application/json")
     builder.setBody(data.stringify)
@@ -63,6 +75,7 @@ object CouchDB {
 
   def getDocument(id: UID): ListenableFuture[Response] = {
     val builder = new RequestBuilder("GET")
+    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/" + id.toString)
     val request = builder.build()
     this.httpClient.executeRequest(request)
@@ -70,6 +83,7 @@ object CouchDB {
 
   def getViewData(viewGroup: String, viewName: String): ListenableFuture[Response] = {
     val builder = new RequestBuilder("GET")
+    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/_design/" + viewGroup + "/_view/" + viewName)
     val request = builder.build()
     this.httpClient.executeRequest(request)

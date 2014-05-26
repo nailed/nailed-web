@@ -10,6 +10,7 @@ import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake,
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import jk_5.nailed.web.webserver.http.apihandlers._
 import jk_5.nailed.web.crash.CrashHandler
+import jk_5.nailed.web.webserver.http.response.ResponseEncoder
 
 /**
  * No description given
@@ -60,10 +61,11 @@ object ProtocolHttp extends MultiplexedProtocol {
     val pipe = channel.pipeline()
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
-    pipe.addLast("compressor", new HttpContentCompressor(6))
+    pipe.addLast("compressor", new HttpContentCompressor)
     pipe.addLast("requestLogger", HttpRequestLogger)
     pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
-    pipe.addLast("chunkedWriter", new ChunkedWriteHandler())
+    pipe.addLast("chunkedWriter", new ChunkedWriteHandler)
+    pipe.addLast("responseEncoder", ResponseEncoder)
     pipe.addLast("webserverRouter", router)
     pipe.addLast("routedHandler", NotFoundHandler)
     pipe.addLast("httpExceptionHandler", HttpExceptionHandler)

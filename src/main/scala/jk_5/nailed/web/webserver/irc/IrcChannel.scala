@@ -2,6 +2,7 @@ package jk_5.nailed.web.webserver.irc
 
 import scala.collection.mutable
 import java.util.Date
+import jk_5.nailed.web.auth.User
 
 /**
  * No description given
@@ -16,6 +17,7 @@ class IrcChannel(val name: String) {
   var topicTime = new Date
   var mode = "snt"
   val modes = mutable.HashMap[IrcConnection, String]()
+  val userModes = mutable.HashMap[User, String]()
 
   def setMode(connection: IrcConnection, mode: String){
     val modes = mode.substring(1)
@@ -28,12 +30,18 @@ class IrcChannel(val name: String) {
       additions = "-"
       modes.split("").foreach(m => if(current.contains(m)){current.replace(m, ""); additions += m})
     }
-    this.modes.put(connection, current)
+    connection match {
+      case a: AuthenticatedConnection => this.userModes.put(a.getUser, current)
+      case _ => this.modes.put(connection, current)
+    }
     if(additions.length > 1){
       this.connections.foreach(_.sendLine(s":${ProtocolIrc.host}!server@${ProtocolIrc.host} MODE $name $additions ${connection.nickname}"))
     }
   }
-  def getMode(connection: IrcConnection) = this.modes.get(connection).getOrElse("")
+  def getMode(connection: IrcConnection): String = connection match {
+    case a: AuthenticatedConnection => this.userModes.get(a.getUser).getOrElse("")
+    case _ => this.modes.get(connection).getOrElse("")
+  }
 
   def onJoin(connection: IrcConnection){
     connection match {
@@ -57,7 +65,7 @@ class IrcChannel(val name: String) {
     }
     this.connections.add(connection)
 
-    connection match {
+    /*connection match {
       case a: AuthenticatedConnection =>
         Option(a.getUser).foreach(u => {
           if(u.permissions.ircOperator){
@@ -65,7 +73,7 @@ class IrcChannel(val name: String) {
           }
         })
       case _ =>
-    }
+    }*/
   }
 
   def onPart(connection: IrcConnection){

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager
 import io.netty.handler.codec.http.{HttpRequest, FullHttpRequest, HttpResponseStatus}
 import jk_5.nailed.web.webserver.irc.{IrcConnection, ProtocolIrc}
 import jk_5.nailed.web.webserver.http.handlers.AggregatedHandler
+import jk_5.nailed.web.webserver.http.response.ErrorResponse
 
 /**
  * No description given
@@ -24,7 +25,8 @@ object HttpExceptionHandler extends ChannelHandlerAdapter {
 @Sharable
 object NotFoundHandler extends AggregatedHandler {
   override def handleAggregated(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-    WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND).addListener(WebServerUtils.closeWhenRequested)
+    ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
+    //WebServerUtils.sendError(ctx, HttpResponseStatus.NOT_FOUND).addListener(WebServerUtils.closeWhenRequested)
   }
 }
 

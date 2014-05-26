@@ -2,7 +2,7 @@ package jk_5.nailed.web.webserver.irc
 
 import jk_5.nailed.web.webserver.MultiplexedProtocol
 import io.netty.buffer.ByteBuf
-import io.netty.channel.Channel
+import io.netty.channel.{ChannelPromise, ChannelHandlerContext, ChannelDuplexHandler, Channel}
 import io.netty.handler.codec.{Delimiters, DelimiterBasedFrameDecoder}
 import io.netty.handler.codec.string.{StringDecoder, StringEncoder}
 import jk_5.nailed.web.webserver.irc.handler.{HandshakeHandler, OutboundFrameAppender}
@@ -25,6 +25,8 @@ object ProtocolIrc extends MultiplexedProtocol {
   val channels = mutable.HashSet[IrcChannel]()
   val connections = mutable.HashSet[IrcConnection]()
 
+  val channelPrefixes = Array("#")
+
   this.connections += ServerBotConnection
   this.connections += ServerConnection
 
@@ -46,6 +48,16 @@ object ProtocolIrc extends MultiplexedProtocol {
     pipe.addLast("stringEncoder", encoder)
     pipe.addLast("stringDecoder", decoder)
     pipe.addLast("outboundFramer", OutboundFrameAppender)
+    pipe.addLast("logger", new ChannelDuplexHandler(){
+      override def write(ctx: ChannelHandlerContext, msg: scala.Any, promise: ChannelPromise){
+        logger.debug("Outbound: " + msg.toString)
+        ctx.write(msg, promise)
+      }
+      override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any){
+        logger.debug("Inbound: " + msg.toString)
+        ctx.fireChannelRead(msg)
+      }
+    })
     pipe.addLast("handshakeHandler", new HandshakeHandler)
   }
 

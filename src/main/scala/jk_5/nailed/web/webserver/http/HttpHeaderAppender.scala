@@ -52,7 +52,10 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
       case _ =>
     }
     ctx.write(msg, promise)
-    if(close) promise.addListener(ChannelFutureListener.CLOSE)
+    if(close){
+      promise.addListener(ChannelFutureListener.CLOSE)
+      println("Closing channel on request")
+    }
   }
 
   override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = msg match {

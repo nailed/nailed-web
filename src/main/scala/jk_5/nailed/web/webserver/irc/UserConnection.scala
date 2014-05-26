@@ -61,8 +61,8 @@ class UserConnection(val channel: Channel) extends IrcConnection with Authentica
     super.disconnected(reason)
   }
 
-  override def onPrivateMessage(connection: IrcConnection, message: String) = this.sendLine(s"${connection.commandPrefix}PRIVMSG $nickname ${if(message.contains(' ')) ":" + message else message}")
-  override def onChannelMessage(sender: IrcConnection, channel: IrcChannel, message: String) = this.sendLine(s"${sender.commandPrefix}PRIVMSG ${channel.name} ${if(message.contains(' ')) ":" + message else message}")
+  override def onPrivateMessage(connection: IrcConnection, message: String) = this.sendLine(s"${connection.commandPrefix}PRIVMSG $nickname :$message")
+  override def onChannelMessage(sender: IrcConnection, channel: IrcChannel, message: String) = this.sendLine(s"${sender.commandPrefix}PRIVMSG ${channel.name} :$message")
   override def onUserJoinedChannel(connection: IrcConnection, channel: IrcChannel) = this.sendLine(s"${connection.commandPrefix}JOIN :${channel.name}")
 
   override def getSession = this.session.getOrElse(null)

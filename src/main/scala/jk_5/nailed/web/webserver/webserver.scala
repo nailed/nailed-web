@@ -80,7 +80,7 @@ object ExceptionHandler extends ChannelHandlerAdapter {
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = cause match {
     case e: IOException => e.getCause match {
       case e1: SSLException => //Fully ignore these
-      case _ => silentIgnore(e)
+      case e1 => silentIgnore(e1)
     }
     case e: DecoderException => e.getCause match {
       case e1: SSLException =>
@@ -90,7 +90,7 @@ object ExceptionHandler extends ChannelHandlerAdapter {
   }
 
   def silentIgnore(t: Throwable){
-    logger.trace(s"Silently ignored ${t.getClass.getSimpleName} in pipeline (${t.getMessage}})")
+    logger.trace(s"Silently ignored ${t.getClass.getSimpleName} in pipeline (${t.getMessage})")
   }
 
   def exception(t: Throwable){
