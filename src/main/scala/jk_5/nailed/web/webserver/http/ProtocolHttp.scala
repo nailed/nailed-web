@@ -33,6 +33,7 @@ object ProtocolHttp extends MultiplexedProtocol {
   this.webserverMultiplexer.addHandler("/api/loadMappack/", classOf[ApiHandlerLoadMappack])
   this.webserverMultiplexer.addHandler("/api/reportCrash/", classOf[ApiHandlerCrashReport])
   this.webserverMultiplexer.addHandler("/api/data/([0-9a-f]+)/", classOf[ApiHandlerMappackFile])
+  this.webserverMultiplexer.addHandler("/api/skins/(.*).png", classOf[ApiHandlerPlayerSkin])
   this.webserverMultiplexer.addHandler("/socket.io/static/flashsocket/(.*).swf", classOf[WebServerHandlerFlashResources])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/websocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/flashsocket/([0-9a-z]+)", classOf[WebServerHandlerSIOWebSocket])

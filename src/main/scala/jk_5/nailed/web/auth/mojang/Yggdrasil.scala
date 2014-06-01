@@ -14,10 +14,10 @@ import org.asynchttpclient.AsyncHttpClient
  * @author jk-5
  */
 object Yggdrasil {
-  private val httpClient = new AsyncHttpClient
-  private val executor = Executors.newCachedThreadPool()
-  private val logger = LogManager.getLogger
-  private val marker = MarkerManager.getMarker("Yggdrasil")
+  val httpClient = new AsyncHttpClient
+  val executor = Executors.newCachedThreadPool()
+  val logger = LogManager.getLogger
+  val marker = MarkerManager.getMarker("Yggdrasil")
 
   private def getJsonTemplate = new JsonObject().add("agent", new JsonObject().add("name", "Minecraft").add("version", 1))
   def lookupUid(username: String, password: String, callback: YggdrasilCallback){
