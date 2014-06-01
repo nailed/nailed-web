@@ -20,8 +20,8 @@ import io.netty.handler.codec.http.HttpHeaders
 import jk_5.jsonlibrary.JsonObject
 import jk_5.commons.config.ConfigTag
 import org.asynchttpclient.{RequestBuilder, Response, ListenableFuture, AsyncHttpClient}
-import org.asynchttpclient.util.Base64
 import io.netty.util.CharsetUtil
+import org.asynchttpclient.util.Base64
 
 /**
  * No description given
@@ -65,9 +65,9 @@ object CouchDB {
     assert(id != null)
     assert(data != null)
     val builder = new RequestBuilder("PUT")
-    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
+    if(this.authenticate) builder.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/" + id.toString)
-    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE.toString, "application/json")
+    builder.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json")
     builder.setBody(data.stringify)
     val request = builder.build()
     this.httpClient.executeRequest(request)
@@ -75,7 +75,7 @@ object CouchDB {
 
   def getDocument(id: UID): ListenableFuture[Response] = {
     val builder = new RequestBuilder("GET")
-    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
+    if(this.authenticate) builder.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/" + id.toString)
     val request = builder.build()
     this.httpClient.executeRequest(request)
@@ -83,7 +83,7 @@ object CouchDB {
 
   def getViewData(viewGroup: String, viewName: String): ListenableFuture[Response] = {
     val builder = new RequestBuilder("GET")
-    if(this.authenticate) builder.addHeader("Authorization", "Basic " + this.authHash)
+    if(this.authenticate) builder.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/_design/" + viewGroup + "/_view/" + viewName)
     val request = builder.build()
     this.httpClient.executeRequest(request)

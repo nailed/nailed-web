@@ -1,16 +1,17 @@
 package jk_5.nailed.web.webserver.http
 
 import jk_5.nailed.web.webserver.{RouterHandler, MultiplexedProtocol}
-import io.netty.channel.Channel
-import io.netty.handler.codec.http.{HttpContentCompressor, HttpResponseEncoder, HttpRequestDecoder}
+import io.netty.channel._
+import io.netty.handler.codec.http._
 import io.netty.handler.stream.ChunkedWriteHandler
-import io.netty.buffer.ByteBuf
+import io.netty.buffer.{Unpooled, ByteBuf}
 import jk_5.nailed.web.webserver.http.handlers._
 import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
 import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
 import jk_5.nailed.web.webserver.http.apihandlers._
 import jk_5.nailed.web.crash.CrashHandler
 import jk_5.nailed.web.webserver.http.response.ResponseEncoder
+import io.netty.util.CharsetUtil
 
 /**
  * No description given
@@ -57,14 +58,28 @@ object ProtocolHttp extends MultiplexedProtocol {
     byte1 == 'C' && byte2 == 'O'    // CONNECT
   }
 
+  val res = Unpooled.copiedBuffer("data", CharsetUtil.UTF_8)
+
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
+    println("Initializing http channel")
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor)
+    //pipe.addLast("aggregator", new HttpObjectAggregator(1024))
     pipe.addLast("requestLogger", HttpRequestLogger)
     pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler)
+    /*pipe.addLast("simpleHttpHandler", new SimpleChannelInboundHandler[FullHttpRequest]{
+      override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
+        println("Incoming request")
+        val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res))
+        r.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE)
+        ctx.writeAndFlush(res).addListener(new ChannelFutureListener {
+          override def operationComplete(future: ChannelFuture) = println("Response sent")
+        })
+      }
+    })*/
     pipe.addLast("responseEncoder", ResponseEncoder)
     pipe.addLast("webserverRouter", router)
     pipe.addLast("routedHandler", NotFoundHandler)

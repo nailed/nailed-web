@@ -21,7 +21,7 @@ import javax.net.ssl.SSLException
  * @author jk-5
  */
 object WebServer {
-  val boss = new NioEventLoopGroup()
+  val boss = new NioEventLoopGroup(2)
   val worker = new NioEventLoopGroup()
   val logger = LogManager.getLogger
 

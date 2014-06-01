@@ -11,17 +11,18 @@ import jk_5.nailed.web.webserver.ipc.PacketUtils
  */
 class PacketPlayerJoin extends IpcPacket {
 
-  var player: Player = _
+  var data: (String, String, String) = _
 
   override def encode(buffer: ByteBuf){}
   override def decode(buffer: ByteBuf){
-    this.player = new Player(PacketUtils.readString(buffer), PacketUtils.readString(buffer), PacketUtils.readString(buffer))
+    this.data = (PacketUtils.readString(buffer), PacketUtils.readString(buffer), PacketUtils.readString(buffer))
   }
   override def processPacket(server: GameServer){
-    server.onPlayerJoin(this.player)
+    val player = new Player(data._1, data._2, data._3, server)
+    server.onPlayerJoin(player)
 
     val p = new PacketPromptLogin
-    p.player = this.player
+    p.player = player
     server.sendPacket(p)
   }
 }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import jk_5.nailed.web.game.GameServer
 import jk_5.nailed.web.webserver.ipc.PacketUtils
 import jk_5.nailed.web.auth.{SessionManager, UserDatabase}
+import jk_5.nailed.web.chat.ChatHandler
 
 /**
  * No description given
@@ -51,5 +52,6 @@ class PacketLoginPlayer extends IpcPacket {
     server.sendPacket(new PacketUserdata(u.get))
     p.get.user = u.get
     p.get.session = s.get
+    ChatHandler.onPlayerAuthenticated(p.get)
   }
 }

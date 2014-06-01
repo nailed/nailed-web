@@ -8,4 +8,4 @@ import jk_5.nailed.web.game.GameServer
  *
  * @author jk-5
  */
-class FakeGameServer(private val channel: Channel) extends GameServer(channel, null)
+class FakeGameServer(private val channel: Channel) extends GameServer(channel)
