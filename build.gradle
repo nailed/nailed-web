@@ -31,6 +31,8 @@ dependencies{
         exclude module: 'netty-all' //It uses an older version of netty, APIs are the same so no problem to exclude this
     }
 
+    compile 'net.debasishg:redisclient_2.10:2.12'
+
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'
 }

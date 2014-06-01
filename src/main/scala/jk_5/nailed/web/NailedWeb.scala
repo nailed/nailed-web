@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager
 import jk_5.commons.config.ConfigFile
 import jk_5.nailed.web.mail.Mailer
 import jk_5.nailed.web.mappack.MappackRegistry
+import jk_5.nailed.web.mojang.UuidCache
 
 /**
  * No description given
@@ -27,12 +28,14 @@ object NailedWeb {
 
   def main(args: Array[String]){
     this.logger.info("Starting Server")
+
     this.logger.info("Reading Config")
     if(!this.CONFIG_DIR.exists()) this.CONFIG_DIR.mkdirs()
     this.config = ConfigFile.fromFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
 
     Mailer.readConfig(this.config.get("mail"))
     CouchDB.readConfig(this.config.get("database"))
+    UuidCache.loadCache()
     MimeTypesLookup.load()
     SslContextProvider.load()
     WebServer.start()
@@ -41,7 +44,7 @@ object NailedWeb {
     this.logger.info("Server started")
   }
 
-  @inline def getConfig = this.config
+  def getConfig = this.config
 }
 
 object LogUtils {

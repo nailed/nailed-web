@@ -55,17 +55,23 @@ trait TCouchDBSerializable {
     if(this._databaseId == null) this._databaseId = CouchDB.newID
     val data = new JsonObject
     this.writeDB(data)
-    val response = CouchDB.updateDocument(this._databaseId, data).get()
-    val resData = JsonObject.readFrom(response.getResponseBody)
-    if(resData.get("ok").asBoolean) this._databaseRevision = resData.get("rev").asString
-    this._existsInDatabase = true
+    CouchDB.updateDocument(this._databaseId, data){
+      response => {
+        val resData = JsonObject.readFrom(response)
+        if(resData.get("ok").asBoolean) this._databaseRevision = resData.get("rev").asString
+        this._existsInDatabase = true
+      }
+    }
   }
 
   def refreshFromDatabase(){
-    val response = CouchDB.getDocument(this._databaseId).get()
-    val resData = JsonObject.readFrom(response.getResponseBody)
-    this.readDB(resData)
-    this._existsInDatabase = true
+    CouchDB.getDocument(this._databaseId){
+      response => {
+        val resData = JsonObject.readFrom(response)
+        this.readDB(resData)
+        this._existsInDatabase = true
+      }
+    }
   }
 
   final def getID = this._databaseId

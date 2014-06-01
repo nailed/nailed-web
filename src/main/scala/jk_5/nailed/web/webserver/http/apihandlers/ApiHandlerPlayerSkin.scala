@@ -4,12 +4,13 @@ import jk_5.nailed.web.webserver.http.handlers.AggregatedHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.http.response.ErrorResponse
-import jk_5.nailed.web.auth.mojang.{UUIDCache, PlayerSkinLookup}
+import jk_5.nailed.web.auth.mojang.PlayerSkinLookup
 import jk_5.nailed.web.webserver.{MimeTypesLookup, RoutedHandler}
 import jk_5.nailed.web.auth.mojang.PlayerSkinLookup.SkinCallback
 import org.asynchttpclient.AsyncHttpClient
 import java.util.concurrent.Executors
 import io.netty.handler.stream.ChunkedStream
+import jk_5.nailed.web.mojang.UuidCache
 
 /**
  * No description given
@@ -31,7 +32,7 @@ class ApiHandlerPlayerSkin extends AggregatedHandler with RoutedHandler {
     part match {
       case None => ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
       case Some(p) =>
-        UUIDCache.uuid(p, uuid => {
+        UuidCache.uuid(p, uuid => {
           PlayerSkinLookup.getSkin(uuid, new SkinCallback {
             override def onError() = println("Lookup error!")
             override def onSuccess(url: String){

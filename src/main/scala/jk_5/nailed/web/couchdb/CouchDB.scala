@@ -22,6 +22,7 @@ import jk_5.commons.config.ConfigTag
 import org.asynchttpclient.{RequestBuilder, Response, ListenableFuture, AsyncHttpClient}
 import io.netty.util.CharsetUtil
 import org.asynchttpclient.util.Base64
+import java.util.concurrent.Executors
 
 /**
  * No description given
@@ -38,7 +39,8 @@ object CouchDB {
   private var authenticate: Boolean = false
   private var ssl: Boolean = false
 
-  private final val httpClient = new AsyncHttpClient()
+  private final val httpClient = new AsyncHttpClient
+  private final val executor = Executors.newCachedThreadPool
 
   def newID = UID.randomUID
 
@@ -61,7 +63,7 @@ object CouchDB {
     obj
   }
 
-  def updateDocument(id: UID, data: JsonObject): ListenableFuture[Response] = {
+  private[couchdb] def updateDocument(id: UID, data: JsonObject)(cb: (String) => Unit){
     assert(id != null)
     assert(data != null)
     val builder = new RequestBuilder("PUT")
@@ -70,15 +72,25 @@ object CouchDB {
     builder.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json")
     builder.setBody(data.stringify)
     val request = builder.build()
-    this.httpClient.executeRequest(request)
+    val future = this.httpClient.executeRequest(request)
+    future.addListener(new Runnable(){
+      override def run(){
+        cb(future.get().getResponseBody)
+      }
+    }, executor)
   }
 
-  def getDocument(id: UID): ListenableFuture[Response] = {
+  private[couchdb] def getDocument(id: UID)(cb: (String) => Unit){
     val builder = new RequestBuilder("GET")
     if(this.authenticate) builder.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + this.authHash)
     builder.setUrl((if(this.ssl) "https://" else "http://") + this.serverHostname + ":" + this.serverPort + "/" + this.databaseName + "/" + id.toString)
     val request = builder.build()
-    this.httpClient.executeRequest(request)
+    val future = this.httpClient.executeRequest(request)
+    future.addListener(new Runnable(){
+      override def run(){
+        cb(future.get().getResponseBody)
+      }
+    }, executor)
   }
 
   def getViewData(viewGroup: String, viewName: String): ListenableFuture[Response] = {
