@@ -29,7 +29,7 @@ object NailedWeb {
   def main(args: Array[String]){
     this.logger.info("Starting Server")
 
-    this.logger.info("Reading Config")
+     this.logger.info("Reading Config")
     if(!this.CONFIG_DIR.exists()) this.CONFIG_DIR.mkdirs()
     this.config = ConfigFile.fromFile(new File(this.CONFIG_DIR, "Nailed.cfg")).setComment("Nailed main configuration file")
 
