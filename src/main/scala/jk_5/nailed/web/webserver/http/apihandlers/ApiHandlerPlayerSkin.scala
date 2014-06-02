@@ -4,13 +4,12 @@ import jk_5.nailed.web.webserver.http.handlers.AggregatedHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http._
 import jk_5.nailed.web.webserver.http.response.ErrorResponse
-import jk_5.nailed.web.auth.mojang.PlayerSkinLookup
 import jk_5.nailed.web.webserver.{MimeTypesLookup, RoutedHandler}
-import jk_5.nailed.web.auth.mojang.PlayerSkinLookup.SkinCallback
 import org.asynchttpclient.AsyncHttpClient
 import java.util.concurrent.Executors
 import io.netty.handler.stream.ChunkedStream
 import jk_5.nailed.web.mojang.UuidCache
+import java.io.ByteArrayInputStream
 
 /**
  * No description given
@@ -32,26 +31,18 @@ class ApiHandlerPlayerSkin extends AggregatedHandler with RoutedHandler {
     part match {
       case None => ctx.writeAndFlush(new ErrorResponse(HttpResponseStatus.NOT_FOUND))
       case Some(p) =>
-        UuidCache.uuid(p, uuid => {
-          PlayerSkinLookup.getSkin(uuid, new SkinCallback {
-            override def onError() = println("Lookup error!")
-            override def onSuccess(url: String){
-              val future = ApiHandlerPlayerSkin.httpClient.executeRequest(ApiHandlerPlayerSkin.httpClient.prepareGet(url).build)
-              future.addListener(new Runnable {
-                override def run(){
-                  println("Downloaded skin " + url)
-                  val res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
-                  res.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("png"))
-                  res.headers().set(HttpHeaders.Names.CONTENT_LENGTH, future.get().getResponseBodyAsBytes.length)
-                  ctx.write(res)
-                  ctx.write(new HttpChunkedInput(new ChunkedStream(future.get.getResponseBodyAsStream)))
-                  ctx.write(LastHttpContent.EMPTY_LAST_CONTENT)
-                  ctx.flush()
-                }
-              }, ApiHandlerPlayerSkin.executor)
-            }
-          })
-        })
+        UuidCache.fromUsername(p){
+          entry => {
+            val bytes = entry.getSkinBytes
+            val res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+            res.headers().set(HttpHeaders.Names.CONTENT_TYPE, MimeTypesLookup.getMimeTypeFromExt("png"))
+            res.headers().set(HttpHeaders.Names.CONTENT_LENGTH, bytes.length)
+            ctx.write(res)
+            ctx.write(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(bytes))))
+            ctx.write(LastHttpContent.EMPTY_LAST_CONTENT)
+            ctx.flush()
+          }
+        }
     }
   }
 }

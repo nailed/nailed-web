@@ -28,14 +28,16 @@ case class UuidCacheEntry(var uuid: String, var name: String) extends TCouchDBSe
     this.skinBytesBase64 = data.get("skin").asString
   }
 
-  def populate(data: String = null){
-    def decode(data: String){
+  def populate(data: String = null)(cb: (UuidCacheEntry) => Unit){
+    def decode(data: String, cb: (UuidCacheEntry) => Unit){
+      //FIXME: The skin is null for people that don't have a custom skin
       val url = JsonObject.readFrom(new String(Base64.decode(data), CharsetUtil.UTF_8)).get("textures").asObject.get("SKIN").asObject.get("url").asString
       val future = Yggdrasil.httpClient.executeRequest(Yggdrasil.httpClient.prepareGet(url).build)
       future.addListener(new Runnable {
         override def run(){
           UuidCache.logger.debug(UuidCache.marker, "Downloaded skin " + url)
           skinBytesBase64 = Base64.encode(future.get().getResponseBodyAsBytes)
+          cb(UuidCacheEntry.this)
           saveToDatabase()
         }
       }, Yggdrasil.executor)
@@ -51,11 +53,13 @@ case class UuidCacheEntry(var uuid: String, var name: String) extends TCouchDBSe
           val data = future.get().getResponseBody
           UuidCache.logger.debug(UuidCache.marker, "< " + data)
           val json = JsonObject.readFrom(data)
-          decode(json.get("properties").asArray.getValues.find(_.asObject.get("name").asString == "textures").get.asObject.get("value").asString)
+          decode(json.get("properties").asArray.getValues.find(_.asObject.get("name").asString == "textures").get.asObject.get("value").asString, cb)
         }
       }, Yggdrasil.executor)
     }else{
-      decode(data)
+      decode(data, cb)
     }
   }
+
+  @inline def getSkinBytes: Array[Byte] = Base64.decode(this.skinBytesBase64)
 }

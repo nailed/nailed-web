@@ -17,6 +17,7 @@
 package jk_5.nailed.web.couchdb
 
 import jk_5.jsonlibrary.JsonObject
+import org.apache.logging.log4j.LogManager
 
 /**
  * No description given
@@ -32,6 +33,7 @@ trait TCouchDBSerializable {
   private var _databaseId: UID = null
   private var _databaseRevision: String = null
   private var _existsInDatabase: Boolean = false
+  private lazy val _cdblogger = LogManager.getLogger
 
   protected final def setDatabaseType(typ: String) = this._databaseType = typ
 
@@ -58,8 +60,13 @@ trait TCouchDBSerializable {
     CouchDB.updateDocument(this._databaseId, data){
       response => {
         val resData = JsonObject.readFrom(response)
-        if(resData.get("ok").asBoolean) this._databaseRevision = resData.get("rev").asString
-        this._existsInDatabase = true
+        if(resData.get("ok") != null && resData.get("ok").asBoolean){
+          this._databaseRevision = resData.get("rev").asString
+          this._existsInDatabase = true
+        }else{
+          _cdblogger.warn("Error (" + resData.get("error").asString + ") while saving document " + this.toString + " to CouchDB")
+          _cdblogger.warn(resData.get("reason").asString)
+        }
       }
     }
   }
