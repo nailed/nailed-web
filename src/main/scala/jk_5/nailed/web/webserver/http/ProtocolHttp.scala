@@ -63,7 +63,6 @@ object ProtocolHttp extends MultiplexedProtocol {
 
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
-    println("Initializing http channel")
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
     pipe.addLast("compressor", new HttpContentCompressor)

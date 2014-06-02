@@ -54,7 +54,6 @@ object HttpHeaderAppender extends ChannelDuplexHandler {
     ctx.write(msg, promise)
     if(close){
       promise.addListener(ChannelFutureListener.CLOSE)
-      println("Closing channel on request")
     }
   }
 
