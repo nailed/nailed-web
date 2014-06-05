@@ -31,5 +31,7 @@ class PacketInitConnection extends IpcPacket {
     srv.address = this.host
     server.getChannel.attr(ProtocolIpc.gameServer).set(srv)
     ServerRegistry.addServer(srv)
+
+    srv.sendPacket(new PacketListMappacks)
   }
 }
