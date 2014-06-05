@@ -13,6 +13,7 @@ import jk_5.nailed.web.mappack.MappackRegistry
 class PacketRequestMappackLoad extends IpcPacket {
 
   var name: String = _
+  var autoload = true
 
   override def encode(buffer: ByteBuf){
 
@@ -20,11 +21,12 @@ class PacketRequestMappackLoad extends IpcPacket {
 
   override def decode(buffer: ByteBuf){
     this.name = PacketUtils.readString(buffer)
+    this.autoload = buffer.readBoolean()
   }
 
   override def processPacket(server: GameServer){
     val mappack = MappackRegistry.getById(this.name)
     if(mappack.isEmpty) return
-    mappack.get.load(server)
+    mappack.get.load(server, autoload)
   }
 }

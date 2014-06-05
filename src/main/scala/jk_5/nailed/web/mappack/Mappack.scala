@@ -80,12 +80,13 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     if(data.get("stats") != null) this.stats = data.get("stats").asArray
   }
 
-  def load(server: GameServer){
+  def load(server: GameServer, autoload: Boolean = true){
     val packet = new PacketLoadMappackMeta
     val json = new JsonObject
     this.writeToJsonForDB(json)
     packet.data = json
     packet.id = this.mpid
+    packet.load = autoload
     server.sendPacket(packet)
   }
 }

@@ -14,10 +14,12 @@ class PacketLoadMappackMeta extends IpcPacket {
 
   var id: String = _
   var data: JsonObject = _
+  var load = true
 
   override def encode(buffer: ByteBuf){
     PacketUtils.writeString(id, buffer)
     PacketUtils.writeString(data.stringify, buffer)
+    buffer.writeBoolean(load)
   }
 
   override def decode(buffer: ByteBuf){
