@@ -29,6 +29,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
   var teamData = new JsonArray
   var randomSpawnpoints = new JsonArray
   var stats = new JsonArray
+  var preventBlockBreak = false
 
   def mpid = this.mappackId
 
@@ -61,6 +62,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     data.add("teams", this.teamData)
     data.add("randomspawnpoints", this.randomSpawnpoints)
     data.add("stats", this.stats)
+    data.add("preventBlockBreak", this.preventBlockBreak)
   }
 
   def readFromJsonForDB(data: JsonObject){
@@ -78,6 +80,7 @@ class Mappack(private var mappackId: String, var name: String) extends TCouchDBS
     if(data.get("teams") != null) this.teamData = data.get("teams").asArray
     if(data.get("randomspawnpoints") != null) this.randomSpawnpoints = data.get("randomspawnpoints").asArray
     if(data.get("stats") != null) this.stats = data.get("stats").asArray
+    this.preventBlockBreak = data.get("preventBlockBreak").asBoolean
   }
 
   def load(server: GameServer, autoload: Boolean = true){
