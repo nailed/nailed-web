@@ -11,5 +11,6 @@ angular.module("nailed", [
     router.when("/register", {templateUrl: "/pages/register.html", controller: "RegisterController"});
     router.when("/linkMojang", {templateUrl: "/pages/mojangaccount.html", controller: "LinkMojangController", access:{isFree: false}});
     router.when("/login", {templateUrl: "/pages/login.html", controller: "LoginController"});
+    router.when("/commits", {templateUrl: "/pages/commitlog.html", controller: "CommitsController"});
     router.otherwise({redirectTo: "/"})
-}])
+}]);

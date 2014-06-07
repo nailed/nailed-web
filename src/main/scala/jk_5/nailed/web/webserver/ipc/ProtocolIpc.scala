@@ -1,6 +1,6 @@
 package jk_5.nailed.web.webserver.ipc
 
-import jk_5.nailed.web.webserver.MultiplexedProtocol
+import jk_5.nailed.web.webserver.ServerProtocol
 import io.netty.channel.Channel
 import jk_5.nailed.web.webserver.ipc.codec.{PacketCodec, VarintFrameCodec}
 import io.netty.util.AttributeKey
@@ -13,7 +13,7 @@ import io.netty.buffer.ByteBuf
  *
  * @author jk-5
  */
-object ProtocolIpc extends MultiplexedProtocol {
+object ProtocolIpc extends ServerProtocol {
   val logger = LogManager.getLogger
   val marker = MarkerManager.getMarker("IPC")
   val connectionMarker = MarkerManager.getMarker("IPC|Connections", this.marker)

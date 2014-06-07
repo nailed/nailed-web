@@ -319,12 +319,15 @@ angular.module('nailed.controllers', [])
             if($scope.files != undefined && $scope.files.length > 0) formData.append("mapFile", $scope.files[0]);
             //TODO: modify button state so the user knows it's uploading
             $http({
-                method: 'POST',
-                url: '/api/createMappack/',
-                data: formData,
-                headers: {'Content-Type': undefined}, transformRequest: angular.identity}
+                    method: 'POST',
+                    url: '/api/createMappack/',
+                    data: formData,
+                    headers: {'Content-Type': undefined}, transformRequest: angular.identity}
             ).success(function(data, status, headers, config) {
-                //TODO: notify user that uploading is done
-            });
+                    //TODO: notify user that uploading is done
+                });
         }
+    }])
+    .controller("CommitsController", ["$scope", "$location", "$http", "UserService", function($scope, $location, $http, $user) {
+
     }]);

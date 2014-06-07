@@ -9,7 +9,7 @@ import io.netty.util.CharsetUtil
  *
  * @author jk-5
  */
-object ProtocolFlashPolicy extends MultiplexedProtocol {
+object ProtocolFlashPolicy extends ServerProtocol {
   private final val requestBuffer = Unpooled.copiedBuffer("<policy-file-request/>", CharsetUtil.UTF_8)
   private final val responseBuffer = Unpooled.copiedBuffer(
     "<?xml version=\"1.0\"?>" +

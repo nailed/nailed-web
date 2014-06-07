@@ -4,7 +4,6 @@ import io.netty.handler.codec.ByteToMessageDecoder
 import io.netty.channel.{Channel, ChannelHandlerContext}
 import io.netty.buffer.ByteBuf
 import java.util
-import io.netty.handler.timeout.ReadTimeoutHandler
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -13,33 +12,26 @@ import scala.collection.mutable.ArrayBuffer
  * @author jk-5
  */
 object ProtocolMultiplexer {
-  private final val handlers = ArrayBuffer[MultiplexedProtocol]()
-  def addHandler(handler: MultiplexedProtocol) = this.handlers += handler
+  private final val handlers = ArrayBuffer[ServerProtocol]()
+  def addHandler(handler: ServerProtocol) = this.handlers += handler
 }
 
 class ProtocolMultiplexer extends ByteToMessageDecoder {
 
   def decode(ctx: ChannelHandlerContext, in: ByteBuf, out: util.List[AnyRef]){
     if(in.readableBytes() < 2) return
-    val handler = ProtocolMultiplexer.handlers.find(h => {
-      in.markReaderIndex()
-      val matches = h.matches(in)
-      in.resetReaderIndex()
-      matches
-    })
+    val handler = ProtocolMultiplexer.handlers.find(_.matches(in))
     if(handler.isEmpty){
       in.clear()
       ctx.close()
       return
     }
-    ctx.pipeline().remove(ReadTimeoutDetector.getClass)
-    ctx.pipeline().remove(classOf[ReadTimeoutHandler])
     handler.get.configureChannel(ctx.channel())
     ctx.pipeline().remove(this)
   }
 }
 
-trait MultiplexedProtocol{
+trait ServerProtocol{
   def matches(buffer: ByteBuf): Boolean
   def configureChannel(channel: Channel)
 }

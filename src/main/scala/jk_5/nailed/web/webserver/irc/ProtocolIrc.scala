@@ -1,6 +1,6 @@
 package jk_5.nailed.web.webserver.irc
 
-import jk_5.nailed.web.webserver.MultiplexedProtocol
+import jk_5.nailed.web.webserver.ServerProtocol
 import io.netty.buffer.ByteBuf
 import io.netty.channel.{ChannelPromise, ChannelHandlerContext, ChannelDuplexHandler, Channel}
 import io.netty.handler.codec.{Delimiters, DelimiterBasedFrameDecoder}
@@ -16,7 +16,7 @@ import jk_5.nailed.web.webserver.irc.connections.{ServerConnection, ServerBotCon
  *
  * @author jk-5
  */
-object ProtocolIrc extends MultiplexedProtocol {
+object ProtocolIrc extends ServerProtocol {
 
   val host = "nailed.jk-5.tk"
   val connection: AttributeKey[IrcConnection] = AttributeKey.valueOf("connection")
@@ -31,10 +31,10 @@ object ProtocolIrc extends MultiplexedProtocol {
   this.connections += ServerConnection
 
   override def matches(buffer: ByteBuf): Boolean = {
-    val c1 = buffer.readUnsignedByte()
-    val c2 = buffer.readUnsignedByte()
-    val c3 = buffer.readUnsignedByte()
-    val c4 = buffer.readUnsignedByte()
+    val c1 = buffer.getUnsignedByte(buffer.readerIndex())
+    val c2 = buffer.getUnsignedByte(buffer.readerIndex() + 1)
+    val c3 = buffer.getUnsignedByte(buffer.readerIndex() + 2)
+    val c4 = buffer.getUnsignedByte(buffer.readerIndex() + 3)
     (c1 == 'N' && c2 == 'I' && c3 == 'C' && c4 == 'K') || (c1 == 'P' && c2 == 'A' && c3 == 'S' && c4 == 'S') || (c1 == 'C' && c2 == 'A' && c3 == 'P')
   }
 

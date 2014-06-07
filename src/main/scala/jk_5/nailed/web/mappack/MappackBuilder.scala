@@ -55,6 +55,7 @@ class MappackBuilder {
     mappack.gameRules.from(this.gamerules)
     mappack.difficulty = this.difficulty
     mappack.defaultGamemode = this.gameMode
+    mappack.preventBlockBreak = this.preventBlockBreak
     if(mapFile == null){
       mappack.saveToDatabase()
       cb.foreach(_.onDone(mappack))

@@ -1,26 +1,22 @@
 package jk_5.nailed.web.webserver.http
 
-import jk_5.nailed.web.webserver.{RouterHandler, MultiplexedProtocol}
+import jk_5.nailed.web.webserver.ServerProtocol
 import io.netty.channel._
 import io.netty.handler.codec.http._
 import io.netty.handler.stream.ChunkedWriteHandler
 import io.netty.buffer.{Unpooled, ByteBuf}
-import jk_5.nailed.web.webserver.http.handlers._
-import jk_5.nailed.web.webserver.socketio.handler.{WebServerHandlerSIOHandshake, WebServerHandlerFlashResources}
-import jk_5.nailed.web.webserver.socketio.transport.websocket.WebServerHandlerSIOWebSocket
-import jk_5.nailed.web.webserver.http.apihandlers._
+import jk_5.nailed.web.webserver.socketio.handler.WebServerHandlerFlashResources
 import jk_5.nailed.web.crash.CrashHandler
-import jk_5.nailed.web.webserver.http.response.ResponseEncoder
-import io.netty.util.CharsetUtil
+import jk_5.nailed.web.webserver.http.routing.RoutingHandler
 
 /**
  * No description given
  *
  * @author jk-5
  */
-object ProtocolHttp extends MultiplexedProtocol {
+object ProtocolHttp extends ServerProtocol {
 
-  val webserverMultiplexer = new MultiplexingUrlResolver
+  /*val webserverMultiplexer = new MultiplexingUrlResolver
 
   this.webserverMultiplexer.addHandler("/api/mappacks.json", classOf[ApiHandlerMappackList])
   this.webserverMultiplexer.addHandler("/api/mappacks/(.*).json", classOf[ApiHandlerMappackData])
@@ -40,7 +36,9 @@ object ProtocolHttp extends MultiplexedProtocol {
   this.webserverMultiplexer.addHandler("/socket.io/([0-9]+)/", classOf[WebServerHandlerSIOHandshake])
   this.webserverMultiplexer.addHandler("/(.*)", classOf[WebServerHandlerHtml])
 
-  val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")
+  val router = new RouterHandler(this.webserverMultiplexer, "routedHandler")*/
+
+  val router = new RoutingHandler
 
   HttpRequestLogger //Init the requestlogger so it creates the channel right away instead of waiting for the first request
   CrashHandler //Init the crashhandler so it creates the channel right away instead of waiting for the first request
@@ -59,30 +57,18 @@ object ProtocolHttp extends MultiplexedProtocol {
     byte1 == 'C' && byte2 == 'O'    // CONNECT
   }
 
-  val res = Unpooled.copiedBuffer("data", CharsetUtil.UTF_8)
-
   def configureChannel(channel: Channel){
     val pipe = channel.pipeline()
     pipe.addLast("httpDecoder", new HttpRequestDecoder)
     pipe.addLast("httpEncoder", new HttpResponseEncoder)
-    pipe.addLast("compressor", new HttpContentCompressor)
-    //pipe.addLast("aggregator", new HttpObjectAggregator(1024))
-    pipe.addLast("requestLogger", HttpRequestLogger)
-    pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
+    //pipe.addLast("compressor", new HttpContentCompressor)
+    pipe.addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 1024))
+    //pipe.addLast("requestLogger", HttpRequestLogger)
+    //pipe.addLast("httpHeaderAppender", HttpHeaderAppender)
     pipe.addLast("chunkedWriter", new ChunkedWriteHandler)
-    /*pipe.addLast("simpleHttpHandler", new SimpleChannelInboundHandler[FullHttpRequest]{
-      override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest){
-        println("Incoming request")
-        val r = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(res))
-        r.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE)
-        ctx.writeAndFlush(res).addListener(new ChannelFutureListener {
-          override def operationComplete(future: ChannelFuture) = println("Response sent")
-        })
-      }
-    })*/
-    pipe.addLast("responseEncoder", ResponseEncoder)
-    pipe.addLast("webserverRouter", router)
-    pipe.addLast("routedHandler", NotFoundHandler)
-    pipe.addLast("httpExceptionHandler", HttpExceptionHandler)
+    //pipe.addLast("responseEncoder", ResponseEncoder)
+    pipe.addLast("router", router)
+    //pipe.addLast("routedHandler", NotFoundHandler)
+    //pipe.addLast("httpExceptionHandler", HttpExceptionHandler)
   }
 }

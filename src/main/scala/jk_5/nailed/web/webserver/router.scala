@@ -1,7 +1,7 @@
 package jk_5.nailed.web.webserver
 
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.handler.codec.http.HttpRequest
+import io.netty.handler.codec.http.{HttpMethod, HttpRequest}
 import io.netty.channel.{ChannelInboundHandlerAdapter, ChannelHandler, ChannelHandlerContext}
 import jk_5.nailed.web.webserver.http.{MultiplexingUrlResolver, URLData, NotFoundHandler}
 import org.apache.logging.log4j.{MarkerManager, LogManager}
@@ -33,6 +33,11 @@ class RouterHandler(private val resolver: MultiplexingUrlResolver, private val h
       case m =>
     }
     ctx.fireChannelRead(msg)
+  }
+
+
+  def += (uri: String, method: HttpMethod, handler: ChannelHandler){
+
   }
 }
 
